@@ -3,7 +3,6 @@ package ru.tki;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 import java.util.Properties;
 
 
@@ -26,7 +25,7 @@ public class BotConfigMainReader {
                 throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
             }
 
-            Date time = new Date(System.currentTimeMillis());
+            config.setProperties(prop);
 
             config.setUrl(prop.getProperty("url"));
             config.setLogin(prop.getProperty("login"));
@@ -35,6 +34,8 @@ public class BotConfigMainReader {
 
             //Setup reauired local property for chrome driver
             System.setProperty("webdriver.chrome.driver", prop.getProperty("webdriver.chrome.driver"));
+
+
         } catch (Exception e) {
             System.out.println("Exception: " + e);
         } finally {

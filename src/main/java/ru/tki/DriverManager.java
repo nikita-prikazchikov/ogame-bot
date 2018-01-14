@@ -21,6 +21,7 @@ public class DriverManager {
     public WebDriver getDriver(){
         if(this.driver == null){
             this.startDriver();
+            this.setImplicitlyWait();
             this.maximize();
         }
         return this.driver;

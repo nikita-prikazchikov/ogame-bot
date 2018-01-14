@@ -10,7 +10,6 @@ public class WebDriverHelper {
 
     public void pause(Integer milliseconds){
         try {
-            //TimeUnit.MILLISECONDS.sleep(milliseconds);
             Thread.sleep(milliseconds);
         } catch (InterruptedException e) {
             e.printStackTrace();
