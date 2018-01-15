@@ -5,9 +5,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.tki.executor.Navigation;
+import ru.tki.models.IPlanet;
 import ru.tki.po.BasePage;
 import ru.tki.po.LoginPage;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 import static org.junit.Assert.assertTrue;
@@ -84,6 +86,10 @@ public class BasicTest {
         navigation.openHomePage();
         loginPage.checkLogin();
 
+        List<IPlanet> planets = basePage.myWorlds.getPlanets();
 
+        for(IPlanet planet:planets){
+            basePage.myWorlds.selectPlanet(planet);
+        }
     }
 }
