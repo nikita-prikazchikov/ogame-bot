@@ -11,7 +11,7 @@ import ru.tki.po.PageObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyWorlds extends PageObject {
+public class MyWorldsComponent extends PageObject {
 
     private final static String PLANETS = "#planetList .smallplanet";
     private final static String PLANET_XPATH = "//div[contains(@class, 'smallplanet')]/a[./span[contains(., '%s')]]";
@@ -39,14 +39,14 @@ public class MyWorlds extends PageObject {
     public List<IPlanet> getPlanets(){
         ArrayList<IPlanet> planetList = new ArrayList<IPlanet>();
 
-        List<WebElement> planets = webDriverHelper.findElements(By.cssSelector(PLANETS));
+        List<WebElement> planets = helper.findElements(By.cssSelector(PLANETS));
         for(WebElement planetElement : planets){
             String coords = planetElement.findElement(By.cssSelector(".planet-koords ")).getText();
             String name = planetElement.findElement(By.cssSelector(".planet-name ")).getText();
             Planet planet = new Planet(coords, name);
             planetList.add(planet);
 
-            if(webDriverHelper.isElementExists(planetElement, By.cssSelector(".moonlink"))){
+            if(helper.isElementExists(planetElement, By.cssSelector(".moonlink"))){
                 Moon moon = new Moon(coords);
                 planetList.add(moon);
             }

@@ -5,7 +5,7 @@ import org.openqa.selenium.support.FindBy;
 import ru.tki.po.PageObject;
 import ru.tki.utils.DataParser;
 
-public class Resources extends PageObject {
+public class ResourcesComponent extends PageObject {
 
     @FindBy(id="resources_metal")
     WebElement metal;

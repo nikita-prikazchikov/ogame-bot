@@ -5,9 +5,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.tki.executor.Navigation;
+import ru.tki.models.BuildingType;
 import ru.tki.models.IPlanet;
 import ru.tki.po.BasePage;
 import ru.tki.po.LoginPage;
+import ru.tki.po.ResourcesPage;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -22,8 +24,9 @@ public class BasicTest {
     BotConfigMain config;
 
     Navigation navigation;
-    LoginPage  loginPage;
-    BasePage   basePage;
+    LoginPage loginPage;
+    BasePage basePage;
+    ResourcesPage resourcesPage;
 
     @Before
     public void setUp() throws Exception {
@@ -37,6 +40,7 @@ public class BasicTest {
         navigation = new Navigation();
         loginPage = new LoginPage();
         basePage = new BasePage();
+        resourcesPage = new ResourcesPage();
     }
 
     @After
@@ -88,8 +92,18 @@ public class BasicTest {
 
         List<IPlanet> planets = basePage.myWorlds.getPlanets();
 
-        for(IPlanet planet:planets){
+        for (IPlanet planet : planets) {
             basePage.myWorlds.selectPlanet(planet);
         }
+    }
+
+    @Test
+    public void buildSolarPlant() throws Exception {
+        navigation.openHomePage();
+        loginPage.checkLogin();
+
+        navigation.leftMenu.openResources();
+
+        resourcesPage.build(BuildingType.SOLAR_PLANT);
     }
 }

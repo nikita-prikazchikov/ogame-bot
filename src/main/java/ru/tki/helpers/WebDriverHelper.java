@@ -31,8 +31,7 @@ public class WebDriverHelper {
         if (parent != null) {
             try {
                 element = parent.findElement(bySelector);
-            } catch (NoSuchElementException ignored) {
-            } catch (StaleElementReferenceException ignored) {
+            } catch (NoSuchElementException | StaleElementReferenceException ignored) {
             } catch (Exception ex) {
                 element = null;
                 ex.printStackTrace();
@@ -50,8 +49,7 @@ public class WebDriverHelper {
         if (parent != null) {
             try {
                 elements = parent.findElements(bySelector);
-            } catch (NoSuchElementException ignored) {
-            } catch (StaleElementReferenceException ignored) {
+            } catch (NoSuchElementException | StaleElementReferenceException ignored) {
             } catch (Exception ex) {
                 elements = null;
                 ex.printStackTrace();
@@ -65,22 +63,19 @@ public class WebDriverHelper {
     }
 
     public boolean isElementExists(SearchContext parent, By bySelector) {
-        ContextHolder.getDriverManager().resetImplicitlyWait();
-        boolean r = this.findElement(parent, bySelector) != null;
-        ContextHolder.getDriverManager().setImplicitlyWait();
-        return r;
+        try {
+            ContextHolder.getDriverManager().resetImplicitlyWait();
+            return this.findElement(parent, bySelector) != null;
+        }
+        catch (Exception ignored){
+            return false;
+        }
+        finally {
+            ContextHolder.getDriverManager().setImplicitlyWait();
+        }
     }
 
     public boolean isElementExists(By bySelector) {
-        boolean r = false;
-        try {
-            ContextHolder.getDriverManager().resetImplicitlyWait();
-            r = (this.findElement(ContextHolder.getDriver(), bySelector) != null);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-            ContextHolder.getDriverManager().setImplicitlyWait();
-        }
-        return r;
+        return this.isElementExists(ContextHolder.getDriver(), bySelector);
     }
 }

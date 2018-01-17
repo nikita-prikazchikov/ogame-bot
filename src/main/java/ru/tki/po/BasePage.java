@@ -1,22 +1,19 @@
 package ru.tki.po;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import ru.tki.po.components.LeftMenu;
-import ru.tki.po.components.MyWorlds;
-import ru.tki.po.components.Resources;
+import ru.tki.po.components.LeftMenuComponent;
+import ru.tki.po.components.MyWorldsComponent;
+import ru.tki.po.components.ResourcesComponent;
 
 public class BasePage extends PageObject {
 
-    public LeftMenu leftMenu;
-    public Resources resources;
-    public MyWorlds myWorlds;
+    public LeftMenuComponent leftMenu;
+    public ResourcesComponent resources;
+    public MyWorldsComponent myWorlds;
 
     public BasePage() {
         super();
-        leftMenu = new LeftMenu();
-        resources = new Resources();
-        myWorlds = new MyWorlds();
+        leftMenu = new LeftMenuComponent();
+        resources = new ResourcesComponent();
+        myWorlds = new MyWorldsComponent();
     }
 }

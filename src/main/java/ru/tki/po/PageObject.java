@@ -8,7 +8,7 @@ import ru.tki.helpers.WebDriverHelper;
 
 public class PageObject {
     protected WebDriver driver;
-    protected WebDriverHelper webDriverHelper = new WebDriverHelper();
+    protected WebDriverHelper helper = new WebDriverHelper();
 
     public PageObject(WebDriver driver) {
         this.driver = driver;

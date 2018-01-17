@@ -1,14 +1,11 @@
 package ru.tki.po;
 
-import com.gargoylesoftware.htmlunit.ElementNotFoundException;
-import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.Select;
 import ru.tki.BotConfigMain;
 import ru.tki.ContextHolder;
-import ru.tki.DriverManager;
 
 
 public class LoginPage extends PageObject {
@@ -49,9 +46,9 @@ public class LoginPage extends PageObject {
 
     public void login(String login, String password, String universe){
         this.username.clear();
-        webDriverHelper.sendKeysSlow(this.username, login);
+        helper.sendKeysSlow(this.username, login);
         this.password.clear();
-        webDriverHelper.sendKeysSlow(this.password, password);
+        helper.sendKeysSlow(this.password, password);
 
         new Select(this.universe).selectByVisibleText(universe);
 

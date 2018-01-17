@@ -3,7 +3,7 @@ package ru.tki.po.components;
 import org.openqa.selenium.By;
 import ru.tki.po.PageObject;
 
-public class LeftMenu extends PageObject {
+public class LeftMenuComponent extends PageObject {
 
     private final String itemLocator = "//div[@id='links']//a[contains(@class, 'menubutton') and contains(., '%s')]";
 
