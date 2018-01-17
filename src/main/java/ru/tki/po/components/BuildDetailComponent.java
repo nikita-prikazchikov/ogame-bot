@@ -17,10 +17,10 @@ public class BuildDetailComponent extends PageObject {
     private static final By METAL = By.cssSelector(ROOT + " #costs .metal .cost");
     private static final By CRYSTAL = By.cssSelector(ROOT + " #costs .crystal .cost");
     private static final By DEUTERIUM = By.cssSelector(ROOT + " #costs .deuterium .cost");
-    private static final By BUILD_IT = By.cssSelector(ROOT + " #costs .build-it");
+    private static final By BUILD_IT = By.cssSelector(ROOT + " .build-it");
 
     public int getLevel(){
-        Matcher m = Pattern.compile("(/d+)").matcher(helper.findElement(LEVEL).getText());
+        Matcher m = Pattern.compile("(/d+)").matcher(helper.getElement(LEVEL).getText());
         if(m.find()){
             return Integer.parseInt(m.group(1));
         }
@@ -30,13 +30,13 @@ public class BuildDetailComponent extends PageObject {
     public Duration getDuration(){
         Duration d = Duration.ZERO;
 
-        String text = helper.findElement(DURATION).getText();
-        Matcher m = Pattern.compile("(/d+)с").matcher(text);
+        String text = helper.getElement(DURATION).getText();
+        Matcher m = Pattern.compile("(\\d+)с").matcher(text);
         if(m.find()){
             d = d.plusSeconds(Integer.parseInt(m.group(1)));
         }
 
-        m = Pattern.compile("(/d+)м").matcher(text);
+        m = Pattern.compile("(\\d+)м").matcher(text);
         if(m.find()){
             d = d.plusMinutes(Integer.parseInt(m.group(1)));
         }
@@ -46,12 +46,12 @@ public class BuildDetailComponent extends PageObject {
             d = d.plusHours(Integer.parseInt(m.group(1)));
         }
 
-        m = Pattern.compile("(/d+)д").matcher(text);
+        m = Pattern.compile("(\\d+)д").matcher(text);
         if(m.find()){
             d = d.plusDays(Integer.parseInt(m.group(1)));
         }
 
-        m = Pattern.compile("(/d+)нед").matcher(text);
+        m = Pattern.compile("(\\d+)нед").matcher(text);
         if(m.find()){
             d = d.plusDays(Integer.parseInt(m.group(1)) * 7);
         }
@@ -62,18 +62,18 @@ public class BuildDetailComponent extends PageObject {
         Resources r = new Resources();
 
         if(helper.isElementExists(METAL)){
-            r.setMetal(DataParser.parseResource(helper.findElement(METAL).getText()));
+            r.setMetal(DataParser.parseResource(helper.getElement(METAL).getText()));
         }
         if(helper.isElementExists(CRYSTAL)){
-            r.setCrystal(DataParser.parseResource(helper.findElement(CRYSTAL).getText()));
+            r.setCrystal(DataParser.parseResource(helper.getElement(CRYSTAL).getText()));
         }
         if(helper.isElementExists(DEUTERIUM)){
-            r.setDeuterium(DataParser.parseResource(helper.findElement(DEUTERIUM).getText()));
+            r.setDeuterium(DataParser.parseResource(helper.getElement(DEUTERIUM).getText()));
         }
         return r;
     }
 
     public void build(){
-        helper.findElement(BUILD_IT).click();
+        helper.getElement(BUILD_IT).click();
     }
 }

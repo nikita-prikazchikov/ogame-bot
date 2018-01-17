@@ -8,6 +8,8 @@ import java.util.List;
 
 public class WebDriverHelper {
 
+    private static final String ELEMENT_NOT_FOUND = "Element not found using locator: %s";
+
     public void pause() {
         this.pause(300);
     }
@@ -24,6 +26,18 @@ public class WebDriverHelper {
         for (int i = 0; i < value.length(); i++) {
             element.sendKeys(String.valueOf(value.charAt(i)));
         }
+    }
+
+    public WebElement getElement(SearchContext parent, By bySelector) {
+        WebElement element = findElement(parent, bySelector);
+        if (element == null){
+            throw new InvalidArgumentException(String.format(ELEMENT_NOT_FOUND, bySelector));
+        }
+        return element;
+    }
+
+    public WebElement getElement(By bySelector) {
+        return this.getElement(ContextHolder.getDriver(), bySelector);
     }
 
     public WebElement findElement(SearchContext parent, By bySelector) {

@@ -2,10 +2,7 @@ package ru.tki.po.components;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import ru.tki.models.Coordinates;
-import ru.tki.models.IPlanet;
-import ru.tki.models.Moon;
-import ru.tki.models.Planet;
+import ru.tki.models.*;
 import ru.tki.po.PageObject;
 
 import java.util.ArrayList;
@@ -17,7 +14,7 @@ public class MyWorldsComponent extends PageObject {
     private final static String PLANET_XPATH = "//div[contains(@class, 'smallplanet')]/a[./span[contains(., '%s')]]";
     private final static String MOON_XPATH = "//div[contains(@class, 'smallplanet') and .//span[contains(@class, 'planet-koords ') and contains(., '%s')]]/a[contains(@class, 'moonlink')]";
 
-    public void selectPlanet(IPlanet planet){
+    public void selectPlanet(AbstractPlanet planet){
         switch (planet.getType()){
             case PLANET:
                 selectPlanet(planet.getCoordinates());
@@ -36,8 +33,8 @@ public class MyWorldsComponent extends PageObject {
         this.driver.findElement(By.xpath(String.format(MOON_XPATH, coordinates.getFormattedCoordinates()))).click();
     }
 
-    public List<IPlanet> getPlanets(){
-        ArrayList<IPlanet> planetList = new ArrayList<IPlanet>();
+    public List<AbstractPlanet> getPlanets(){
+        ArrayList<AbstractPlanet> planetList = new ArrayList<>();
 
         List<WebElement> planets = helper.findElements(By.cssSelector(PLANETS));
         for(WebElement planetElement : planets){

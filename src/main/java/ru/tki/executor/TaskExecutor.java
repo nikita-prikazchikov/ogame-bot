@@ -1,22 +1,11 @@
 package ru.tki.executor;
 
-import ru.tki.models.IAction;
-import ru.tki.models.ITask;
-import ru.tki.models.actions.BuildResourceAction;
+import ru.tki.models.actions.Action;
+import ru.tki.models.tasks.Task;
 
 public class TaskExecutor {
 
-    public IAction executeTask(ITask task){
-        switch (task.getType()){
-
-            case BUILD_RESOURCES:
-                return executeBuildResources();
-            default:
-                return null;
-        }
-    }
-
-    public IAction executeBuildResources(){
-        return new BuildResourceAction();
+    public Action executeTask(Task task){
+        return task.execute();
     }
 }

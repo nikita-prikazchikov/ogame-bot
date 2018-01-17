@@ -17,4 +17,40 @@ public class Navigation {
         WebDriver webDriver = ContextHolder.getDriver();
         webDriver.get(ContextHolder.getBotConfigMain().getUrl());
     }
+
+    public void openOverview() {
+        leftMenu.openOverview();
+    }
+
+    public void openShipyard() {
+        leftMenu.openShipyard();
+    }
+
+    public void openResearch() {
+        leftMenu.openResearch();
+    }
+
+    public void openFleet() {
+        leftMenu.openFleet();
+    }
+
+    public void openDefense() {
+        leftMenu.openDefense();
+    }
+
+    public void openResources() {
+        leftMenu.openResources();
+    }
+
+    public void openGalaxy() {
+        leftMenu.openGalaxy();
+    }
+
+    public void openTraderOverview() {
+        leftMenu.openTraderOverview();
+    }
+
+    public void openStation() {
+        leftMenu.openStation();
+    }
 }

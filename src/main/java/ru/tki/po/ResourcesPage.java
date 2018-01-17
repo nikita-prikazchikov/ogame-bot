@@ -2,7 +2,6 @@ package ru.tki.po;
 
 import org.openqa.selenium.By;
 import ru.tki.models.BuildingType;
-import ru.tki.po.components.BuildDetailComponent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,9 +10,9 @@ import java.util.Map;
 public class ResourcesPage extends PageObject {
 
     private static final Map<BuildingType, By> buildings = new HashMap<BuildingType, By>() {{
-        put(BuildingType.METAL, By.cssSelector("#button1"));
-        put(BuildingType.CRYSTAL, By.cssSelector("#button2"));
-        put(BuildingType.DEUTERIUM, By.cssSelector("#button3"));
+        put(BuildingType.METAL_MINE, By.cssSelector("#button1"));
+        put(BuildingType.CRYSTAL_MINE, By.cssSelector("#button2"));
+        put(BuildingType.DEUTERIUM_MINE, By.cssSelector("#button3"));
         put(BuildingType.SOLAR_PLANT, By.cssSelector("#button4"));
         put(BuildingType.SOLAR_SATELLITE, By.cssSelector("#button6"));
         put(BuildingType.METAL_STORAGE, By.cssSelector("#button7"));
@@ -21,19 +20,12 @@ public class ResourcesPage extends PageObject {
         put(BuildingType.DEUTERIUM_STORAGE, By.cssSelector("#button9"));
     }};
 
-    private BuildDetailComponent buildDetailComponent;
-
-    public ResourcesPage() {
-        super();
-        buildDetailComponent = new BuildDetailComponent();
-    }
-
     public void build(BuildingType type) {
         helper.findElement(helper.findElement(buildings.get(type)), By.cssSelector(".fastBuild")).click();
     }
 
-    public void openDetails(BuildingType type) {
-        helper.findElement(helper.findElement(buildings.get(type)), By.cssSelector(".detail_button")).click();
+    public void select(BuildingType type) {
+        helper.findElement(helper.findElement(buildings.get(type)), By.cssSelector("#details")).click();
     }
 
     public int getBuildingLevel(BuildingType type) {

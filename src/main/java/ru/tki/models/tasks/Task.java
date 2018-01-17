@@ -1,13 +1,22 @@
 package ru.tki.models.tasks;
 
-import ru.tki.models.ITask;
+import ru.tki.models.AbstractPlanet;
+import ru.tki.models.actions.Action;
 
 import java.util.Date;
 
-public abstract class Task implements ITask {
-    private Date executionDate;
+public abstract class Task {
 
-    public Date getExecutionTime() {
+    private   Date           executionDate;
+    protected AbstractPlanet planet;
+
+    public abstract Action execute();
+
+    public void setPlanet(AbstractPlanet planet) {
+        this.planet = planet;
+    }
+
+    public Date getExecutionDate() {
         return executionDate;
     }
 

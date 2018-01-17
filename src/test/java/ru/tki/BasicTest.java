@@ -5,8 +5,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.tki.executor.Navigation;
+import ru.tki.models.AbstractPlanet;
 import ru.tki.models.BuildingType;
-import ru.tki.models.IPlanet;
+import ru.tki.models.actions.Action;
+import ru.tki.models.tasks.BuildResourceTask;
 import ru.tki.po.BasePage;
 import ru.tki.po.LoginPage;
 import ru.tki.po.ResourcesPage;
@@ -90,9 +92,9 @@ public class BasicTest {
         navigation.openHomePage();
         loginPage.checkLogin();
 
-        List<IPlanet> planets = basePage.myWorlds.getPlanets();
+        List<AbstractPlanet> planets = basePage.myWorlds.getPlanets();
 
-        for (IPlanet planet : planets) {
+        for (AbstractPlanet planet : planets) {
             basePage.myWorlds.selectPlanet(planet);
         }
     }
@@ -102,8 +104,21 @@ public class BasicTest {
         navigation.openHomePage();
         loginPage.checkLogin();
 
-        navigation.leftMenu.openResources();
+        navigation.openResources();
 
         resourcesPage.build(BuildingType.SOLAR_PLANT);
+    }
+
+    @Test
+    public void buildMetalMineByTask() throws Exception {
+        navigation.openHomePage();
+        loginPage.checkLogin();
+
+        List<AbstractPlanet> planets = basePage.myWorlds.getPlanets();
+
+        BuildResourceTask task = new BuildResourceTask(planets.get(0), BuildingType.METAL_MINE);
+        Action action = task.execute();
+
+        logger.info(action.toString());
     }
 }
