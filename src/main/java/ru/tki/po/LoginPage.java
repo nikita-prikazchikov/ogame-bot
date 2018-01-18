@@ -58,6 +58,7 @@ public class LoginPage extends PageObject {
     public void openLoginForm(){
         if(!this.loginForm.isDisplayed()){
             this.login.click();
+            helper.pause();
         }
     }
 

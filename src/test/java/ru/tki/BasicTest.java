@@ -7,8 +7,10 @@ import org.junit.Test;
 import ru.tki.executor.Navigation;
 import ru.tki.models.AbstractPlanet;
 import ru.tki.models.BuildingType;
+import ru.tki.models.ResearchType;
 import ru.tki.models.StationType;
 import ru.tki.models.actions.Action;
+import ru.tki.models.tasks.ResearchTask;
 import ru.tki.models.tasks.ResourceTask;
 import ru.tki.models.tasks.StationTask;
 import ru.tki.po.BasePage;
@@ -132,6 +134,19 @@ public class BasicTest {
         List<AbstractPlanet> planets = basePage.myWorlds.getPlanets();
 
         StationTask task = new StationTask(planets.get(0), StationType.ROBOTS_FACTORY);
+        Action action = task.execute();
+
+        logger.info(action.toString());
+    }
+
+    @Test
+    public void researchEspionageByTask() throws Exception {
+        navigation.openHomePage();
+        loginPage.checkLogin();
+
+        List<AbstractPlanet> planets = basePage.myWorlds.getPlanets();
+
+        ResearchTask task = new ResearchTask(planets.get(0), ResearchType.ESPIONAGE);
         Action action = task.execute();
 
         logger.info(action.toString());

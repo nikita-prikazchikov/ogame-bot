@@ -21,15 +21,15 @@ public class ResourcesPage extends PageObject {
     }};
 
     public void build(BuildingType type) {
-        helper.findElement(helper.findElement(buildings.get(type)), By.cssSelector(".fastBuild")).click();
+        helper.getElement(helper.getElement(buildings.get(type)), By.cssSelector(".fastBuild")).click();
     }
 
     public void select(BuildingType type) {
-        helper.findElement(helper.findElement(buildings.get(type)), By.cssSelector("#details")).click();
+        helper.getElement(helper.getElement(buildings.get(type)), By.cssSelector("#details")).click();
     }
 
     public int getBuildingLevel(BuildingType type) {
         return Integer.parseInt(
-                helper.findElement(helper.findElement(buildings.get(type)), By.cssSelector(".level")).getText().trim());
+                helper.getElement(helper.getElement(buildings.get(type)), By.cssSelector(".level")).getText().trim());
     }
 }

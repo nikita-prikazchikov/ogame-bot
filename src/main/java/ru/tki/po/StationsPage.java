@@ -21,15 +21,15 @@ public class StationsPage extends PageObject {
     }};
 
     public void build(StationType type) {
-        helper.findElement(helper.findElement(stations.get(type)), By.cssSelector(".fastBuild")).click();
+        helper.getElement(helper.getElement(stations.get(type)), By.cssSelector(".fastBuild")).click();
     }
 
     public void select(StationType type) {
-        helper.findElement(helper.findElement(stations.get(type)), By.cssSelector(".detail_button ")).click();
+        helper.getElement(helper.getElement(stations.get(type)), By.cssSelector(".detail_button ")).click();
     }
 
     public int getBuildingLevel(StationType type) {
         return Integer.parseInt(
-                helper.findElement(helper.findElement(stations.get(type)), By.cssSelector(".level")).getText().trim());
+                helper.getElement(helper.getElement(stations.get(type)), By.cssSelector(".level")).getText().trim());
     }
 }
