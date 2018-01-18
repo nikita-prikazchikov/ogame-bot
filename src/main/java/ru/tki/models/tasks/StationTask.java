@@ -1,39 +1,39 @@
 package ru.tki.models.tasks;
 
 import ru.tki.models.AbstractPlanet;
-import ru.tki.models.BuildingType;
-import ru.tki.models.actions.BuildResourceAction;
+import ru.tki.models.StationType;
+import ru.tki.models.actions.StationAction;
 import ru.tki.po.BasePage;
-import ru.tki.po.ResourcesPage;
+import ru.tki.po.StationsPage;
 import ru.tki.po.components.BuildDetailComponent;
 
-public class BuildResourceTask extends Task {
+public class StationTask extends Task {
 
-    BuildingType type;
+    StationType type;
 
-    public BuildResourceTask(AbstractPlanet planet, BuildingType type) {
+    public StationTask(AbstractPlanet planet, StationType type) {
         this.planet = planet;
         this.type = type;
     }
 
-    public BuildingType getType() {
+    public StationType getType() {
         return type;
     }
 
-    public void setType(BuildingType type) {
+    public void setType(StationType type) {
         this.type = type;
     }
 
     @Override
-    public BuildResourceAction execute() {
-        BuildResourceAction action = new BuildResourceAction(planet);
+    public StationAction execute() {
+        StationAction action = new StationAction(planet);
 
         BasePage basePage = new BasePage();
         basePage.myWorlds.selectPlanet(planet);
-        basePage.leftMenu.openResources();
+        basePage.leftMenu.openStation();
 
-        ResourcesPage resourcesPage = new ResourcesPage();
-        resourcesPage.select(type);
+        StationsPage stationsPage = new StationsPage();
+        stationsPage.select(type);
 
         BuildDetailComponent buildDetailComponent = new BuildDetailComponent();
         action.setEndDate(buildDetailComponent.getDuration());

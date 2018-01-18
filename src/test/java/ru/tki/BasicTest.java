@@ -9,8 +9,8 @@ import ru.tki.models.AbstractPlanet;
 import ru.tki.models.BuildingType;
 import ru.tki.models.StationType;
 import ru.tki.models.actions.Action;
-import ru.tki.models.tasks.BuildResourceTask;
-import ru.tki.models.tasks.BuildStationTask;
+import ru.tki.models.tasks.ResourceTask;
+import ru.tki.models.tasks.StationTask;
 import ru.tki.po.BasePage;
 import ru.tki.po.LoginPage;
 import ru.tki.po.ResourcesPage;
@@ -118,7 +118,7 @@ public class BasicTest {
 
         List<AbstractPlanet> planets = basePage.myWorlds.getPlanets();
 
-        BuildResourceTask task = new BuildResourceTask(planets.get(0), BuildingType.METAL_MINE);
+        ResourceTask task = new ResourceTask(planets.get(0), BuildingType.METAL_MINE);
         Action action = task.execute();
 
         logger.info(action.toString());
@@ -131,7 +131,7 @@ public class BasicTest {
 
         List<AbstractPlanet> planets = basePage.myWorlds.getPlanets();
 
-        BuildStationTask task = new BuildStationTask(planets.get(0), StationType.ROBOTS_FACTORY);
+        StationTask task = new StationTask(planets.get(0), StationType.ROBOTS_FACTORY);
         Action action = task.execute();
 
         logger.info(action.toString());
