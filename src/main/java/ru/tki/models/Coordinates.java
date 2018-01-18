@@ -35,4 +35,9 @@ public class Coordinates {
     public String getPlanet() {
         return planet;
     }
+
+    @Override
+    public String toString() {
+        return String.format("[%s:%s:%s]", galaxy, system, planet);
+    }
 }

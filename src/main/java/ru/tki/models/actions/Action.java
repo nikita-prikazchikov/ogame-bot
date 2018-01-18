@@ -38,4 +38,12 @@ public abstract class Action {
         //add 5 seconds to avoid time difference between object creation and actual execution of build time
         this.endDate = instant.plus(duration).plusSeconds(5);
     }
+
+    @Override
+    public String toString() {
+        return "Action{" +
+                "planet=" + planet +
+                ", endDate=" + endDate +
+                '}';
+    }
 }

@@ -46,4 +46,12 @@ public abstract class AbstractPlanet {
     public String getName() {
         return name;
     }
+
+    @Override
+    public String toString() {
+        return "AbstractPlanet{" +
+                "coordinates=" + coordinates +
+                ", name=" + name +
+                '}';
+    }
 }

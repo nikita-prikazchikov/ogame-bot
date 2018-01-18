@@ -7,8 +7,10 @@ import org.junit.Test;
 import ru.tki.executor.Navigation;
 import ru.tki.models.AbstractPlanet;
 import ru.tki.models.BuildingType;
+import ru.tki.models.StationType;
 import ru.tki.models.actions.Action;
 import ru.tki.models.tasks.BuildResourceTask;
+import ru.tki.models.tasks.BuildStationTask;
 import ru.tki.po.BasePage;
 import ru.tki.po.LoginPage;
 import ru.tki.po.ResourcesPage;
@@ -117,6 +119,19 @@ public class BasicTest {
         List<AbstractPlanet> planets = basePage.myWorlds.getPlanets();
 
         BuildResourceTask task = new BuildResourceTask(planets.get(0), BuildingType.METAL_MINE);
+        Action action = task.execute();
+
+        logger.info(action.toString());
+    }
+
+    @Test
+    public void buildRobotsFactoryByTask() throws Exception {
+        navigation.openHomePage();
+        loginPage.checkLogin();
+
+        List<AbstractPlanet> planets = basePage.myWorlds.getPlanets();
+
+        BuildStationTask task = new BuildStationTask(planets.get(0), StationType.ROBOTS_FACTORY);
         Action action = task.execute();
 
         logger.info(action.toString());
