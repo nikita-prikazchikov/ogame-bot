@@ -1,0 +1,18 @@
+package ru.tki.models;
+
+public enum ShipType {
+    LIGHT_FIGHTER,
+    HEAVY_FIGHTER,
+    CRUISER,
+    BATTLESHIP,
+    BATTLECRUISER,
+    BOMBER,
+    DESTROYER,
+    DEATHSTAR,
+    SMALL_CARGO,
+    LARGE_CARGO,
+    COLONY_SHIP,
+    RECYCLER,
+    ESPIONAGE_PROBE,
+    SOLAR_SATELLITE
+}

@@ -5,17 +5,16 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.tki.executor.Navigation;
-import ru.tki.models.AbstractPlanet;
-import ru.tki.models.BuildingType;
-import ru.tki.models.ResearchType;
-import ru.tki.models.StationType;
+import ru.tki.models.*;
 import ru.tki.models.actions.Action;
 import ru.tki.models.tasks.ResearchTask;
 import ru.tki.models.tasks.ResourceTask;
+import ru.tki.models.tasks.ShipyardTask;
 import ru.tki.models.tasks.StationTask;
 import ru.tki.po.BasePage;
 import ru.tki.po.LoginPage;
 import ru.tki.po.ResourcesPage;
+import ru.tki.po.ShipyardPage;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -147,6 +146,19 @@ public class BasicTest {
         List<AbstractPlanet> planets = basePage.myWorlds.getPlanets();
 
         ResearchTask task = new ResearchTask(planets.get(0), ResearchType.ESPIONAGE);
+        Action action = task.execute();
+
+        logger.info(action.toString());
+    }
+
+    @Test
+    public void buildLightFirgterByTask() throws Exception {
+        navigation.openHomePage();
+        loginPage.checkLogin();
+
+        List<AbstractPlanet> planets = basePage.myWorlds.getPlanets();
+
+        ShipyardTask task = new ShipyardTask(planets.get(0), ShipType.LIGHT_FIGHTER, 2);
         Action action = task.execute();
 
         logger.info(action.toString());

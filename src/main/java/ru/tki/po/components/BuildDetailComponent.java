@@ -1,6 +1,7 @@
 package ru.tki.po.components;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import ru.tki.models.Resources;
 import ru.tki.po.PageObject;
 import ru.tki.utils.DataParser;
@@ -17,6 +18,7 @@ public class BuildDetailComponent extends PageObject {
     private static final By METAL = By.cssSelector(ROOT + " #costs .metal .cost");
     private static final By CRYSTAL = By.cssSelector(ROOT + " #costs .crystal .cost");
     private static final By DEUTERIUM = By.cssSelector(ROOT + " #costs .deuterium .cost");
+    private static final By AMOUNT = By.cssSelector(ROOT + "  #number");
     private static final By BUILD_IT = By.cssSelector(ROOT + " .build-it");
 
     public int getLevel(){
@@ -71,6 +73,16 @@ public class BuildDetailComponent extends PageObject {
             r.setDeuterium(DataParser.parseResource(helper.getElement(DEUTERIUM).getText()));
         }
         return r;
+    }
+
+    public void setAmount(int value){
+        this.setAmount(Integer.toString(value));
+    }
+
+    public void setAmount(String value){
+        WebElement element = helper.getElement(AMOUNT);
+        element.clear();
+        element.sendKeys(value);
     }
 
     public void build(){

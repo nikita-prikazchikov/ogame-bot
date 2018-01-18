@@ -37,7 +37,7 @@ public class ResearchesPage extends PageObject {
         helper.getElement(helper.getElement(stations.get(type)), By.cssSelector(".detail_button")).click();
     }
 
-    public int getBuildingLevel(ResearchType type) {
+    public int getResearchLevel(ResearchType type) {
         return Integer.parseInt(
                 helper.getElement(helper.getElement(stations.get(type)), By.cssSelector(".level")).getText().trim());
     }
