@@ -50,7 +50,7 @@ public class Navigation {
         leftMenu.openTraderOverview();
     }
 
-    public void openStation() {
-        leftMenu.openStation();
+    public void openFactory() {
+        leftMenu.openFactory();
     }
 }

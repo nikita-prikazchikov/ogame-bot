@@ -1,13 +1,14 @@
 package ru.tki.po;
 
 import org.openqa.selenium.By;
+import ru.tki.models.Buildings;
 import ru.tki.models.types.BuildingType;
 
 import java.util.HashMap;
 import java.util.Map;
 
 
-public class ResourcesPage extends PageObject {
+public class BuildingsPage extends PageObject {
 
     private static final Map<BuildingType, By> elements = new HashMap<BuildingType, By>() {{
         put(BuildingType.METAL_MINE, By.cssSelector("#button1"));
@@ -31,5 +32,13 @@ public class ResourcesPage extends PageObject {
     public int getBuildingLevel(BuildingType type) {
         return Integer.parseInt(
                 getElement(getElement(elements.get(type)), By.cssSelector(".level")).getText().trim());
+    }
+
+    public Buildings getBuildings(){
+        Buildings buildings = new Buildings();
+        for(BuildingType type : BuildingType.values()){
+            buildings.set(type, getBuildingLevel(type));
+        }
+        return buildings;
     }
 }

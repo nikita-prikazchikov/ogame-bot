@@ -9,9 +9,7 @@ import ru.tki.models.*;
 import ru.tki.models.actions.Action;
 import ru.tki.models.tasks.*;
 import ru.tki.models.types.*;
-import ru.tki.po.BasePage;
-import ru.tki.po.LoginPage;
-import ru.tki.po.ResourcesPage;
+import ru.tki.po.*;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -26,9 +24,15 @@ public class BasicTest {
     BotConfigMain config;
 
     Navigation navigation;
-    LoginPage loginPage;
-    BasePage basePage;
-    ResourcesPage resourcesPage;
+    LoginPage  loginPage;
+    BasePage   basePage;
+
+    OverviewPage   overviewPage;
+    BuildingsPage  buildingsPage;
+    FactoriesPage  factoriesPage;
+    ResearchesPage researchesPage;
+    DefencePage    defencePage;
+    FleetPage      fleetPage;
 
     @Before
     public void setUp() throws Exception {
@@ -42,7 +46,13 @@ public class BasicTest {
         navigation = new Navigation();
         loginPage = new LoginPage();
         basePage = new BasePage();
-        resourcesPage = new ResourcesPage();
+
+        overviewPage = new OverviewPage();
+        buildingsPage = new BuildingsPage();
+        factoriesPage = new FactoriesPage();
+        researchesPage = new ResearchesPage();
+        defencePage = new DefencePage();
+        fleetPage = new FleetPage();
     }
 
     @After
@@ -78,7 +88,7 @@ public class BasicTest {
 
         basePage.leftMenu.openResources();
         basePage.leftMenu.openOverview();
-        basePage.leftMenu.openStation();
+        basePage.leftMenu.openFactory();
         basePage.leftMenu.openTraderOverview();
         basePage.leftMenu.openResearch();
         basePage.leftMenu.openShipyard();
@@ -100,13 +110,43 @@ public class BasicTest {
     }
 
     @Test
+    public void testMyFirstPlanet() throws Exception {
+        navigation.openHomePage();
+        loginPage.checkLogin();
+
+        List<AbstractPlanet> planets = basePage.myWorlds.getPlanets();
+        Planet planet = (Planet) planets.get(0);
+
+        navigation.openOverview();
+        planet.setName(overviewPage.getPlanetName());
+        planet.setSize(overviewPage.getPlanetSize());
+
+        navigation.openResources();
+        planet.setBuildings(buildingsPage.getBuildings());
+
+        navigation.openFactory();
+        planet.setFactories(factoriesPage.getFactories());
+
+        navigation.openResearch();
+        planet.setResearches(researchesPage.getResearches());
+
+        navigation.openDefense();
+        planet.setDefence(defencePage.getDefence());
+
+        navigation.openFleet();
+        planet.setFleet(fleetPage.getFleet());
+
+        logger.info(planet.toString());
+    }
+
+    @Test
     public void buildSolarPlant() throws Exception {
         navigation.openHomePage();
         loginPage.checkLogin();
 
         navigation.openResources();
 
-        resourcesPage.build(BuildingType.SOLAR_PLANT);
+        buildingsPage.build(BuildingType.SOLAR_PLANT);
     }
 
     @Test
@@ -129,7 +169,7 @@ public class BasicTest {
 
         List<AbstractPlanet> planets = basePage.myWorlds.getPlanets();
 
-        StationTask task = new StationTask(planets.get(0), StationType.ROBOTS_FACTORY);
+        FactoryTask task = new FactoryTask(planets.get(0), FactoryType.ROBOTS_FACTORY);
         Action action = task.execute();
 
         logger.info(action.toString());
@@ -186,7 +226,7 @@ public class BasicTest {
                 new Planet("2:39:6"),
                 new Fleet(ShipType.LIGHT_FIGHTER, 1),
                 MissionType.ATTACK,
-                new Resources(1,2,3));
+                new Resources(1, 2, 3));
         task.setFleetSpeed(FleetSpeed.S80);
 
         Action action = task.execute();

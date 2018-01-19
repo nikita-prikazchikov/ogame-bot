@@ -171,4 +171,18 @@ public class FleetPage extends PageObject {
         return d;
     }
 
+    public int getShipCount(ShipType type) {
+        return Integer.parseInt(
+                getElement(getElement(ships.get(type)), By.cssSelector(".level")).getText().trim());
+    }
+
+    public Fleet getFleet() {
+        Fleet fleet = new Fleet();
+        for (ShipType type : ShipType.values()) {
+            if (type == ShipType.SOLAR_SATELLITE)
+                continue;
+            fleet.set(type, getShipCount(type));
+        }
+        return fleet;
+    }
 }

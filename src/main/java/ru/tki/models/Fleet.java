@@ -21,24 +21,41 @@ public class Fleet {
             solarSatellite;
 
     public Fleet() {
+        this.lightFighter = 0;
+        this.heavyFighter = 0;
+        this.cruiser = 0;
+        this.battleship = 0;
+        this.battlecruiser = 0;
+        this.bomber = 0;
+        this.destroyer = 0;
+        this.deathStar = 0;
+        this.smallCargo = 0;
+        this.largeCargo = 0;
+        this.colonyShip = 0;
+        this.recycler = 0;
+        this.espionageProbe = 0;
+        this.solarSatellite = 0;
     }
 
     public Fleet(ShipType type, Integer count) {
-        setShipCount(type, count);
+        this();
+        set(type, count);
     }
 
     public Fleet(ShipType type, Integer count, ShipType type2, Integer count2) {
-        setShipCount(type, count);
-        setShipCount(type2, count2);
+        this();
+        set(type, count);
+        set(type2, count2);
     }
 
     public Fleet(ShipType type, Integer count, ShipType type2, Integer count2, ShipType type3, Integer count3) {
-        setShipCount(type, count);
-        setShipCount(type2, count2);
-        setShipCount(type3, count3);
+        this();
+        set(type, count);
+        set(type2, count2);
+        set(type3, count3);
     }
 
-    public int getShipCount(ShipType type){
+    public Integer get(ShipType type){
         switch (type){
 
             case LIGHT_FIGHTER:
@@ -73,7 +90,7 @@ public class Fleet {
         return 0;
     }
 
-    public void setShipCount(ShipType type, Integer count){
+    public void set(ShipType type, Integer count){
         switch (type){
             case LIGHT_FIGHTER:
                 setLightFighter(count);

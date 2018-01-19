@@ -7,6 +7,7 @@ import ru.tki.po.BasePage;
 public abstract class AbstractPlanet {
     protected Coordinates coordinates;
     protected String      name;
+    protected Integer     size;
 
     public AbstractPlanet() {
     }
@@ -48,11 +49,20 @@ public abstract class AbstractPlanet {
         return name;
     }
 
+    public Integer getSize() {
+        return size;
+    }
+
+    public void setSize(Integer size) {
+        this.size = size;
+    }
+
     @Override
     public String toString() {
         return "AbstractPlanet{" +
                 "coordinates=" + coordinates +
                 ", name=" + name +
+                ", size=" + size +
                 '}';
     }
 }

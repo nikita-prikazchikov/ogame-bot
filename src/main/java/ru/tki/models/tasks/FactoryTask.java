@@ -1,39 +1,39 @@
 package ru.tki.models.tasks;
 
 import ru.tki.models.AbstractPlanet;
-import ru.tki.models.types.StationType;
-import ru.tki.models.actions.StationAction;
+import ru.tki.models.types.FactoryType;
+import ru.tki.models.actions.FactoryAction;
 import ru.tki.po.BasePage;
-import ru.tki.po.StationsPage;
+import ru.tki.po.FactoriesPage;
 import ru.tki.po.components.BuildDetailComponent;
 
-public class StationTask extends Task {
+public class FactoryTask extends Task {
 
-    StationType type;
+    FactoryType type;
 
-    public StationTask(AbstractPlanet planet, StationType type) {
+    public FactoryTask(AbstractPlanet planet, FactoryType type) {
         this.planet = planet;
         this.type = type;
     }
 
-    public StationType getType() {
+    public FactoryType getType() {
         return type;
     }
 
-    public void setType(StationType type) {
+    public void setType(FactoryType type) {
         this.type = type;
     }
 
     @Override
-    public StationAction execute() {
-        StationAction action = new StationAction(planet);
+    public FactoryAction execute() {
+        FactoryAction action = new FactoryAction(planet);
 
         BasePage basePage = new BasePage();
         basePage.myWorlds.selectPlanet(planet);
-        basePage.leftMenu.openStation();
+        basePage.leftMenu.openFactory();
 
-        StationsPage stationsPage = new StationsPage();
-        stationsPage.select(type);
+        FactoriesPage factoriesPage = new FactoriesPage();
+        factoriesPage.select(type);
 
         BuildDetailComponent buildDetailComponent = new BuildDetailComponent();
         action.setDuration(buildDetailComponent.getDuration());

@@ -1,6 +1,6 @@
 package ru.tki.models.types;
 
-public enum StationType {
+public enum FactoryType {
     ROBOTS_FACTORY,
     SHIPYARD,
     RESEARCH_LAB,

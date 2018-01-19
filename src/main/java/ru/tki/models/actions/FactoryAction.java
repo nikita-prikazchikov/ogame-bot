@@ -2,9 +2,9 @@ package ru.tki.models.actions;
 
 import ru.tki.models.AbstractPlanet;
 
-public class StationAction extends Action {
+public class FactoryAction extends Action {
 
-    public StationAction(AbstractPlanet planet) {
+    public FactoryAction(AbstractPlanet planet) {
         super(planet);
     }
 }

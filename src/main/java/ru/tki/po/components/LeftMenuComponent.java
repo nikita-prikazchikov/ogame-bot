@@ -9,7 +9,7 @@ public class LeftMenuComponent extends PageObject {
 
     private final String ITEM_OVERVIEW        = "Обзор";
     private final String ITEM_RESOURCES       = "Сырьё";
-    private final String ITEM_STATION         = "Фабрики";
+    private final String ITEM_FACTORY         = "Фабрики";
     private final String ITEM_TRADER_OVERVIEW = "Скупщик";
     private final String ITEM_RESEARCH        = "Исследования";
     private final String ITEM_SHIPYARD        = "Верфь";
@@ -29,8 +29,8 @@ public class LeftMenuComponent extends PageObject {
         this.openPage(ITEM_RESOURCES);
     }
 
-    public void openStation(){
-        this.openPage(ITEM_STATION);
+    public void openFactory(){
+        this.openPage(ITEM_FACTORY);
     }
 
     public void openTraderOverview(){

@@ -1,6 +1,7 @@
 package ru.tki.po;
 
 import org.openqa.selenium.By;
+import ru.tki.models.Researches;
 import ru.tki.models.types.ResearchType;
 
 import java.util.HashMap;
@@ -40,5 +41,13 @@ public class ResearchesPage extends PageObject {
     public int getResearchLevel(ResearchType type) {
         return Integer.parseInt(
                 getElement(getElement(elements.get(type)), By.cssSelector(".level")).getText().trim());
+    }
+
+    public Researches getResearches(){
+        Researches researches = new Researches();
+        for(ResearchType type : ResearchType.values()){
+            researches.set(type, getResearchLevel(type));
+        }
+        return researches;
     }
 }

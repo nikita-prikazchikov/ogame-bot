@@ -4,7 +4,7 @@ import ru.tki.models.AbstractPlanet;
 import ru.tki.models.types.BuildingType;
 import ru.tki.models.actions.ResourceAction;
 import ru.tki.po.BasePage;
-import ru.tki.po.ResourcesPage;
+import ru.tki.po.BuildingsPage;
 import ru.tki.po.components.BuildDetailComponent;
 
 public class ResourceTask extends Task {
@@ -32,8 +32,8 @@ public class ResourceTask extends Task {
         basePage.myWorlds.selectPlanet(planet);
         basePage.leftMenu.openResources();
 
-        ResourcesPage resourcesPage = new ResourcesPage();
-        resourcesPage.select(type);
+        BuildingsPage buildingsPage = new BuildingsPage();
+        buildingsPage.select(type);
 
         BuildDetailComponent buildDetailComponent = new BuildDetailComponent();
         action.setDuration(buildDetailComponent.getDuration());
