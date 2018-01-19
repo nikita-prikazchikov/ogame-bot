@@ -8,9 +8,11 @@ import java.time.Instant;
 public abstract class Action {
 
     protected AbstractPlanet planet;
-    protected Instant        endDate;
+    protected Duration       duration;
+    protected Instant        startDate;
 
     public Action() {
+        startDate = Instant.now();
     }
 
     public Action(AbstractPlanet planet) {
@@ -25,25 +27,24 @@ public abstract class Action {
         this.planet = planet;
     }
 
-    public Instant getEndDate() {
-        return endDate;
+    public Duration getDuration() {
+        return duration;
     }
 
-    public void setEndDate(Instant endDate) {
-        this.endDate = endDate;
+    public void setDuration(Duration duration) {
+        this.duration = duration;
     }
 
-    public void setEndDate(Duration duration){
-        Instant instant = Instant.now();
-        //add 5 seconds to avoid time difference between object creation and actual execution of build time
-        this.endDate = instant.plus(duration).plusSeconds(5);
+    public Instant getStartDate() {
+        return startDate;
     }
 
     @Override
     public String toString() {
         return "Action{" +
                 "planet=" + planet +
-                ", endDate=" + endDate +
+                "startDate=" + startDate +
+                ", duration=" + duration +
                 '}';
     }
 }

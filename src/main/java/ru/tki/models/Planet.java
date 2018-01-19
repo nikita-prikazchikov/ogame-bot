@@ -1,6 +1,8 @@
 package ru.tki.models;
 
 
+import ru.tki.models.types.PlanetType;
+
 public class Planet extends AbstractPlanet {
 
     public Planet() {

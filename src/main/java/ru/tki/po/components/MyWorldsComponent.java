@@ -26,24 +26,24 @@ public class MyWorldsComponent extends PageObject {
     }
 
     private void selectPlanet(Coordinates coordinates){
-        this.driver.findElement(By.xpath(String.format(PLANET_XPATH, coordinates.getFormattedCoordinates()))).click();
+        getElement(By.xpath(String.format(PLANET_XPATH, coordinates.getFormattedCoordinates()))).click();
     }
 
     private void selectMoon(Coordinates coordinates){
-        this.driver.findElement(By.xpath(String.format(MOON_XPATH, coordinates.getFormattedCoordinates()))).click();
+        getElement(By.xpath(String.format(MOON_XPATH, coordinates.getFormattedCoordinates()))).click();
     }
 
     public List<AbstractPlanet> getPlanets(){
         ArrayList<AbstractPlanet> planetList = new ArrayList<>();
 
-        List<WebElement> planets = helper.findElements(By.cssSelector(PLANETS));
+        List<WebElement> planets = findElements(By.cssSelector(PLANETS));
         for(WebElement planetElement : planets){
             String coords = planetElement.findElement(By.cssSelector(".planet-koords ")).getText();
             String name = planetElement.findElement(By.cssSelector(".planet-name ")).getText();
             Planet planet = new Planet(coords, name);
             planetList.add(planet);
 
-            if(helper.isElementExists(planetElement, By.cssSelector(".moonlink"))){
+            if(isElementExists(planetElement, By.cssSelector(".moonlink"))){
                 Moon moon = new Moon(coords);
                 planetList.add(moon);
             }

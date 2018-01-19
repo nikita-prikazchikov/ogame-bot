@@ -46,9 +46,9 @@ public class LoginPage extends PageObject {
 
     public void login(String login, String password, String universe){
         this.username.clear();
-        helper.sendKeysSlow(this.username, login);
+        sendKeysSlow(this.username, login);
         this.password.clear();
-        helper.sendKeysSlow(this.password, password);
+        sendKeysSlow(this.password, password);
 
         new Select(this.universe).selectByVisibleText(universe);
 
@@ -58,7 +58,7 @@ public class LoginPage extends PageObject {
     public void openLoginForm(){
         if(!this.loginForm.isDisplayed()){
             this.login.click();
-            helper.pause();
+            pause();
         }
     }
 

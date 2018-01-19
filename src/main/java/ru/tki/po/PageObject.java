@@ -6,9 +6,8 @@ import ru.tki.ContextHolder;
 import ru.tki.helpers.WebDriverHelper;
 
 
-public class PageObject {
+public class PageObject extends WebDriverHelper{
     protected WebDriver driver;
-    protected WebDriverHelper helper = new WebDriverHelper();
 
     public PageObject(WebDriver driver) {
         this.driver = driver;

@@ -1,7 +1,7 @@
 package ru.tki.models.tasks;
 
 import ru.tki.models.AbstractPlanet;
-import ru.tki.models.BuildingType;
+import ru.tki.models.types.BuildingType;
 import ru.tki.models.actions.ResourceAction;
 import ru.tki.po.BasePage;
 import ru.tki.po.ResourcesPage;
@@ -36,7 +36,7 @@ public class ResourceTask extends Task {
         resourcesPage.select(type);
 
         BuildDetailComponent buildDetailComponent = new BuildDetailComponent();
-        action.setEndDate(buildDetailComponent.getDuration());
+        action.setDuration(buildDetailComponent.getDuration());
         buildDetailComponent.build();
 
         return action;

@@ -22,7 +22,7 @@ public class BuildDetailComponent extends PageObject {
     private static final By BUILD_IT = By.cssSelector(ROOT + " .build-it");
 
     public int getLevel(){
-        Matcher m = Pattern.compile("(/d+)").matcher(helper.getElement(LEVEL).getText());
+        Matcher m = Pattern.compile("(/d+)").matcher(getElement(LEVEL).getText());
         if(m.find()){
             return Integer.parseInt(m.group(1));
         }
@@ -32,7 +32,7 @@ public class BuildDetailComponent extends PageObject {
     public Duration getDuration(){
         Duration d = Duration.ZERO;
 
-        String text = helper.getElement(DURATION).getText();
+        String text = getElement(DURATION).getText();
         Matcher m = Pattern.compile("(\\d+)с").matcher(text);
         if(m.find()){
             d = d.plusSeconds(Integer.parseInt(m.group(1)));
@@ -63,14 +63,14 @@ public class BuildDetailComponent extends PageObject {
     public Resources getResources(){
         Resources r = new Resources();
 
-        if(helper.isElementExists(METAL)){
-            r.setMetal(DataParser.parseResource(helper.getElement(METAL).getText()));
+        if(isElementExists(METAL)){
+            r.setMetal(DataParser.parseResource(getElement(METAL).getText()));
         }
-        if(helper.isElementExists(CRYSTAL)){
-            r.setCrystal(DataParser.parseResource(helper.getElement(CRYSTAL).getText()));
+        if(isElementExists(CRYSTAL)){
+            r.setCrystal(DataParser.parseResource(getElement(CRYSTAL).getText()));
         }
-        if(helper.isElementExists(DEUTERIUM)){
-            r.setDeuterium(DataParser.parseResource(helper.getElement(DEUTERIUM).getText()));
+        if(isElementExists(DEUTERIUM)){
+            r.setDeuterium(DataParser.parseResource(getElement(DEUTERIUM).getText()));
         }
         return r;
     }
@@ -80,12 +80,12 @@ public class BuildDetailComponent extends PageObject {
     }
 
     public void setAmount(String value){
-        WebElement element = helper.getElement(AMOUNT);
+        WebElement element = getElement(AMOUNT);
         element.clear();
         element.sendKeys(value);
     }
 
     public void build(){
-        helper.getElement(BUILD_IT).click();
+        getElement(BUILD_IT).click();
     }
 }

@@ -28,6 +28,11 @@ public class WebDriverHelper {
         }
     }
 
+    public void setValue(WebElement element, String value){
+        element.clear();
+        element.sendKeys(value);
+    }
+
     public WebElement getElement(SearchContext parent, By bySelector) {
         WebElement element = findElement(parent, bySelector);
         if (element == null){

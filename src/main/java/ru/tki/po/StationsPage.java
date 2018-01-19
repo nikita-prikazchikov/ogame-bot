@@ -1,7 +1,7 @@
 package ru.tki.po;
 
 import org.openqa.selenium.By;
-import ru.tki.models.StationType;
+import ru.tki.models.types.StationType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class StationsPage extends PageObject {
 
-    private static final Map<StationType, By> stations = new HashMap<StationType, By>() {{
+    private static final Map<StationType, By> elements = new HashMap<StationType, By>() {{
         put(StationType.ROBOTS_FACTORY, By.cssSelector("#button0"));
         put(StationType.SHIPYARD, By.cssSelector("#button1"));
         put(StationType.RESEARCH_LAB, By.cssSelector("#button2"));
@@ -21,15 +21,15 @@ public class StationsPage extends PageObject {
     }};
 
     public void build(StationType type) {
-        helper.getElement(helper.getElement(stations.get(type)), By.cssSelector(".fastBuild")).click();
+        getElement(getElement(elements.get(type)), By.cssSelector(".fastBuild")).click();
     }
 
     public void select(StationType type) {
-        helper.getElement(helper.getElement(stations.get(type)), By.cssSelector(".detail_button ")).click();
+        getElement(getElement(elements.get(type)), By.cssSelector(".detail_button ")).click();
     }
 
     public int getBuildingLevel(StationType type) {
         return Integer.parseInt(
-                helper.getElement(helper.getElement(stations.get(type)), By.cssSelector(".level")).getText().trim());
+                getElement(getElement(elements.get(type)), By.cssSelector(".level")).getText().trim());
     }
 }

@@ -16,6 +16,10 @@ public abstract class Task {
         this.planet = planet;
     }
 
+    public AbstractPlanet getPlanet() {
+        return planet;
+    }
+
     public Date getExecutionDate() {
         return executionDate;
     }

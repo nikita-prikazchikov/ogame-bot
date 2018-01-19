@@ -1,7 +1,7 @@
 package ru.tki.po;
 
 import org.openqa.selenium.By;
-import ru.tki.models.ResearchType;
+import ru.tki.models.types.ResearchType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class ResearchesPage extends PageObject {
 
-    private static final Map<ResearchType, By> stations = new HashMap<ResearchType, By>() {{
+    private static final Map<ResearchType, By> elements = new HashMap<ResearchType, By>() {{
         put(ResearchType.ENERGY, By.cssSelector(".research113"));
         put(ResearchType.LASER, By.cssSelector(".research120"));
         put(ResearchType.ION, By.cssSelector(".research121"));
@@ -30,15 +30,15 @@ public class ResearchesPage extends PageObject {
     }};
 
     public void build(ResearchType type) {
-        helper.getElement(helper.getElement(stations.get(type)), By.cssSelector(".fastBuild")).click();
+        getElement(getElement(elements.get(type)), By.cssSelector(".fastBuild")).click();
     }
 
     public void select(ResearchType type) {
-        helper.getElement(helper.getElement(stations.get(type)), By.cssSelector(".detail_button")).click();
+        getElement(getElement(elements.get(type)), By.cssSelector(".detail_button")).click();
     }
 
     public int getResearchLevel(ResearchType type) {
         return Integer.parseInt(
-                helper.getElement(helper.getElement(stations.get(type)), By.cssSelector(".level")).getText().trim());
+                getElement(getElement(elements.get(type)), By.cssSelector(".level")).getText().trim());
     }
 }

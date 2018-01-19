@@ -8,6 +8,7 @@ import ru.tki.executor.Navigation;
 import ru.tki.models.*;
 import ru.tki.models.actions.Action;
 import ru.tki.models.tasks.*;
+import ru.tki.models.types.*;
 import ru.tki.po.BasePage;
 import ru.tki.po.LoginPage;
 import ru.tki.po.ResourcesPage;
@@ -168,6 +169,26 @@ public class BasicTest {
         List<AbstractPlanet> planets = basePage.myWorlds.getPlanets();
 
         DefenceTask task = new DefenceTask(planets.get(0), DefenceType.LIGHT_LASER, 3);
+        Action action = task.execute();
+
+        logger.info(action.toString());
+    }
+
+    @Test
+    public void sendFleetByTask() throws Exception {
+        navigation.openHomePage();
+        loginPage.checkLogin();
+
+        List<AbstractPlanet> planets = basePage.myWorlds.getPlanets();
+
+        FleetTask task = new FleetTask(
+                planets.get(0),
+                new Planet("2:39:6"),
+                new Fleet(ShipType.LIGHT_FIGHTER, 1),
+                MissionType.ATTACK,
+                new Resources(1,2,3));
+        task.setFleetSpeed(FleetSpeed.S80);
+
         Action action = task.execute();
 
         logger.info(action.toString());

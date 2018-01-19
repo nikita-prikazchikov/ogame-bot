@@ -1,7 +1,7 @@
 package ru.tki.po;
 
 import org.openqa.selenium.By;
-import ru.tki.models.BuildingType;
+import ru.tki.models.types.BuildingType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class ResourcesPage extends PageObject {
 
-    private static final Map<BuildingType, By> buildings = new HashMap<BuildingType, By>() {{
+    private static final Map<BuildingType, By> elements = new HashMap<BuildingType, By>() {{
         put(BuildingType.METAL_MINE, By.cssSelector("#button1"));
         put(BuildingType.CRYSTAL_MINE, By.cssSelector("#button2"));
         put(BuildingType.DEUTERIUM_MINE, By.cssSelector("#button3"));
@@ -21,15 +21,15 @@ public class ResourcesPage extends PageObject {
     }};
 
     public void build(BuildingType type) {
-        helper.getElement(helper.getElement(buildings.get(type)), By.cssSelector(".fastBuild")).click();
+        getElement(getElement(elements.get(type)), By.cssSelector(".fastBuild")).click();
     }
 
     public void select(BuildingType type) {
-        helper.getElement(helper.getElement(buildings.get(type)), By.cssSelector("#details")).click();
+        getElement(getElement(elements.get(type)), By.cssSelector("#details")).click();
     }
 
     public int getBuildingLevel(BuildingType type) {
         return Integer.parseInt(
-                helper.getElement(helper.getElement(buildings.get(type)), By.cssSelector(".level")).getText().trim());
+                getElement(getElement(elements.get(type)), By.cssSelector(".level")).getText().trim());
     }
 }

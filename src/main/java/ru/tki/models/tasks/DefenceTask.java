@@ -1,7 +1,7 @@
 package ru.tki.models.tasks;
 
 import ru.tki.models.AbstractPlanet;
-import ru.tki.models.DefenceType;
+import ru.tki.models.types.DefenceType;
 import ru.tki.models.actions.DefenceAction;
 import ru.tki.po.BasePage;
 import ru.tki.po.DefencePage;
@@ -41,7 +41,7 @@ public class DefenceTask extends Task {
 
         BuildDetailComponent buildDetailComponent = new BuildDetailComponent();
         Duration duration = buildDetailComponent.getDuration();
-        action.setEndDate(duration.multipliedBy(amount));
+        action.setDuration(duration.multipliedBy(amount));
         buildDetailComponent.setAmount(amount);
         buildDetailComponent.build();
 

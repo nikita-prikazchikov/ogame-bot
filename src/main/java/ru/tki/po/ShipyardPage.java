@@ -1,7 +1,7 @@
 package ru.tki.po;
 
 import org.openqa.selenium.By;
-import ru.tki.models.ShipType;
+import ru.tki.models.types.ShipType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class ShipyardPage extends PageObject {
 
-    private static final Map<ShipType, By> stations = new HashMap<ShipType, By>() {{
+    private static final Map<ShipType, By> elements = new HashMap<ShipType, By>() {{
         put(ShipType.LIGHT_FIGHTER, By.cssSelector("#battleships #button1"));
         put(ShipType.HEAVY_FIGHTER, By.cssSelector("#battleships #button2"));
         put(ShipType.CRUISER, By.cssSelector("#battleships #button3"));
@@ -29,11 +29,11 @@ public class ShipyardPage extends PageObject {
     }};
 
     public void select(ShipType type) {
-        helper.getElement(helper.getElement(stations.get(type)), By.cssSelector(".detail_button")).click();
+        getElement(getElement(elements.get(type)), By.cssSelector(".detail_button")).click();
     }
 
     public int getShipsCount(ShipType type) {
         return Integer.parseInt(
-                helper.getElement(helper.getElement(stations.get(type)), By.cssSelector(".level")).getText().trim());
+                getElement(getElement(elements.get(type)), By.cssSelector(".level")).getText().trim());
     }
 }

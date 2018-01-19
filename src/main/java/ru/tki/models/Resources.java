@@ -2,20 +2,20 @@ package ru.tki.models;
 
 public class Resources {
 
-    private int metal;
-    private int crystal;
-    private int deuterium;
+    private Integer metal;
+    private Integer crystal;
+    private Integer deuterium;
 
     public Resources() {
     }
 
-    public Resources(int metal, int crystal, int deuterium) {
+    public Resources(Integer metal, Integer crystal, Integer deuterium) {
         this.metal = metal;
         this.crystal = crystal;
         this.deuterium = deuterium;
     }
 
-    public int getMetal() {
+    public Integer getMetal() {
         return metal;
     }
 
@@ -24,7 +24,7 @@ public class Resources {
         return this;
     }
 
-    public int getCrystal() {
+    public Integer getCrystal() {
         return crystal;
     }
 
@@ -33,7 +33,7 @@ public class Resources {
         return this;
     }
 
-    public int getDeuterium() {
+    public Integer getDeuterium() {
         return deuterium;
     }
 

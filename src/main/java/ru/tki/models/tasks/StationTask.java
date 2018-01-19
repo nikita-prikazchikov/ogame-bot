@@ -1,7 +1,7 @@
 package ru.tki.models.tasks;
 
 import ru.tki.models.AbstractPlanet;
-import ru.tki.models.StationType;
+import ru.tki.models.types.StationType;
 import ru.tki.models.actions.StationAction;
 import ru.tki.po.BasePage;
 import ru.tki.po.StationsPage;
@@ -36,7 +36,7 @@ public class StationTask extends Task {
         stationsPage.select(type);
 
         BuildDetailComponent buildDetailComponent = new BuildDetailComponent();
-        action.setEndDate(buildDetailComponent.getDuration());
+        action.setDuration(buildDetailComponent.getDuration());
         buildDetailComponent.build();
 
         return action;

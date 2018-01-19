@@ -1,5 +1,6 @@
 package ru.tki.models;
 
+import ru.tki.models.types.PlanetType;
 import ru.tki.po.BasePage;
 
 

@@ -18,7 +18,7 @@ public class LeftMenuComponent extends PageObject {
     private final String ITEM_GALAXY          = "Галактика";
 
     private void openPage(String value){
-        helper.getElement(By.xpath(String.format(itemLocator, value))).click();
+        getElement(By.xpath(String.format(itemLocator, value))).click();
     }
 
     public void openOverview(){

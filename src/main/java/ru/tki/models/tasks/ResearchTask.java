@@ -1,13 +1,10 @@
 package ru.tki.models.tasks;
 
 import ru.tki.models.AbstractPlanet;
-import ru.tki.models.ResearchType;
-import ru.tki.models.StationType;
+import ru.tki.models.types.ResearchType;
 import ru.tki.models.actions.ResearchAction;
-import ru.tki.models.actions.StationAction;
 import ru.tki.po.BasePage;
 import ru.tki.po.ResearchesPage;
-import ru.tki.po.StationsPage;
 import ru.tki.po.components.BuildDetailComponent;
 
 public class ResearchTask extends Task {
@@ -39,7 +36,7 @@ public class ResearchTask extends Task {
         researchesPage.select(type);
 
         BuildDetailComponent buildDetailComponent = new BuildDetailComponent();
-        action.setEndDate(buildDetailComponent.getDuration());
+        action.setDuration(buildDetailComponent.getDuration());
         buildDetailComponent.build();
 
         return action;

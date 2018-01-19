@@ -1,7 +1,7 @@
 package ru.tki.po;
 
 import org.openqa.selenium.By;
-import ru.tki.models.DefenceType;
+import ru.tki.models.types.DefenceType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,11 +23,11 @@ public class DefencePage extends PageObject {
     }};
 
     public void select(DefenceType type) {
-        helper.getElement(helper.getElement(elements.get(type)), By.cssSelector(".detail_button ")).click();
+        getElement(getElement(elements.get(type)), By.cssSelector(".detail_button ")).click();
     }
 
     public int getDefenceCount(DefenceType type) {
         return Integer.parseInt(
-                helper.getElement(helper.getElement(elements.get(type)), By.cssSelector(".level")).getText().trim());
+                getElement(getElement(elements.get(type)), By.cssSelector(".level")).getText().trim());
     }
 }

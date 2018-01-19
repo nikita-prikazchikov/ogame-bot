@@ -1,4 +1,4 @@
-package ru.tki.models;
+package ru.tki.models.types;
 
 public enum ShipType {
     LIGHT_FIGHTER,
