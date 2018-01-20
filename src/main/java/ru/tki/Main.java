@@ -1,16 +1,13 @@
 package ru.tki;
 
-import ru.tki.executor.Navigation;
-import ru.tki.po.LoginPage;
+import ru.tki.brain.Mainframe;
+import ru.tki.models.Empire;
 
 import java.io.IOException;
 
 
 public class Main {
-
     public static void main(String[] args) throws IOException {
-        System.out.println("Let's the magic start!");
-
         BotConfigMainReader reader = new BotConfigMainReader();
         BotConfigMain config = reader.getPropValues();
         ContextHolder.setBotConfigMain(config);
@@ -18,12 +15,9 @@ public class Main {
         DriverManager driverManager = new DriverManager();
         ContextHolder.setDriverManager(driverManager);
 
-        Navigation navigation = new Navigation();
-        navigation.openHomePage();
+        Empire empire = new Empire();
 
-        LoginPage loginPage = new LoginPage();
-        loginPage.login();
-
-        driverManager.closeDriver();
+        Mainframe mainframe = new Mainframe(empire);
+        mainframe.start();
     }
 }

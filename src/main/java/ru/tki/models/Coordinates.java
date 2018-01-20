@@ -40,4 +40,8 @@ public class Coordinates {
     public String toString() {
         return String.format("[%s:%s:%s]", galaxy, system, planet);
     }
+
+    public String getFileSafeString(){
+        return String.format("%s_%s_%s", galaxy, system, planet);
+    }
 }

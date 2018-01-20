@@ -79,4 +79,4 @@ src/main/resources/config.properties
 *.iml
 
 # Local universe details
-src/**/universes
+storage

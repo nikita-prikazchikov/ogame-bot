@@ -1,22 +1,18 @@
 package ru.tki.models;
 
 
+import com.google.gson.Gson;
 import ru.tki.models.types.PlanetType;
 
 public class Planet extends AbstractPlanet {
 
-    Buildings  buildings;
-    Factories  factories;
+    Buildings  buildings = new Buildings();
+    Factories  factories= new Factories();
     Researches researches;
-    Defence    defence;
-    Fleet      fleet;
+    Defence    defence = new Defence();
+    Fleet      fleet = new Fleet();
 
     public Planet() {
-        buildings = new Buildings();
-        factories = new Factories();
-        researches = new Researches();
-        defence = new Defence();
-        fleet = new Fleet();
     }
 
     public Planet(String coordinates) {
@@ -73,5 +69,11 @@ public class Planet extends AbstractPlanet {
 
     public void setFleet(Fleet fleet) {
         this.fleet = fleet;
+    }
+
+    @Override
+    public String toString() {
+        Gson gson = new Gson();
+        return gson.toJson(this);
     }
 }

@@ -26,6 +26,7 @@ public class FleetPage extends PageObject {
     private static final By CRYSTAL = By.cssSelector("#crystal");
     private static final By DEUTERIUM = By.cssSelector("#deuterium");
     private static final By START = By.cssSelector("#start");
+    private static final By WARNING = By.cssSelector("#warning");
 
     private static final Map<ShipType, By> ships = new HashMap<ShipType, By>() {{
         put(ShipType.LIGHT_FIGHTER, By.cssSelector("#battleships #button204"));
@@ -178,6 +179,9 @@ public class FleetPage extends PageObject {
 
     public Fleet getFleet() {
         Fleet fleet = new Fleet();
+        if (isElementExists(WARNING)){
+            return fleet;
+        }
         for (ShipType type : ShipType.values()) {
             if (type == ShipType.SOLAR_SATELLITE)
                 continue;
