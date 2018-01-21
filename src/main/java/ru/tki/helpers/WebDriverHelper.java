@@ -1,7 +1,9 @@
 package ru.tki.helpers;
 
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import ru.tki.ContextHolder;
+import ru.tki.DriverManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,5 +98,21 @@ public class WebDriverHelper {
 
     public boolean isElementExists(By bySelector) {
         return this.isElementExists(ContextHolder.getDriver(), bySelector);
+    }
+
+    public WebElement waitForWebElement(final SearchContext parent, final By bySelector){
+        WebElement element = null;
+        try{
+            final WebDriverHelper that = this;
+            element = (new WebDriverWait(ContextHolder.getDriver(), DriverManager.getImplicitlyWait()))
+                    .until(d -> that.findElement(parent, bySelector));
+        } catch (TimeoutException ex){
+            element = null;
+        }
+        return element;
+    }
+
+    public WebElement waitForWebElement(final By bySelector) {
+        return this.waitForWebElement(ContextHolder.getDriver(), bySelector);
     }
 }

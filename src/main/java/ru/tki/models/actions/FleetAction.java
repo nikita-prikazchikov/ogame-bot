@@ -46,4 +46,9 @@ public class FleetAction extends Action {
     public void setFleetSpeed(FleetSpeed fleetSpeed) {
         this.fleetSpeed = fleetSpeed;
     }
+
+    @Override
+    public void complete(Empire empire) {
+
+    }
 }

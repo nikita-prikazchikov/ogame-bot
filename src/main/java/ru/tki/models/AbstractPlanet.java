@@ -1,5 +1,6 @@
 package ru.tki.models;
 
+import com.google.gson.Gson;
 import ru.tki.models.types.PlanetType;
 import ru.tki.po.BasePage;
 
@@ -8,6 +9,8 @@ public abstract class AbstractPlanet {
     protected Coordinates coordinates;
     protected String      name;
     protected Integer     size;
+    protected Boolean     buildInProgress = false;
+    Resources resources = new Resources();
 
     public AbstractPlanet() {
     }
@@ -57,12 +60,24 @@ public abstract class AbstractPlanet {
         this.size = size;
     }
 
+    public Boolean getBuildInProgress() {
+        return buildInProgress;
+    }
+
+    public void setBuildInProgress(Boolean buildInProgress) {
+        this.buildInProgress = buildInProgress;
+    }
+
+    public Resources getResources() {
+        return resources;
+    }
+
+    public void setResources(Resources resources) {
+        this.resources = resources;
+    }
+
     @Override
     public String toString() {
-        return "AbstractPlanet{" +
-                "coordinates=" + coordinates +
-                ", name=" + name +
-                ", size=" + size +
-                '}';
+        return new Gson().toJson(this);
     }
 }

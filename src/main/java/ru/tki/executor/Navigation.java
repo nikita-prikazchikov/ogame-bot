@@ -2,15 +2,19 @@ package ru.tki.executor;
 
 import org.openqa.selenium.WebDriver;
 import ru.tki.ContextHolder;
+import ru.tki.models.AbstractPlanet;
 import ru.tki.po.components.LeftMenuComponent;
+import ru.tki.po.components.MyWorldsComponent;
 
 public class Navigation {
 
     public LeftMenuComponent leftMenu;
+    public MyWorldsComponent myWorldsComponent;
 
     public Navigation() {
         super();
         leftMenu = new LeftMenuComponent();
+        myWorldsComponent = new MyWorldsComponent();
     }
 
     public void openHomePage(){
@@ -52,5 +56,9 @@ public class Navigation {
 
     public void openFactory() {
         leftMenu.openFactory();
+    }
+
+    public void selectPlanet(AbstractPlanet planet) {
+        myWorldsComponent.selectPlanet(planet);
     }
 }

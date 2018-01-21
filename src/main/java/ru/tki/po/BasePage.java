@@ -16,4 +16,8 @@ public class BasePage extends PageObject {
         resources = new ResourcesComponent();
         myWorlds = new MyWorldsComponent();
     }
+
+    public boolean isUnderAttack() {
+        return false;
+    }
 }

@@ -7,6 +7,7 @@ import ru.tki.models.Planet;
 import ru.tki.models.actions.Action;
 import ru.tki.models.types.PlanetType;
 import ru.tki.po.*;
+import ru.tki.po.components.ResourcesComponent;
 
 import java.util.List;
 
@@ -29,6 +30,7 @@ public class EmpireTask extends Task {
         ResearchesPage researchesPage = new ResearchesPage();
         empire.setResearches(researchesPage.getResearches());
 
+        ResourcesComponent resourcesComponent = new ResourcesComponent();
         OverviewPage overviewPage = new OverviewPage();
         BuildingsPage buildingsPage = new BuildingsPage();
         FactoriesPage factoriesPage = new FactoriesPage();
@@ -43,6 +45,7 @@ public class EmpireTask extends Task {
                 navigation.openOverview();
                 p.setName(overviewPage.getPlanetName());
                 p.setSize(overviewPage.getPlanetSize());
+                p.setResources(resourcesComponent.getResources());
 
                 navigation.openResources();
                 p.setBuildings(buildingsPage.getBuildings());
@@ -67,6 +70,6 @@ public class EmpireTask extends Task {
 
     @Override
     public String toString() {
-        return "Collect information about the whole empire.";
+        return "Collect information about the whole empire";
     }
 }

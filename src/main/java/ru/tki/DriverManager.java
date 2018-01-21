@@ -47,4 +47,8 @@ public class DriverManager {
     public void resetImplicitlyWait(){
         this.setImplicitlyWait(0);
     }
+
+    public static int getImplicitlyWait() {
+        return IMPLICITLY_WAIT;
+    }
 }

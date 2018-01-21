@@ -29,6 +29,8 @@ public class Empire {
     private File directory;
     private Gson gson;
 
+    private boolean isUnderAttack;
+
     public Empire() {
         directory = new File(STORAGE + File.separator +
                 ContextHolder.getBotConfigMain().getUniverse().toLowerCase() + File.separator +
@@ -82,6 +84,14 @@ public class Empire {
         actions.add(action);
     }
 
+    public boolean isUnderAttack() {
+        return isUnderAttack;
+    }
+
+    public void setUnderAttack(boolean underAttack) {
+        isUnderAttack = underAttack;
+    }
+
     public void save() {
         save(directory);
     }
@@ -105,10 +115,18 @@ public class Empire {
             }
         }
         for (AbstractPlanet planet : planets) {
-            File file = new File(planetsDir, planet.getCoordinates().getFileSafeString() + "_" + planet.getType() + ".json");
-            String jsonString = gson.toJson(planet);
-            writeToFile(file, jsonString);
+            savePlanet(planetsDir, planet);
         }
+    }
+
+    public void savePlanet(AbstractPlanet planet){
+        savePlanet(new File(directory, PLANETS), planet);
+    }
+
+    public void savePlanet(File directory, AbstractPlanet planet){
+        File file = new File(directory, planet.getCoordinates().getFileSafeString() + "_" + planet.getType() + ".json");
+        String jsonString = gson.toJson(planet);
+        writeToFile(file, jsonString);
     }
 
     public void saveResearches(File directory) {

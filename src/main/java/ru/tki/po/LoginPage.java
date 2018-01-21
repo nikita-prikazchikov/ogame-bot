@@ -1,5 +1,6 @@
 package ru.tki.po;
 
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -49,6 +50,8 @@ public class LoginPage extends PageObject {
         sendKeysSlow(this.username, login);
         this.password.clear();
         sendKeysSlow(this.password, password);
+        //Click Tab here to avoid password protection popups blocking login click
+        this.password.sendKeys(Keys.TAB);
 
         new Select(this.universe).selectByVisibleText(universe);
 

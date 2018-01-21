@@ -1,18 +1,30 @@
 package ru.tki.models;
 
+import com.google.gson.Gson;
+
 public class Resources {
 
-    private Integer metal;
-    private Integer crystal;
-    private Integer deuterium;
+    private Integer metal = 0;
+    private Integer crystal = 0;
+    private Integer deuterium = 0;
+    private Integer energy = 0;
 
     public Resources() {
     }
 
-    public Resources(Integer metal, Integer crystal, Integer deuterium) {
+    public Resources(Integer metal, Integer crystal) {
         this.metal = metal;
         this.crystal = crystal;
+    }
+
+    public Resources(Integer metal, Integer crystal, Integer deuterium) {
+        this(metal, crystal);
         this.deuterium = deuterium;
+    }
+
+    public Resources(Integer metal, Integer crystal, Integer deuterium, Integer energy) {
+        this(metal, crystal, deuterium);
+        this.energy = energy;
     }
 
     public Integer getMetal() {
@@ -40,5 +52,43 @@ public class Resources {
     public Resources setDeuterium(int deuterium) {
         this.deuterium = deuterium;
         return this;
+    }
+
+    public Integer getEnergy() {
+        return energy;
+    }
+
+    public Resources setEnergy(Integer energy) {
+        this.energy = energy;
+        return this;
+    }
+
+    public Resources multiply(Double value){
+        return new Resources(
+                ((Double)(metal * value)).intValue(),
+                ((Double)(crystal * value)).intValue(),
+                ((Double)(deuterium * value)).intValue(),
+                ((Double)(energy * value)).intValue());
+    }
+
+    public Resources add (Resources resources){
+        return new Resources(
+                metal + resources.getMetal(),
+                crystal + resources.getCrystal(),
+                deuterium + resources.getDeuterium(),
+                energy + resources.getEnergy()
+        );
+    }
+
+    public Boolean isEnoughFor(Resources resources) {
+        return metal >= resources.getMetal()
+                && crystal >= resources.getCrystal()
+                && deuterium >= resources.getDeuterium()
+                && (resources.getEnergy() == 0 || energy >= resources.getEnergy());
+    }
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
     }
 }

@@ -2,6 +2,7 @@ package ru.tki.po.components;
 
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import ru.tki.models.Resources;
 import ru.tki.po.PageObject;
 import ru.tki.utils.DataParser;
 
@@ -33,5 +34,12 @@ public class ResourcesComponent extends PageObject {
 
     public int getEnergy() {
         return DataParser.parseResource(energy.getText());
+    }
+
+    public Resources getResources(){
+        return new Resources().setMetal(getMetal())
+                .setCrystal(getCrystal())
+                .setDeuterium(getDeuterium())
+                .setEnergy(getEnergy());
     }
 }

@@ -26,7 +26,7 @@ public class BuildingsPage extends PageObject {
     }
 
     public void select(BuildingType type) {
-        getElement(getElement(elements.get(type)), By.cssSelector("#details")).click();
+        waitForWebElement(getElement(elements.get(type)), By.cssSelector("#details")).click();
     }
 
     public int getBuildingLevel(BuildingType type) {

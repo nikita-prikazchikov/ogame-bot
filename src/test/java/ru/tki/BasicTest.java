@@ -156,7 +156,7 @@ public class BasicTest {
 
         List<AbstractPlanet> planets = basePage.myWorlds.getPlanets();
 
-        ResourceTask task = new ResourceTask(planets.get(0), BuildingType.METAL_MINE);
+        BuildingTask task = new BuildingTask(new Empire(), planets.get(0), BuildingType.METAL_MINE);
         Action action = task.execute();
 
         logger.info(action.toString());
