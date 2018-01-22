@@ -1,10 +1,8 @@
 package ru.tki.po;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
-import ru.tki.models.Planet;
 import ru.tki.models.actions.Action;
 import ru.tki.models.actions.BuildingAction;
 import ru.tki.models.actions.ResearchAction;

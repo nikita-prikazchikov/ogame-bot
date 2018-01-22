@@ -86,7 +86,7 @@ public class Empire {
 
     public void removeAction(Action action) {
         System.out.println("Remove finished action: " + action.toLog());
-        actions.add(action);
+        actions.remove(action);
     }
 
     public boolean isUnderAttack() {

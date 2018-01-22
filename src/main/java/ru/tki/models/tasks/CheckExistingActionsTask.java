@@ -23,26 +23,28 @@ public class CheckExistingActionsTask extends Task {
         OverviewPage overviewPage = new OverviewPage();
 
         Action action = overviewPage.getResearchAction(empire, empire.getPlanets().get(0));
-        if (null != action) {
-            empire.addAction(action);
-        }
+        addActionWithUpdateSubtask(action);
 
         for (AbstractPlanet planet : empire.getPlanets()) {
             navigation.selectPlanet(planet);
             planet.setResources(basePage.resources.getResources());
 
             action = overviewPage.getBuildAction(planet);
-            if (null != action) {
-                empire.addAction(action);
-            }
+            addActionWithUpdateSubtask(action);
 
             action = overviewPage.getShipyardAction(planet);
-            if (null != action) {
-                empire.addAction(action);
-            }
-
+            addActionWithUpdateSubtask(action);
         }
         return null;
+    }
+
+    private void addActionWithUpdateSubtask(Action action) {
+        Task task;
+        if (null != action) {
+            task = new UpdatePlanetInfoTask(empire);
+            action.setSubtask(task);
+            empire.addAction(action);
+        }
     }
 
     @Override

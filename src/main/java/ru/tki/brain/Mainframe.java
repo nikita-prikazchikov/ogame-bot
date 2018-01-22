@@ -82,7 +82,7 @@ public class Mainframe {
         }
     }
 
-    private void verifyActions(){
+    private void verifyActions() throws InterruptedException {
         List<Action> actions = new ArrayList<>();
         empire.getActions().stream().filter(Action::isFinished).forEach(action ->{
             action.complete(empire);
@@ -92,6 +92,9 @@ public class Mainframe {
             actions.add(action);
         });
         actions.forEach(action -> empire.removeAction(action));
+        if(!empire.getTasks().isEmpty()){
+            execute();
+        }
     }
 
     private void thinkBuildings() {
@@ -130,25 +133,15 @@ public class Mainframe {
         }
 
         if(!empire.isResearchInProgress()){
-            if(researches.getEnergy() <= 12
-                    && OGameLibrary.canBuild(empire, planet, ResearchType.ENERGY)
-                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.ENERGY, researches.getEnergy()))){
-                return new ResearchTask(empire, planet, ResearchType.ENERGY);
+            if(researches.getComputer() <= 20
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.COMPUTER)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.COMPUTER, researches.getComputer()))){
+                return new ResearchTask(empire, planet, ResearchType.COMPUTER);
             }
-            if(researches.getLaser() <= 12
-                    && OGameLibrary.canBuild(empire, planet, ResearchType.LASER)
-                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.LASER, researches.getLaser()))){
-                return new ResearchTask(empire, planet, ResearchType.LASER);
-            }
-            if(researches.getIon() <= 5
-                    && OGameLibrary.canBuild(empire, planet, ResearchType.ION)
-                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.ION, researches.getIon()))){
-                return new ResearchTask(empire, planet, ResearchType.ION);
-            }
-            if(researches.getHyper() <= 8
-                    && OGameLibrary.canBuild(empire, planet, ResearchType.HYPER)
-                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.HYPER, researches.getHyper()))){
-                return new ResearchTask(empire, planet, ResearchType.HYPER);
+            if(researches.getAstrophysics() <= 20
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.ASTROPHYSICS)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.ASTROPHYSICS, researches.getAstrophysics()))){
+                return new ResearchTask(empire, planet, ResearchType.ASTROPHYSICS);
             }
             if(researches.getPlasma() <= 20
                     && OGameLibrary.canBuild(empire, planet, ResearchType.PLASMA)
@@ -160,15 +153,15 @@ public class Mainframe {
                     && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.ESPIONAGE, researches.getEspionage()))){
                 return new ResearchTask(empire, planet, ResearchType.ESPIONAGE);
             }
-            if(researches.getComputer() <= 20
-                    && OGameLibrary.canBuild(empire, planet, ResearchType.COMPUTER)
-                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.COMPUTER, researches.getComputer()))){
-                return new ResearchTask(empire, planet, ResearchType.COMPUTER);
+            if(researches.getHyper() <= 8
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.HYPER)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.HYPER, researches.getHyper()))){
+                return new ResearchTask(empire, planet, ResearchType.HYPER);
             }
-            if(researches.getAstrophysics() <= 20
-                    && OGameLibrary.canBuild(empire, planet, ResearchType.ASTROPHYSICS)
-                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.ASTROPHYSICS, researches.getAstrophysics()))){
-                return new ResearchTask(empire, planet, ResearchType.ASTROPHYSICS);
+            if(researches.getIon() <= 5
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.ION)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.ION, researches.getIon()))){
+                return new ResearchTask(empire, planet, ResearchType.ION);
             }
             if(researches.getMis() <= 7
                     && OGameLibrary.canBuild(empire, planet, ResearchType.MIS)
@@ -176,20 +169,20 @@ public class Mainframe {
                 return new ResearchTask(empire, planet, ResearchType.MIS);
             }
 
-            if(researches.getReactiveEngine() <= 20
-                    && OGameLibrary.canBuild(empire, planet, ResearchType.REACTIVE_ENGINE)
-                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.REACTIVE_ENGINE, researches.getReactiveEngine()))){
-                return new ResearchTask(empire, planet, ResearchType.REACTIVE_ENGINE);
+            if(researches.getHyperEngine() <= 20
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.HYPER_ENGINE)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.HYPER_ENGINE, researches.getHyperEngine()))){
+                return new ResearchTask(empire, planet, ResearchType.HYPER_ENGINE);
             }
             if(researches.getImpulseEngine() <= 20
                     && OGameLibrary.canBuild(empire, planet, ResearchType.IMPULSE_ENGINE)
                     && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.IMPULSE_ENGINE, researches.getImpulseEngine()))){
                 return new ResearchTask(empire, planet, ResearchType.IMPULSE_ENGINE);
             }
-            if(researches.getHyperEngine() <= 20
-                    && OGameLibrary.canBuild(empire, planet, ResearchType.HYPER_ENGINE)
-                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.HYPER_ENGINE, researches.getHyperEngine()))){
-                return new ResearchTask(empire, planet, ResearchType.HYPER_ENGINE);
+            if(researches.getReactiveEngine() <= 20
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.REACTIVE_ENGINE)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.REACTIVE_ENGINE, researches.getReactiveEngine()))){
+                return new ResearchTask(empire, planet, ResearchType.REACTIVE_ENGINE);
             }
             if(researches.getWeapon() <= 25
                     && OGameLibrary.canBuild(empire, planet, ResearchType.WEAPON)
@@ -205,6 +198,16 @@ public class Mainframe {
                     && OGameLibrary.canBuild(empire, planet, ResearchType.ARMOR)
                     && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.ARMOR, researches.getArmor()))){
                 return new ResearchTask(empire, planet, ResearchType.ARMOR);
+            }
+            if(researches.getLaser() <= 12
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.LASER)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.LASER, researches.getLaser()))){
+                return new ResearchTask(empire, planet, ResearchType.LASER);
+            }
+            if(researches.getEnergy() <= 12
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.ENERGY)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.ENERGY, researches.getEnergy()))){
+                return new ResearchTask(empire, planet, ResearchType.ENERGY);
             }
         }
 
