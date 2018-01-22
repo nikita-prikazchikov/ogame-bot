@@ -7,11 +7,9 @@ import ru.tki.models.types.FactoryType;
 public class FactoryAction extends Action {
 
     FactoryType factoryType;
-    Empire empire;
 
-    public FactoryAction(Empire empire, AbstractPlanet planet, FactoryType factoryType) {
+    public FactoryAction(AbstractPlanet planet, FactoryType factoryType) {
         super(planet);
-        this.empire = empire;
         this.factoryType = factoryType;
     }
 

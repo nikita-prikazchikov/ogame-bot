@@ -54,10 +54,11 @@ public class OGameLibrary {
     public static Resources getBuildingPrice(BuildingType type, Integer currentLevel) {
         switch (type) {
             case METAL_MINE:
-            case CRYSTAL_MINE:
             case DEUTERIUM_MINE:
             case SOLAR_PLANT:
                 return buildings.get(type).multiply(Math.pow(1.5, currentLevel));
+            case CRYSTAL_MINE:
+                return buildings.get(type).multiply(Math.pow(1.6, currentLevel));
             case SOLAR_SATELLITE:
                 return buildings.get(type);
             case METAL_STORAGE:

@@ -11,6 +11,6 @@ public class ResearchAction extends Action {
 
     @Override
     public void complete(Empire empire) {
-
+        empire.setResearchInProgress(false);
     }
 }

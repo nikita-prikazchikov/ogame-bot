@@ -3,6 +3,7 @@ package ru.tki.models.actions;
 import com.google.gson.Gson;
 import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
+import ru.tki.models.tasks.Task;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -12,6 +13,7 @@ public abstract class Action {
     protected AbstractPlanet planet;
     protected Duration       duration;
     protected Instant        startDate;
+    protected Task           subtask;
 
     public Action() {
         startDate = Instant.now();
@@ -52,8 +54,25 @@ public abstract class Action {
         return startDate;
     }
 
+    public Task getSubtask() {
+        return subtask;
+    }
+
+    public void setSubtask(Task subtask) {
+        this.subtask = subtask;
+    }
+
+    public boolean hasSubtask() {
+        return null != subtask;
+    }
+
     @Override
     public String toString() {
         return new Gson().toJson(this);
+    }
+
+    public String toLog(){
+        return String.format("%s on planet %s for %s",
+                this.getClass().getName(), planet.getCoordinates().getFormattedCoordinates(), duration.getSeconds());
     }
 }

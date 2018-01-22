@@ -9,6 +9,7 @@ public abstract class Task {
 
     private   Instant        executionDate;
     protected AbstractPlanet planet;
+    protected Task subtask = null;
 
     public abstract Action execute();
 
@@ -26,6 +27,18 @@ public abstract class Task {
 
     public void setExecutionDate(Instant executionDate) {
         this.executionDate = executionDate;
+    }
+
+    public Task getSubtask() {
+        return subtask;
+    }
+
+    public boolean hasSubtask() {
+        return null != subtask;
+    }
+
+    public void setSubtask(Task subtask) {
+        this.subtask = subtask;
     }
 
     public boolean canExecute() {

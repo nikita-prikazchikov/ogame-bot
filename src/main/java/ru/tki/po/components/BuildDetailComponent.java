@@ -30,34 +30,7 @@ public class BuildDetailComponent extends PageObject {
     }
 
     public Duration getDuration(){
-        Duration d = Duration.ZERO;
-
-        String text = getElement(DURATION).getText();
-        Matcher m = Pattern.compile("(\\d+)с").matcher(text);
-        if(m.find()){
-            d = d.plusSeconds(Integer.parseInt(m.group(1)));
-        }
-
-        m = Pattern.compile("(\\d+)м").matcher(text);
-        if(m.find()){
-            d = d.plusMinutes(Integer.parseInt(m.group(1)));
-        }
-
-        m = Pattern.compile("(/d+)ч").matcher(text);
-        if(m.find()){
-            d = d.plusHours(Integer.parseInt(m.group(1)));
-        }
-
-        m = Pattern.compile("(\\d+)д").matcher(text);
-        if(m.find()){
-            d = d.plusDays(Integer.parseInt(m.group(1)));
-        }
-
-        m = Pattern.compile("(\\d+)нед").matcher(text);
-        if(m.find()){
-            d = d.plusDays(Integer.parseInt(m.group(1)) * 7);
-        }
-        return d;
+        return DataParser.parseDuration(getElement(DURATION).getText());
     }
 
     public Resources getResources(){

@@ -34,6 +34,7 @@ public class BuildingTask extends Task {
     public BuildingAction execute() {
         BuildingAction action = new BuildingAction(planet);
 
+
         BasePage basePage = new BasePage();
         basePage.myWorlds.selectPlanet(planet);
         basePage.leftMenu.openResources();

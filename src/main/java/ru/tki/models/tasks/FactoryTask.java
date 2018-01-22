@@ -32,7 +32,7 @@ public class FactoryTask extends Task {
 
     @Override
     public FactoryAction execute() {
-        FactoryAction action = new FactoryAction(empire, planet, type);
+        FactoryAction action = new FactoryAction(planet, type);
 
         BasePage basePage = new BasePage();
         basePage.myWorlds.selectPlanet(planet);

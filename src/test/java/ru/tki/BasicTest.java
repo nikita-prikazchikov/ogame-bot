@@ -182,7 +182,7 @@ public class BasicTest {
 
         List<AbstractPlanet> planets = basePage.myWorlds.getPlanets();
 
-        ResearchTask task = new ResearchTask(planets.get(0), ResearchType.ESPIONAGE);
+        ResearchTask task = new ResearchTask(new Empire(), planets.get(0), ResearchType.ESPIONAGE);
         Action action = task.execute();
 
         logger.info(action.toString());

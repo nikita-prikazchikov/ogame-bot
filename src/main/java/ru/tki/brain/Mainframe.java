@@ -4,10 +4,7 @@ import ru.tki.executor.Navigation;
 import ru.tki.models.*;
 import ru.tki.models.actions.Action;
 import ru.tki.models.tasks.*;
-import ru.tki.models.types.BuildingType;
-import ru.tki.models.types.FactoryType;
-import ru.tki.models.types.PlanetType;
-import ru.tki.models.types.ShipType;
+import ru.tki.models.types.*;
 import ru.tki.po.LoginPage;
 
 import java.time.Duration;
@@ -24,7 +21,7 @@ public class Mainframe {
 
     private Empire empire;
     private Instant lastAttackCheck = Instant.now();
-    private Instant lastUpdateResources = Instant.now().minus(Duration.ofMinutes(15));
+    private Instant lastUpdateResources = Instant.now();//.minus(Duration.ofMinutes(15));
 
     Navigation navigation;
     LoginPage  loginPage;
@@ -36,26 +33,27 @@ public class Mainframe {
     }
 
     public void start() {
+        System.out.println("Let's the magic start!");
+
         if (!empire.load()) {
             empire.addTask(new EmpireTask(empire));
             lastUpdateResources = Instant.now();
         }
+        empire.addTask(new CheckExistingActionsTask(empire));
         runExecution();
     }
 
     private void runExecution() {
-        System.out.println("Let's the magic start!");
         do {
             try {
                 if(!loginPage.isLoggedIn()){
                     navigation.openHomePage();
                     loginPage.login();
                 }
-
+                execute();
                 verifySchedules();
                 verifyActions();
                 think();
-                execute();
             } catch (Exception ex) {
                 ex.printStackTrace();
                 try {
@@ -88,11 +86,12 @@ public class Mainframe {
         List<Action> actions = new ArrayList<>();
         empire.getActions().stream().filter(Action::isFinished).forEach(action ->{
             action.complete(empire);
+            if(action.hasSubtask()){
+                empire.addTask(action.getSubtask());
+            }
             actions.add(action);
         });
-        actions.forEach(action -> {
-            empire.getActions().remove(action);
-        });
+        actions.forEach(action -> empire.removeAction(action));
     }
 
     private void thinkBuildings() {
@@ -118,6 +117,7 @@ public class Mainframe {
         Resources resources = planet.getResources();
         Buildings buildings = planet.getBuildings();
         Factories factories = planet.getFactories();
+        Researches researches = empire.getResearches();
         Integer currentMax = buildings.getSolarPlant();
 
         if(!planet.getShipyardBusy()) {
@@ -126,6 +126,85 @@ public class Mainframe {
                         && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.SOLAR_SATELLITE, 1))) {
                     return new ShipyardTask(empire, planet, ShipType.SOLAR_SATELLITE, 1);
                 }
+            }
+        }
+
+        if(!empire.isResearchInProgress()){
+            if(researches.getEnergy() <= 12
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.ENERGY)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.ENERGY, researches.getEnergy()))){
+                return new ResearchTask(empire, planet, ResearchType.ENERGY);
+            }
+            if(researches.getLaser() <= 12
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.LASER)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.LASER, researches.getLaser()))){
+                return new ResearchTask(empire, planet, ResearchType.LASER);
+            }
+            if(researches.getIon() <= 5
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.ION)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.ION, researches.getIon()))){
+                return new ResearchTask(empire, planet, ResearchType.ION);
+            }
+            if(researches.getHyper() <= 8
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.HYPER)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.HYPER, researches.getHyper()))){
+                return new ResearchTask(empire, planet, ResearchType.HYPER);
+            }
+            if(researches.getPlasma() <= 20
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.PLASMA)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.PLASMA, researches.getPlasma()))){
+                return new ResearchTask(empire, planet, ResearchType.PLASMA);
+            }
+            if(researches.getEspionage() <= 20
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.ESPIONAGE)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.ESPIONAGE, researches.getEspionage()))){
+                return new ResearchTask(empire, planet, ResearchType.ESPIONAGE);
+            }
+            if(researches.getComputer() <= 20
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.COMPUTER)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.COMPUTER, researches.getComputer()))){
+                return new ResearchTask(empire, planet, ResearchType.COMPUTER);
+            }
+            if(researches.getAstrophysics() <= 20
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.ASTROPHYSICS)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.ASTROPHYSICS, researches.getAstrophysics()))){
+                return new ResearchTask(empire, planet, ResearchType.ASTROPHYSICS);
+            }
+            if(researches.getMis() <= 7
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.MIS)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.MIS, researches.getMis()))){
+                return new ResearchTask(empire, planet, ResearchType.MIS);
+            }
+
+            if(researches.getReactiveEngine() <= 20
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.REACTIVE_ENGINE)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.REACTIVE_ENGINE, researches.getReactiveEngine()))){
+                return new ResearchTask(empire, planet, ResearchType.REACTIVE_ENGINE);
+            }
+            if(researches.getImpulseEngine() <= 20
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.IMPULSE_ENGINE)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.IMPULSE_ENGINE, researches.getImpulseEngine()))){
+                return new ResearchTask(empire, planet, ResearchType.IMPULSE_ENGINE);
+            }
+            if(researches.getHyperEngine() <= 20
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.HYPER_ENGINE)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.HYPER_ENGINE, researches.getHyperEngine()))){
+                return new ResearchTask(empire, planet, ResearchType.HYPER_ENGINE);
+            }
+            if(researches.getWeapon() <= 25
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.WEAPON)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.WEAPON, researches.getEspionage()))){
+                return new ResearchTask(empire, planet, ResearchType.WEAPON);
+            }
+            if(researches.getShields() <= 25
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.SHIELDS)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.SHIELDS, researches.getShields()))){
+                return new ResearchTask(empire, planet, ResearchType.SHIELDS);
+            }
+            if(researches.getArmor() <= 25
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.ARMOR)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.ARMOR, researches.getArmor()))){
+                return new ResearchTask(empire, planet, ResearchType.ARMOR);
             }
         }
 
@@ -203,6 +282,9 @@ public class Mainframe {
             System.out.println("Execute task: " + task.toString());
             Action action = task.execute();
             if (null != action) {
+                if (task.hasSubtask()){
+                    action.setSubtask(task.getSubtask());
+                }
                 empire.addAction(action);
             }
             tasksForRemove.add(task);

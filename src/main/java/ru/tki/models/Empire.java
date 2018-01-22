@@ -66,10 +66,12 @@ public class Empire {
     }
 
     public void addTask(Task task) {
+        System.out.println("Add task: " + task);
         tasks.add(task);
     }
 
     public void removeTask(Task task) {
+//        System.out.println("Remove completed task: " + task);
         tasks.remove(task);
     }
 
@@ -78,10 +80,12 @@ public class Empire {
     }
 
     public void addAction(Action action) {
+        System.out.println("Add action: " + action.toLog());
         actions.add(action);
     }
 
     public void removeAction(Action action) {
+        System.out.println("Remove finished action: " + action.toLog());
         actions.add(action);
     }
 
@@ -105,7 +109,7 @@ public class Empire {
         save(directory);
     }
 
-    public void save(File directory) {
+    private void save(File directory) {
         if (!directory.exists()) {
             if (!directory.mkdirs()) {
                 throw new InvalidArgumentException("Unable to create directory: " + directory);
@@ -115,7 +119,7 @@ public class Empire {
         saveResearches(directory);
     }
 
-    public void savePlanets(File directory) {
+    private void savePlanets(File directory) {
         File planetsDir = new File(directory, PLANETS);
 
         if (!planetsDir.exists()) {
@@ -132,13 +136,17 @@ public class Empire {
         savePlanet(new File(directory, PLANETS), planet);
     }
 
-    public void savePlanet(File directory, AbstractPlanet planet){
+    private void savePlanet(File directory, AbstractPlanet planet){
         File file = new File(directory, planet.getCoordinates().getFileSafeString() + "_" + planet.getType() + ".json");
         String jsonString = gson.toJson(planet);
         writeToFile(file, jsonString);
     }
 
-    public void saveResearches(File directory) {
+    public void saveResearches() {
+        saveResearches(directory);
+    }
+
+    private void saveResearches(File directory) {
         File file = new File(directory, RESEARCHES);
         String jsonString = gson.toJson(researches);
         writeToFile(file, jsonString);

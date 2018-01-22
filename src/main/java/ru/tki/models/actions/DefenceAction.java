@@ -11,6 +11,6 @@ public class DefenceAction extends Action {
 
     @Override
     public void complete(Empire empire) {
-
+        planet.setShipyardBusy(false);
     }
 }
