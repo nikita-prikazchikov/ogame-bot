@@ -1,8 +1,8 @@
 package ru.tki.models.tasks;
 
 import ru.tki.models.AbstractPlanet;
-import ru.tki.models.types.DefenceType;
 import ru.tki.models.actions.DefenceAction;
+import ru.tki.models.types.DefenceType;
 import ru.tki.po.BasePage;
 import ru.tki.po.DefencePage;
 import ru.tki.po.components.BuildDetailComponent;
@@ -49,5 +49,10 @@ public class DefenceTask extends Task {
         planet.setShipyardBusy(true);
 
         return action;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Build %d %s on planet %s", amount, type, planet.getCoordinates().getFormattedCoordinates());
     }
 }

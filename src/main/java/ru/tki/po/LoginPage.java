@@ -1,5 +1,6 @@
 package ru.tki.po;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
@@ -10,6 +11,8 @@ import ru.tki.ContextHolder;
 
 
 public class LoginPage extends PageObject {
+
+    private final static By OVERLAY = By.cssSelector(".openX_int_closeButton");
 
     @FindBy(id="loginBtn")
     WebElement login;
@@ -34,6 +37,9 @@ public class LoginPage extends PageObject {
 
     public void login(){
         BotConfigMain conf = ContextHolder.getBotConfigMain();
+        if(isElementExists(OVERLAY)){
+            getElement(getElement(OVERLAY), By.cssSelector("a")).click();
+        }
 
         openLoginForm();
         login(conf.getLogin(), conf.getPassword(), conf.getUniverse());
