@@ -10,7 +10,9 @@ public abstract class AbstractPlanet {
     protected String      name;
     protected Integer     size;
     protected Boolean     buildInProgress = false;
+    protected Boolean     shipyardBusy = false;
     Resources resources = new Resources();
+    Fleet fleet = new Fleet();
 
     public AbstractPlanet() {
     }
@@ -68,12 +70,28 @@ public abstract class AbstractPlanet {
         this.buildInProgress = buildInProgress;
     }
 
+    public Boolean getShipyardBusy() {
+        return shipyardBusy;
+    }
+
+    public void setShipyardBusy(Boolean shipyardBusy) {
+        this.shipyardBusy = shipyardBusy;
+    }
+
     public Resources getResources() {
         return resources;
     }
 
     public void setResources(Resources resources) {
         this.resources = resources;
+    }
+
+    public Fleet getFleet() {
+        return fleet;
+    }
+
+    public void setFleet(Fleet fleet) {
+        this.fleet = fleet;
     }
 
     @Override

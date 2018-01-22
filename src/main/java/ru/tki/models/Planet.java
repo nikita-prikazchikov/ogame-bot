@@ -10,7 +10,6 @@ public class Planet extends AbstractPlanet {
     Factories  factories= new Factories();
     Researches researches;
     Defence    defence = new Defence();
-    Fleet      fleet = new Fleet();
 
     public Planet() {
     }
@@ -61,14 +60,6 @@ public class Planet extends AbstractPlanet {
 
     public void setDefence(Defence defence) {
         this.defence = defence;
-    }
-
-    public Fleet getFleet() {
-        return fleet;
-    }
-
-    public void setFleet(Fleet fleet) {
-        this.fleet = fleet;
     }
 
     @Override

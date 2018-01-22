@@ -169,7 +169,7 @@ public class BasicTest {
 
         List<AbstractPlanet> planets = basePage.myWorlds.getPlanets();
 
-        FactoryTask task = new FactoryTask(planets.get(0), FactoryType.ROBOTS_FACTORY);
+        FactoryTask task = new FactoryTask(new Empire(), planets.get(0), FactoryType.ROBOTS_FACTORY);
         Action action = task.execute();
 
         logger.info(action.toString());
@@ -195,7 +195,7 @@ public class BasicTest {
 
         List<AbstractPlanet> planets = basePage.myWorlds.getPlanets();
 
-        ShipyardTask task = new ShipyardTask(planets.get(0), ShipType.LIGHT_FIGHTER, 2);
+        ShipyardTask task = new ShipyardTask(new Empire(), planets.get(0), ShipType.LIGHT_FIGHTER, 2);
         Action action = task.execute();
 
         logger.info(action.toString());

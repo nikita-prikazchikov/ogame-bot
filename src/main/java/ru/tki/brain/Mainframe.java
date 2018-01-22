@@ -5,7 +5,9 @@ import ru.tki.models.*;
 import ru.tki.models.actions.Action;
 import ru.tki.models.tasks.*;
 import ru.tki.models.types.BuildingType;
+import ru.tki.models.types.FactoryType;
 import ru.tki.models.types.PlanetType;
+import ru.tki.models.types.ShipType;
 import ru.tki.po.LoginPage;
 
 import java.time.Duration;
@@ -93,18 +95,21 @@ public class Mainframe {
         });
     }
 
-    private void thinkBuildings(){
-        for(AbstractPlanet planet:empire.getPlanets()){
-            if (planet.getType() == PlanetType.PLANET && !planet.getBuildInProgress()){
-                thinkBuildings((Planet) planet);
-            }
-            else if (planet.getType() == PlanetType.MOON){
+    private void thinkBuildings() {
+        Task task;
+        for (AbstractPlanet planet : empire.getPlanets()) {
+            if (planet.getType() == PlanetType.PLANET) {
+                task = thinkBuildings((Planet) planet);
+                if (null != task) {
+                    empire.addTask(task);
+                }
+            } else if (planet.getType() == PlanetType.MOON) {
                 //Do nothing now
             }
         }
     }
 
-    private void thinkBuildings(Planet planet) {
+    private Task thinkBuildings(Planet planet) {
         // Rules for building
         // Keep buildings flat amount on planet
         // Solar main level X
@@ -115,45 +120,74 @@ public class Mainframe {
         Factories factories = planet.getFactories();
         Integer currentMax = buildings.getSolarPlant();
 
-        if (buildings.getMetalMine() < currentMax) {
-            if (resources.isEnoughFor(PriceLibrary.getBuildingPrice(BuildingType.METAL_MINE, buildings.getMetalMine() + 1))) {
-                empire.addTask(new BuildingTask(empire, planet, BuildingType.METAL_MINE));
-                return;
+        if(!planet.getShipyardBusy()) {
+            if (planet.getResources().getEnergy() < 0) {
+                if (OGameLibrary.canBuild(empire, planet, ShipType.SOLAR_SATELLITE)
+                        && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.SOLAR_SATELLITE, 1))) {
+                    return new ShipyardTask(empire, planet, ShipType.SOLAR_SATELLITE, 1);
+                }
             }
         }
-        if (buildings.getCrystalMine() < currentMax - 2) {
-            if (resources.isEnoughFor(PriceLibrary.getBuildingPrice(BuildingType.CRYSTAL_MINE, buildings.getCrystalMine()))) {
-                empire.addTask(new BuildingTask(empire, planet, BuildingType.CRYSTAL_MINE));
-                return;
+
+        if(!planet.getBuildInProgress()) {
+            if (factories.getRobotsFactory() <= 10 && factories.getRobotsFactory() < currentMax / 3) {
+                if (resources.isEnoughFor(OGameLibrary.getFactoryPrice(FactoryType.ROBOTS_FACTORY, factories.getRobotsFactory()))) {
+                    return new FactoryTask(empire, planet, FactoryType.ROBOTS_FACTORY);
+                }
+            }
+            if (!planet.getShipyardBusy() && factories.getShipyard() <= 9 && factories.getShipyard() < currentMax / 3) {
+                if (OGameLibrary.canBuild(empire, planet, FactoryType.SHIPYARD)
+                        && resources.isEnoughFor(OGameLibrary.getFactoryPrice(FactoryType.SHIPYARD, factories.getShipyard()))) {
+                    return new FactoryTask(empire, planet, FactoryType.SHIPYARD);
+                }
+            }
+            if (!empire.isResearchInProgress() && factories.getResearchLab() <= 10 && factories.getResearchLab() < currentMax / 3) {
+                if (OGameLibrary.canBuild(empire, planet, FactoryType.RESEARCH_LAB)
+                        && resources.isEnoughFor(OGameLibrary.getFactoryPrice(FactoryType.RESEARCH_LAB, factories.getResearchLab()))) {
+                    return new FactoryTask(empire, planet, FactoryType.RESEARCH_LAB);
+                }
+            }
+
+            if (buildings.getMetalMine() < currentMax) {
+                if (resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.METAL_MINE, buildings.getMetalMine()))) {
+                    return new BuildingTask(empire, planet, BuildingType.METAL_MINE);
+                }
+            }
+            if (buildings.getCrystalMine() < currentMax - 2) {
+                if (resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.CRYSTAL_MINE, buildings.getCrystalMine()))) {
+                    return new BuildingTask(empire, planet, BuildingType.CRYSTAL_MINE);
+                }
+            }
+            if (buildings.getDeuteriumMine() < currentMax / 2) {
+                if (resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.DEUTERIUM_MINE, buildings.getDeuteriumMine()))) {
+                    return new BuildingTask(empire, planet, BuildingType.DEUTERIUM_MINE);
+                }
+            }
+            if (buildings.getMetalStorage() < currentMax / 3) {
+                if (resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.METAL_STORAGE, buildings.getMetalStorage()))) {
+                    return new BuildingTask(empire, planet, BuildingType.METAL_STORAGE);
+                }
+            }
+            if (buildings.getCrystalStorage() < (currentMax - 2) / 3) {
+                if (resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.CRYSTAL_STORAGE, buildings.getCrystalStorage()))) {
+                    return new BuildingTask(empire, planet, BuildingType.CRYSTAL_STORAGE);
+                }
+            }
+            if (buildings.getDeuteriumStorage() < currentMax / 6) {
+                if (resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.DEUTERIUM_STORAGE, buildings.getDeuteriumStorage()))) {
+                    return new BuildingTask(empire, planet, BuildingType.DEUTERIUM_STORAGE);
+                }
+            }
+            if (resources.getEnergy() < 0) {
+                if (resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.SOLAR_SATELLITE, buildings.getDeuteriumStorage()))) {
+                    return new ShipyardTask(empire, planet, ShipType.SOLAR_SATELLITE, 1);
+                }
+            }
+            if (resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.SOLAR_PLANT, buildings.getSolarPlant()))) {
+                return new BuildingTask(empire, planet, BuildingType.SOLAR_PLANT);
             }
         }
-        if (buildings.getDeuteriumMine() < currentMax / 2) {
-            if (resources.isEnoughFor(PriceLibrary.getBuildingPrice(BuildingType.DEUTERIUM_MINE, buildings.getDeuteriumMine()))) {
-                empire.addTask(new BuildingTask(empire, planet, BuildingType.DEUTERIUM_MINE));
-                return;
-            }
-        }
-        if (buildings.getMetalStorage() < currentMax / 3) {
-            if (resources.isEnoughFor(PriceLibrary.getBuildingPrice(BuildingType.METAL_STORAGE, buildings.getMetalStorage()))) {
-                empire.addTask(new BuildingTask(empire, planet, BuildingType.METAL_STORAGE));
-                return;
-            }
-        }
-        if (buildings.getCrystalStorage() < (currentMax - 2) / 3) {
-            if (resources.isEnoughFor(PriceLibrary.getBuildingPrice(BuildingType.CRYSTAL_STORAGE, buildings.getCrystalStorage()))) {
-                empire.addTask(new BuildingTask(empire, planet, BuildingType.CRYSTAL_STORAGE));
-                return;
-            }
-        }
-        if (buildings.getDeuteriumStorage() < currentMax / 6) {
-            if (resources.isEnoughFor(PriceLibrary.getBuildingPrice(BuildingType.DEUTERIUM_STORAGE, buildings.getDeuteriumStorage()))) {
-                empire.addTask(new BuildingTask(empire, planet, BuildingType.DEUTERIUM_STORAGE));
-                return;
-            }
-        }
-        if (resources.isEnoughFor(PriceLibrary.getBuildingPrice(BuildingType.SOLAR_PLANT, buildings.getSolarPlant()))) {
-            empire.addTask(new BuildingTask(empire, planet, BuildingType.SOLAR_PLANT));
-        }
+        return null;
     }
 
     private void execute() throws InterruptedException {

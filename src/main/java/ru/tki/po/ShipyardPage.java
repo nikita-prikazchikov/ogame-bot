@@ -1,6 +1,7 @@
 package ru.tki.po;
 
 import org.openqa.selenium.By;
+import ru.tki.models.Fleet;
 import ru.tki.models.types.ShipType;
 
 import java.util.HashMap;
@@ -32,8 +33,18 @@ public class ShipyardPage extends PageObject {
         getElement(getElement(elements.get(type)), By.cssSelector(".detail_button")).click();
     }
 
-    public int getShipsCount(ShipType type) {
+    public int getShipCount(ShipType type) {
         return Integer.parseInt(
                 getElement(getElement(elements.get(type)), By.cssSelector(".level")).getText().trim());
+    }
+
+    public Fleet getFleet() {
+        Fleet fleet = new Fleet();
+        for (ShipType type : ShipType.values()) {
+            if (type == ShipType.SOLAR_SATELLITE)
+                continue;
+            fleet.set(type, getShipCount(type));
+        }
+        return fleet;
     }
 }

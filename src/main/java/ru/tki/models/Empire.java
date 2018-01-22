@@ -30,6 +30,7 @@ public class Empire {
     private Gson gson;
 
     private boolean isUnderAttack;
+    private boolean researchInProgress = false;
 
     public Empire() {
         directory = new File(STORAGE + File.separator +
@@ -90,6 +91,14 @@ public class Empire {
 
     public void setUnderAttack(boolean underAttack) {
         isUnderAttack = underAttack;
+    }
+
+    public boolean isResearchInProgress() {
+        return researchInProgress;
+    }
+
+    public void setResearchInProgress(boolean researchInProgress) {
+        this.researchInProgress = researchInProgress;
     }
 
     public void save() {
