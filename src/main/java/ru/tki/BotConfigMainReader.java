@@ -31,6 +31,7 @@ public class BotConfigMainReader {
             config.setLogin(prop.getProperty("login"));
             config.setPassword(prop.getProperty("password"));
             config.setUniverse(prop.getProperty("universe"));
+            config.setHeadless(Boolean.parseBoolean(prop.getProperty("chrome.headless", "false")));
 
             //Setup reauired local property for chrome driver
             System.setProperty("webdriver.chrome.driver", prop.getProperty("webdriver.chrome.driver"));

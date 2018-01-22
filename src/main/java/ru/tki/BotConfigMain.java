@@ -7,6 +7,7 @@ public class BotConfigMain {
     String login;
     String password;
     String universe;
+    Boolean headless = false;
 
     Properties properties;
 
@@ -48,5 +49,13 @@ public class BotConfigMain {
 
     public void setUniverse(String universe) {
         this.universe = universe;
+    }
+
+    public Boolean getHeadless() {
+        return headless;
+    }
+
+    public void setHeadless(Boolean headless) {
+        this.headless = headless;
     }
 }

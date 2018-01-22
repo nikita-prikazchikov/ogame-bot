@@ -3,6 +3,7 @@ package ru.tki;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -15,7 +16,11 @@ public class DriverManager {
     private WebDriver driver = null;
 
     private void startDriver(){
-        this.driver = new ChromeDriver();
+        ChromeOptions options = new ChromeOptions();
+        if(ContextHolder.getBotConfigMain().getHeadless()) {
+            options.addArguments("--headless");
+        }
+        this.driver = new ChromeDriver(options);
     }
 
     public WebDriver getDriver(){
