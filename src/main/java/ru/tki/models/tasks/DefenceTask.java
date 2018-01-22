@@ -45,6 +45,9 @@ public class DefenceTask extends Task {
         buildDetailComponent.setAmount(amount);
         buildDetailComponent.build();
 
+        planet.setResources(basePage.resources.getResources());
+        planet.setShipyardBusy(true);
+
         return action;
     }
 }

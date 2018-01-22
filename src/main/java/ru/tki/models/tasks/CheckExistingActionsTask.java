@@ -41,7 +41,7 @@ public class CheckExistingActionsTask extends Task {
     private void addActionWithUpdateSubtask(Action action) {
         Task task;
         if (null != action) {
-            task = new UpdatePlanetInfoTask(empire);
+            task = new UpdatePlanetInfoTask(empire, action.getPlanet());
             action.setSubtask(task);
             empire.addAction(action);
         }

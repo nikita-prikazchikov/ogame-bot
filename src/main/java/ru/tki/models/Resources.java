@@ -71,6 +71,14 @@ public class Resources {
                 ((Double)(energy * value)).intValue());
     }
 
+    public Resources multiply(Integer value){
+        return new Resources(
+                metal * value,
+                crystal * value,
+                deuterium * value,
+                energy * value);
+    }
+
     public Resources add (Resources resources){
         return new Resources(
                 metal + resources.getMetal(),

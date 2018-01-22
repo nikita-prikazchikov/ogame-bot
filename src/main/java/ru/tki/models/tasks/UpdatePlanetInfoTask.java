@@ -12,7 +12,8 @@ public class UpdatePlanetInfoTask extends Task {
 
     Empire empire;
 
-    public UpdatePlanetInfoTask(Empire empire) {
+    public UpdatePlanetInfoTask(Empire empire, AbstractPlanet planet) {
+        setPlanet(planet);
         this.empire = empire;
     }
 

@@ -1,9 +1,6 @@
 package ru.tki.models;
 
-import ru.tki.models.types.BuildingType;
-import ru.tki.models.types.FactoryType;
-import ru.tki.models.types.ResearchType;
-import ru.tki.models.types.ShipType;
+import ru.tki.models.types.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +26,19 @@ public class OGameLibrary {
         put(FactoryType.TERRAFORMER, new Resources(0, 50000, 100000));
         put(FactoryType.ALLIANCE_WAREHOUSE, new Resources(20000, 40000));
         put(FactoryType.MISSILE_SILOS, new Resources(20000, 20000, 1000));
+    }};
+
+    private static final Map<DefenceType, Resources> defence = new HashMap<DefenceType, Resources>() {{
+        put(DefenceType.ROCKET, new Resources(2000, 0, 0));
+        put(DefenceType.LIGHT_LASER, new Resources(1500, 500, 0));
+        put(DefenceType.HEAVY_LASER, new Resources(6000, 2000, 0));
+        put(DefenceType.GAUSS, new Resources(20000, 15000, 2000));
+        put(DefenceType.ION, new Resources(2000, 6000, 0));
+        put(DefenceType.PLASMA, new Resources(50000, 50000, 30000));
+        put(DefenceType.SMALL_SHIELD, new Resources(10000, 10000, 0));
+        put(DefenceType.BIG_SHIELD, new Resources(50000, 50000, 0));
+        put(DefenceType.DEFENCE_MISSILE, new Resources(8000, 2000, 0));
+        put(DefenceType.MISSILE, new Resources(12500, 2500, 10000));
     }};
 
     private static final Map<ResearchType, Resources> researches = new HashMap<ResearchType, Resources>() {{
@@ -106,6 +116,10 @@ public class OGameLibrary {
                 return researches.get(type).multiply(Math.pow(2, currentLevel));
         }
         return null;
+    }
+
+    public static Resources getDefencePrice(DefenceType type) {
+        return defence.get(type);
     }
 
     public static Boolean canBuild(Empire empire, Planet planet, ShipType type) {
@@ -230,6 +244,42 @@ public class OGameLibrary {
                         && empire.getResearches().getEnergy() >= 3;
             case ARMOR:
                 return planet.getFactories().getResearchLab() >= 2;
+        }
+        return false;
+    }
+
+    public static Boolean canBuild(Empire empire, Planet planet, DefenceType type) {
+        switch (type) {
+            case ROCKET:
+                return planet.getFactories().getShipyard() >= 2;
+            case LIGHT_LASER:
+                return planet.getFactories().getShipyard() >= 2
+                        && empire.getResearches().getLaser() >= 3;
+            case HEAVY_LASER:
+                return planet.getFactories().getShipyard() >= 4
+                        && empire.getResearches().getLaser() >= 6
+                        && empire.getResearches().getEnergy() >= 3;
+            case GAUSS:
+                return planet.getFactories().getShipyard() >= 6
+                        && empire.getResearches().getWeapon() >= 3
+                        && empire.getResearches().getEnergy() >= 6
+                        && empire.getResearches().getShields() >= 1;
+            case ION:
+                return planet.getFactories().getShipyard() >= 4
+                        && empire.getResearches().getIon() >= 4;
+            case PLASMA:
+                return planet.getFactories().getShipyard() >= 8
+                        && empire.getResearches().getPlasma() >= 7;
+            case SMALL_SHIELD:
+                return planet.getFactories().getShipyard() >= 1
+                        && empire.getResearches().getShields() >= 2;
+            case BIG_SHIELD:
+                return planet.getFactories().getShipyard() >= 6
+                        && empire.getResearches().getShields() >= 6;
+            case DEFENCE_MISSILE:
+                return planet.getFactories().getMissileSilos() >= 2;
+            case MISSILE:
+                return planet.getFactories().getMissileSilos() >= 4;
         }
         return false;
     }
