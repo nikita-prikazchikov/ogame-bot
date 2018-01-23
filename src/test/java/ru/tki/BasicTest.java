@@ -3,6 +3,7 @@ package ru.tki;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import ru.tki.executor.Navigation;
 import ru.tki.models.*;
@@ -16,6 +17,7 @@ import java.util.logging.Logger;
 
 import static org.junit.Assert.assertTrue;
 
+@Ignore
 public class BasicTest {
 
     private static Logger logger = Logger.getLogger(String.valueOf(DriverManager.class));

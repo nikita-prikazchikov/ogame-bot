@@ -16,20 +16,24 @@ public class EmpireTest {
 
     DriverManager driverManager;
     BotConfigMain config;
+    Empire empire;
 
     @Before
     public void setUp() throws Exception {
         BotConfigMainReader reader = new BotConfigMainReader();
         config = reader.getPropValues();
+        config.setLogin("test");
+        config.setPassword("test");
         ContextHolder.setBotConfigMain(config);
 
         driverManager = new DriverManager();
         ContextHolder.setDriverManager(driverManager);
+
+        empire = new Empire();
     }
 
     @Test
     public void testSave() throws Exception {
-        Empire empire = new Empire();
         Planet planet = new Planet("2:3:5", "Planet name");
         empire.addPlanet(planet);
         Planet planet1 = new Planet("1:214:9", "Second planet name");
@@ -40,7 +44,6 @@ public class EmpireTest {
 
     @Test
     public void testLoad() throws Exception {
-        Empire empire = new Empire();
         empire.load();
         empire.getPlanets();
     }
