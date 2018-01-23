@@ -137,6 +137,10 @@ public class Fleet {
         }
     }
 
+    public Integer getCapacity(){
+        return smallCargo * 5000 + largeCargo * 25000;
+    }
+
     public Integer getLightFighter() {
         return lightFighter;
     }

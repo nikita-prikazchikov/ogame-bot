@@ -102,4 +102,13 @@ public abstract class AbstractPlanet {
     public void logResources(){
         System.out.println(String.format("Resources on %s %s %s", getType(), getCoordinates().getFormattedCoordinates(), getResources()));
     }
+
+    //Current planet level. Most of the logic of building relates on it.
+    public abstract Integer getLevel();
+
+    public boolean isMain(){
+        return false;
+    }
+
+    public abstract Integer getProduction();
 }

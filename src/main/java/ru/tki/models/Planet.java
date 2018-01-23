@@ -2,6 +2,7 @@ package ru.tki.models;
 
 
 import com.google.gson.Gson;
+import ru.tki.ContextHolder;
 import ru.tki.models.types.PlanetType;
 
 public class Planet extends AbstractPlanet {
@@ -66,5 +67,23 @@ public class Planet extends AbstractPlanet {
     public String toString() {
         Gson gson = new Gson();
         return gson.toJson(this);
+    }
+
+    @Override
+    public Integer getLevel() {
+        return buildings.getSolarPlant();
+    }
+
+    @Override
+    public Integer getProduction() {
+        return OGameLibrary.getMetalProduction(buildings.getMetalMine())
+                + OGameLibrary.getCrystalProduction(buildings.getCrystalMine())
+                + OGameLibrary.getDeuteriumProduction(buildings.getDeuteriumMine());
+    }
+
+    @Override
+    //Planet is "main" in case it has fleet which can cargo more resources than N hours production rate of a planet
+    public boolean isMain() {
+        return fleet.getCapacity() * .95 > getProduction() * ContextHolder.getProductionTime();
     }
 }

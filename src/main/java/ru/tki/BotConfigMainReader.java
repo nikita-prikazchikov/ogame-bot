@@ -31,6 +31,10 @@ public class BotConfigMainReader {
             config.setLogin(prop.getProperty("login"));
             config.setPassword(prop.getProperty("password"));
             config.setUniverse(prop.getProperty("universe"));
+
+            config.setUniverseSpeed(Integer.parseInt(prop.getProperty("universe.speed", "1")));
+            config.setUniverseFleetSpeed(Integer.parseInt(prop.getProperty("universe.fleet.speed", "1")));
+
             config.setHeadless(Boolean.parseBoolean(prop.getProperty("chrome.headless", "false")));
 
             config.setBuildResources(Boolean.parseBoolean(prop.getProperty("empire.build.resources", "true")));
@@ -40,7 +44,7 @@ public class BotConfigMainReader {
             config.setBuildColonies(Boolean.parseBoolean(prop.getProperty("empire.build.colonies", "true")));
             config.setDoResearches(Boolean.parseBoolean(prop.getProperty("empire.do.researches", "true")));
 
-            //Setup reauired local property for chrome driver
+            //Setup required local property for chrome driver
             System.setProperty("webdriver.chrome.driver", prop.getProperty("webdriver.chrome.driver"));
 
 

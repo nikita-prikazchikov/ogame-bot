@@ -37,6 +37,8 @@ public class Empire {
                 ContextHolder.getBotConfigMain().getUniverse().toLowerCase() + File.separator +
                 ContextHolder.getBotConfigMain().getLogin().toLowerCase());
         gson = new GsonBuilder().setPrettyPrinting().create();
+
+        ContextHolder.setProductionTime(Math.max(3, 8 - ContextHolder.getBotConfigMain().getUniverseSpeed()));
     }
 
     public List<AbstractPlanet> getPlanets() {

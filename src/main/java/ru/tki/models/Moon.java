@@ -3,7 +3,7 @@ package ru.tki.models;
 
 import ru.tki.models.types.PlanetType;
 
-public class Moon  extends AbstractPlanet {
+public class Moon extends AbstractPlanet {
 
     public Moon() {
     }
@@ -22,5 +22,15 @@ public class Moon  extends AbstractPlanet {
 
     public PlanetType getType() {
         return PlanetType.MOON;
+    }
+
+    @Override
+    public Integer getLevel() {
+        return 0;
+    }
+
+    @Override
+    public Integer getProduction() {
+        return 0;
     }
 }

@@ -16,6 +16,9 @@ public class BotConfigMain {
     Boolean buildColonies = true;
     Boolean doResearches = true;
 
+    Integer universeSpeed = 1;
+    Integer universeFleetSpeed = 1;
+
     Properties properties;
 
     public Properties getProperties() {
@@ -112,5 +115,21 @@ public class BotConfigMain {
 
     public void setDoResearches(Boolean doResearches) {
         this.doResearches = doResearches;
+    }
+
+    public Integer getUniverseSpeed() {
+        return universeSpeed;
+    }
+
+    public void setUniverseSpeed(Integer universeSpeed) {
+        this.universeSpeed = universeSpeed;
+    }
+
+    public Integer getUniverseFleetSpeed() {
+        return universeFleetSpeed;
+    }
+
+    public void setUniverseFleetSpeed(Integer universeFleetSpeed) {
+        this.universeFleetSpeed = universeFleetSpeed;
     }
 }

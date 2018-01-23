@@ -63,6 +63,10 @@ public class Resources {
         return this;
     }
 
+    public Integer getCapacity(){
+        return metal + crystal + deuterium;
+    }
+
     public Resources multiply(Double value){
         return new Resources(
                 ((Double)(metal * value)).intValue(),

@@ -49,6 +49,22 @@ public class CoordinatesTest {
         assertEquals(c.getSystem(), "2");
         assertEquals(c.getPlanet(), "3");
         assertEquals(c.getFormattedCoordinates(), "1:2:3");
-
     }
+
+    @Test
+    public void testEquals(){
+        Coordinates base = new Coordinates("2:100:5");
+        assertTrue(base.equals(base));
+        assertTrue(base.equals(new Coordinates("2:100:5")));
+        assertFalse(base.equals(new Coordinates("2:101:5")));
+    }
+
+    @Test
+    public void testCloser(){
+        Coordinates base = new Coordinates("2:100:5");
+        assertTrue(new Coordinates("2:81:5").equals(base.closer(new Coordinates("2:80:15"), new Coordinates("2:81:5"))));
+        assertTrue(new Coordinates("1:81:5").equals(base.closer(new Coordinates("4:80:15"), new Coordinates("1:81:5"))));
+        assertTrue(new Coordinates("1:81:5").equals(base.closer(new Coordinates("1:81:15"), new Coordinates("1:81:5"))));
+    }
+
 }

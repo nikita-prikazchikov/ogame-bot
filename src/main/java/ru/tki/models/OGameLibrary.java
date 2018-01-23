@@ -1,5 +1,6 @@
 package ru.tki.models;
 
+import ru.tki.ContextHolder;
 import ru.tki.models.types.*;
 
 import java.util.HashMap;
@@ -39,6 +40,24 @@ public class OGameLibrary {
         put(DefenceType.BIG_SHIELD, new Resources(50000, 50000, 0));
         put(DefenceType.DEFENCE_MISSILE, new Resources(8000, 2000, 0));
         put(DefenceType.MISSILE, new Resources(12500, 2500, 10000));
+    }};
+
+    private static final Map<ShipType, Resources> ships = new HashMap<ShipType, Resources>() {{
+        put(ShipType.LIGHT_FIGHTER, new Resources(3000, 1000, 0));
+        put(ShipType.HEAVY_FIGHTER, new Resources(6000, 4000, 0));
+        put(ShipType.CRUISER, new Resources(20000, 7000, 2000));
+        put(ShipType.BATTLESHIP, new Resources(45000, 15000, 0));
+        put(ShipType.BATTLECRUISER, new Resources(30000, 40000, 15000));
+        put(ShipType.BOMBER, new Resources(50000, 250000, 15000));
+        put(ShipType.DESTROYER, new Resources(60000, 50000, 15000));
+        put(ShipType.DEATHSTAR, new Resources(5000000, 4000000, 1000000));
+
+        put(ShipType.SMALL_CARGO, new Resources(2000, 2000, 0));
+        put(ShipType.LARGE_CARGO, new Resources(6000, 6000, 0));
+        put(ShipType.COLONY_SHIP, new Resources(10000, 20000, 10000));
+        put(ShipType.RECYCLER, new Resources(10000, 6000, 2000));
+        put(ShipType.ESPIONAGE_PROBE, new Resources(0, 1000, 0));
+        put(ShipType.SOLAR_SATELLITE, new Resources(0, 2000, 500));
     }};
 
     private static final Map<ResearchType, Resources> researches = new HashMap<ResearchType, Resources>() {{
@@ -120,6 +139,10 @@ public class OGameLibrary {
 
     public static Resources getDefencePrice(DefenceType type) {
         return defence.get(type);
+    }
+
+    public static Resources getShipPrice(ShipType type) {
+        return ships.get(type);
     }
 
     public static Boolean canBuild(Empire empire, Planet planet, ShipType type) {
@@ -282,5 +305,20 @@ public class OGameLibrary {
                 return planet.getFactories().getMissileSilos() >= 4;
         }
         return false;
+    }
+
+    public static Integer getMetalProduction(Integer level){
+        Double value = 30 * level * Math.pow(1.1, level) * ContextHolder.getBotConfigMain().getUniverseSpeed();
+        return value.intValue();
+    }
+
+    public static Integer getCrystalProduction(Integer level){
+        Double value = 20 * level * Math.pow(1.1, level) * ContextHolder.getBotConfigMain().getUniverseSpeed();
+        return value.intValue();
+    }
+
+    public static Integer getDeuteriumProduction(Integer level){
+        Double value = 10 * level * Math.pow(1.1, level) * (-0.004 * 0 + 1.36) * ContextHolder.getBotConfigMain().getUniverseSpeed();
+        return value.intValue();
     }
 }
