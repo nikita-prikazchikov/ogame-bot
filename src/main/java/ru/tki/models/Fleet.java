@@ -5,6 +5,9 @@ import ru.tki.models.types.ShipType;
 
 public class Fleet {
 
+    private final static Integer SMALL_CARGO_CAPACITY = 5000;
+    private final static Integer LARGE_CARGO_CAPACITY = 25000;
+
     Integer lightFighter,
             heavyFighter,
             cruiser,
@@ -137,8 +140,16 @@ public class Fleet {
         }
     }
 
+    public Fleet add(Fleet fleet){
+        Fleet f = new Fleet();
+        for (ShipType type : ShipType.values()) {
+            f.set(type, this.get(type) + fleet.get(type));
+        }
+        return f;
+    }
+
     public Integer getCapacity(){
-        return smallCargo * 5000 + largeCargo * 25000;
+        return smallCargo * SMALL_CARGO_CAPACITY + largeCargo * LARGE_CARGO_CAPACITY;
     }
 
     public Integer getLightFighter() {
@@ -251,5 +262,29 @@ public class Fleet {
 
     public void setSolarSatellite(Integer solarSatellite) {
         this.solarSatellite = solarSatellite;
+    }
+
+    public Fleet getRequiredFleet(Resources resources) {
+        Fleet fleet = new Fleet();
+        Integer totalResources = resources.getCapacity();
+        if(smallCargo > 0){
+            if(totalResources < smallCargo * SMALL_CARGO_CAPACITY){
+                fleet.setSmallCargo(totalResources / SMALL_CARGO_CAPACITY + 1);
+                totalResources = 0;
+            }
+            else{
+                fleet.setSmallCargo(smallCargo);
+                totalResources -= smallCargo*SMALL_CARGO_CAPACITY;
+            }
+            if (totalResources > 0 && largeCargo > 0){
+                if(totalResources < largeCargo * LARGE_CARGO_CAPACITY){
+                    fleet.setLargeCargo(totalResources / LARGE_CARGO_CAPACITY + 1);
+                }
+                else{
+                    fleet.setLargeCargo(largeCargo);
+                }
+            }
+        }
+        return fleet;
     }
 }

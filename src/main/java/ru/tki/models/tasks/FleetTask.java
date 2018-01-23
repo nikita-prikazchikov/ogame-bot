@@ -10,29 +10,32 @@ import ru.tki.po.FleetPage;
 public class FleetTask extends Task {
 
     protected AbstractPlanet targetPlanet;
+    protected Empire empire;
     protected Fleet          fleet;
     protected Resources      resources;
-    protected MissionType missionType = MissionType.TRANSPORT;
 
+    protected MissionType missionType = MissionType.KEEP;
     protected FleetSpeed fleetSpeed = FleetSpeed.S100;
 
-    public FleetTask(AbstractPlanet planet) {
-        this.planet = planet;
+    public FleetTask(Empire empire, AbstractPlanet planet) {
+        this.empire = empire;
+        setPlanet(planet);
+        empire.addActiveFleet();
     }
 
-    public FleetTask(AbstractPlanet fromPlanet, AbstractPlanet targetPlanet, Fleet fleet) {
-        this(fromPlanet);
+    public FleetTask(Empire empire, AbstractPlanet fromPlanet, AbstractPlanet targetPlanet, Fleet fleet) {
+        this(empire, fromPlanet);
         this.targetPlanet = targetPlanet;
         this.fleet = fleet;
     }
 
-    public  FleetTask(AbstractPlanet fromPlanet, AbstractPlanet targetPlanet, Fleet fleet, MissionType missionType) {
-        this(fromPlanet, targetPlanet, fleet);
+    public  FleetTask(Empire empire, AbstractPlanet fromPlanet, AbstractPlanet targetPlanet, Fleet fleet, MissionType missionType) {
+        this(empire, fromPlanet, targetPlanet, fleet);
         this.missionType = missionType;
     }
 
-    public  FleetTask(AbstractPlanet fromPlanet, AbstractPlanet targetPlanet, Fleet fleet, MissionType missionType, Resources resources) {
-        this(fromPlanet, targetPlanet, fleet, missionType);
+    public  FleetTask(Empire empire, AbstractPlanet fromPlanet, AbstractPlanet targetPlanet, Fleet fleet, MissionType missionType, Resources resources) {
+        this(empire, fromPlanet, targetPlanet, fleet, missionType);
         this.resources = resources;
     }
 
@@ -78,6 +81,7 @@ public class FleetTask extends Task {
 
     @Override
     public FleetAction execute() {
+        super.execute();
         FleetAction action = new FleetAction(this);
 
         BasePage basePage = new BasePage();
@@ -107,6 +111,10 @@ public class FleetTask extends Task {
             fleetPage.setResources(resources);
         }
         fleetPage.clickStart();
+
+        planet.setFleet(fleetPage.getFleet());
+        planet.setResources(basePage.resources.getResources());
+        empire.savePlanet(planet);
 
         return action;
     }

@@ -5,6 +5,7 @@ import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
 import ru.tki.models.Planet;
 import ru.tki.models.actions.Action;
+import ru.tki.models.actions.FleetAction;
 import ru.tki.models.tasks.*;
 import ru.tki.models.types.PlanetType;
 import ru.tki.po.LoginPage;
@@ -102,13 +103,27 @@ public class Mainframe {
 
     private void verifyActions() throws InterruptedException {
         List<Action> actions = new ArrayList<>();
-        empire.getActions().stream().filter(Action::isFinished).forEach(action ->{
+        empire.getActions().stream().filter(action1 -> !(action1 instanceof FleetAction)).filter(Action::isFinished).forEach(action ->{
             action.complete(empire);
             if(action.hasSubtask()){
                 empire.addTask(action.getSubtask());
             }
             actions.add(action);
         });
+        empire.getActions().stream().filter(action1 -> action1 instanceof FleetAction).forEach(action ->{
+
+            if(action.isFinished())
+            {action.complete(empire);
+                actions.add(action);}
+            else if(true){
+                if(action.hasSubtask()){
+                    empire.addTask(action.getSubtask());
+                    //TODO update fleet actions processing
+                }
+            }
+
+        });
+
         actions.forEach(action -> empire.removeAction(action));
         if(!empire.getTasks().isEmpty()){
             execute();
@@ -118,8 +133,16 @@ public class Mainframe {
     private void thinkBuildings() {
         Task task;
         for (AbstractPlanet planet : empire.getPlanets()) {
+            //avoid 2 tasks on 1 planet
+            if (planet.hasTask()){
+                continue;
+            }
             if (planet.getType() == PlanetType.PLANET) {
                 task = taskGenerator.getTask((Planet) planet);
+                if (null != task) {
+                    empire.addTask(task);
+                }
+                task = taskGenerator.getFleetTask((Planet) planet);
                 if (null != task) {
                     empire.addTask(task);
                 }

@@ -11,9 +11,15 @@ public abstract class Task {
     protected AbstractPlanet planet;
     protected Task subtask = null;
 
-    public abstract Action execute();
+    public Action execute() {
+        if (null != planet) {
+            planet.setHasTask(false);
+        }
+        return null;
+    }
 
     public void setPlanet(AbstractPlanet planet) {
+        planet.setHasTask(true);
         this.planet = planet;
     }
 

@@ -19,6 +19,7 @@ public class UpdatePlanetInfoTask extends Task {
 
     @Override
     public Action execute() {
+        super.execute();
         Navigation navigation = new Navigation();
         OverviewPage overviewPage = new OverviewPage();
         BuildingsPage buildingsPage = new BuildingsPage();
@@ -47,6 +48,7 @@ public class UpdatePlanetInfoTask extends Task {
         planet.setFleet(fleetPage.getFleet());
 
         empire.savePlanet(planet);
+        planet.logResources();
         return null;
     }
 

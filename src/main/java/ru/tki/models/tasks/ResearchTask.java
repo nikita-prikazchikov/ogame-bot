@@ -2,12 +2,9 @@ package ru.tki.models.tasks;
 
 import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
-import ru.tki.models.Planet;
 import ru.tki.models.Researches;
-import ru.tki.models.types.FactoryType;
-import ru.tki.models.types.PlanetType;
-import ru.tki.models.types.ResearchType;
 import ru.tki.models.actions.ResearchAction;
+import ru.tki.models.types.ResearchType;
 import ru.tki.po.BasePage;
 import ru.tki.po.ResearchesPage;
 import ru.tki.po.components.BuildDetailComponent;
@@ -20,7 +17,7 @@ public class ResearchTask extends Task {
     public ResearchTask(Empire empire, AbstractPlanet planet, ResearchType type) {
         this.empire = empire;
         empire.setResearchInProgress(true);
-        this.planet = planet;
+        setPlanet(planet);
         this.type = type;
     }
 
@@ -34,6 +31,7 @@ public class ResearchTask extends Task {
 
     @Override
     public ResearchAction execute() {
+        super.execute();
         ResearchAction action = new ResearchAction(planet);
 
         BasePage basePage = new BasePage();

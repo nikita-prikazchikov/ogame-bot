@@ -32,6 +32,7 @@ public class BuildingTask extends Task {
 
     @Override
     public BuildingAction execute() {
+        super.execute();
         BuildingAction action = new BuildingAction(planet);
 
 

@@ -224,6 +224,7 @@ public class BasicTest {
         List<AbstractPlanet> planets = basePage.myWorlds.getPlanets();
 
         FleetTask task = new FleetTask(
+                new Empire(),
                 planets.get(0),
                 new Planet("2:39:6"),
                 new Fleet(ShipType.LIGHT_FIGHTER, 1),

@@ -5,13 +5,16 @@ import com.google.gson.GsonBuilder;
 import org.openqa.selenium.InvalidArgumentException;
 import ru.tki.ContextHolder;
 import ru.tki.models.actions.Action;
+import ru.tki.models.actions.FleetAction;
 import ru.tki.models.tasks.Task;
+import ru.tki.models.types.MissionType;
 import ru.tki.models.types.PlanetType;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 public class Empire {
     private static Logger logger = Logger.getLogger(String.valueOf(Empire.class));
@@ -31,6 +34,10 @@ public class Empire {
 
     private boolean isUnderAttack;
     private boolean researchInProgress = false;
+    private Integer activeFleets       = 0;
+
+    // value of hours to take resources off the planet
+    private Integer productionTimeHours;
 
     public Empire() {
         directory = new File(STORAGE + File.separator +
@@ -38,7 +45,8 @@ public class Empire {
                 ContextHolder.getBotConfigMain().getLogin().toLowerCase());
         gson = new GsonBuilder().setPrettyPrinting().create();
 
-        ContextHolder.setProductionTime(Math.max(3, 8 - ContextHolder.getBotConfigMain().getUniverseSpeed()));
+        // Timeframe for transport resources from colony to main planet
+        productionTimeHours = 4;
     }
 
     public List<AbstractPlanet> getPlanets() {
@@ -73,7 +81,6 @@ public class Empire {
     }
 
     public void removeTask(Task task) {
-//        System.out.println("Remove completed task: " + task);
         tasks.remove(task);
     }
 
@@ -107,6 +114,74 @@ public class Empire {
         this.researchInProgress = researchInProgress;
     }
 
+    public Integer getActiveFleets() {
+        return activeFleets;
+    }
+
+    public void addActiveFleet() {
+        this.activeFleets++;
+    }
+
+    public void removeActiveFleet(){
+        this.activeFleets--;
+    }
+
+    public Integer getMaxFleets(){
+        //Actually +1 has to be here but need to keep at least one slot for save fleet in future
+        return researches.getComputer();
+    }
+
+    public boolean canSendFleet(){
+        return activeFleets < getMaxFleets();
+    }
+
+    public boolean isPlanetMain(AbstractPlanet planet) {
+        return getPlanetTotalFleet(planet).getCapacity() * .95 > getProductionOnPlanetInTimeframe(planet);
+    }
+
+    public AbstractPlanet selectMain() {
+        return planets.stream().max((a, b) -> a.getLevel() - b.getLevel()).get();
+    }
+
+    public AbstractPlanet getClosestMainPlanet(AbstractPlanet planet) {
+        Stream<AbstractPlanet> mainPlanets = planets.stream().filter(this::isPlanetMain);
+        if (mainPlanets.count() > 0) {
+            return mainPlanets.reduce(planet::closer).get();
+        } else {
+            return selectMain();
+        }
+    }
+
+    public Fleet getPlanetTotalFleet(AbstractPlanet planet) {
+        Fleet fleet = planet.getFleet();
+        actions.stream().filter(action -> action instanceof FleetAction).map(action -> (FleetAction) action)
+                .filter(fleetAction -> fleetAction.getTargetPlanet().equals(planet)
+                        && fleetAction.getMissionType() == MissionType.KEEP)
+                .map(FleetAction::getFleet)
+                .reduce(fleet, Fleet::add);
+        actions.stream().filter(action -> action instanceof FleetAction).map(action -> (FleetAction) action)
+                .filter(fleetAction -> fleetAction.getPlanet().equals(planet)
+                        && (fleetAction.getMissionType() == MissionType.TRANSPORT
+                        || fleetAction.getMissionType() == MissionType.ATTACK
+                        || fleetAction.getMissionType() == MissionType.EXPEDITION))
+                .map(FleetAction::getFleet)
+                .reduce(fleet, Fleet::add);
+        return fleet;
+    }
+
+    public Integer getProductionOnPlanet(AbstractPlanet planet) {
+        if (getResearches().getPlasma() > 0) {
+            Double res = planet.getProduction() * 0.01 * getResearches().getPlasma();
+            return res.intValue();
+        } else {
+            return planet.getProduction();
+        }
+    }
+
+    public Integer getProductionOnPlanetInTimeframe(AbstractPlanet planet) {
+        return getProductionOnPlanet(planet) * productionTimeHours;
+    }
+
     public void save() {
         save(directory);
     }
@@ -134,11 +209,11 @@ public class Empire {
         }
     }
 
-    public void savePlanet(AbstractPlanet planet){
+    public void savePlanet(AbstractPlanet planet) {
         savePlanet(new File(directory, PLANETS), planet);
     }
 
-    private void savePlanet(File directory, AbstractPlanet planet){
+    private void savePlanet(File directory, AbstractPlanet planet) {
         File file = new File(directory, planet.getCoordinates().getFileSafeString() + "_" + planet.getType() + ".json");
         String jsonString = gson.toJson(planet);
         writeToFile(file, jsonString);
@@ -203,7 +278,7 @@ public class Empire {
     public boolean loadResearches(File directory) {
         File file = new File(directory, RESEARCHES);
         Researches researches = readFromFile(file, Researches.class);
-        ;
+
         if (null != researches) {
             this.researches = researches;
             return true;
@@ -219,5 +294,13 @@ public class Empire {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public Integer getProductionTimeHours() {
+        return productionTimeHours;
+    }
+
+    public void setProductionTimeHours(Integer productionTimeHours) {
+        this.productionTimeHours = productionTimeHours;
     }
 }

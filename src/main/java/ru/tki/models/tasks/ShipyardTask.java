@@ -21,7 +21,7 @@ public class ShipyardTask extends Task {
     public ShipyardTask(Empire empire, AbstractPlanet planet, ShipType type, Integer amount) {
         this.empire = empire;
         this.amount = amount;
-        this.planet = planet;
+        setPlanet(planet);
         this.type = type;
     }
 
@@ -39,6 +39,7 @@ public class ShipyardTask extends Task {
 
     @Override
     public ShipyardAction execute() {
+        super.execute();
         ShipyardAction action = new ShipyardAction(planet);
 
         BasePage basePage = new BasePage();

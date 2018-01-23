@@ -46,7 +46,9 @@ public class TaskGenerator {
             if (planet.getResources().getEnergy() < 0) {
                 if (OGameLibrary.canBuild(empire, planet, ShipType.SOLAR_SATELLITE)
                         && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.SOLAR_SATELLITE, 1))) {
-                    return new ShipyardTask(empire, planet, ShipType.SOLAR_SATELLITE, 1);
+                    Task task = new ShipyardTask(empire, planet, ShipType.SOLAR_SATELLITE, 1);
+                    task.setSubtask(new UpdatePlanetInfoTask(empire, planet));
+                    return task;
                 }
             }
         }
@@ -71,16 +73,40 @@ public class TaskGenerator {
         return null;
     }
 
+    public Task getFleetTask(Planet planet){
+        Task task = getFleetMoveResourcesTask(planet);
+        if (task != null) return task;
+
+        return null;
+    }
+
     private Task getRequiredCargoTask(Planet planet) {
         Integer currentMax = planet.getLevel();
         Resources resources = planet.getResources();
         if (!planet.getShipyardBusy() && currentMax > 12 && botConfig.getBuildFleet()) {
-            Integer planetProduction = planet.getProduction() * ContextHolder.getProductionTime();
-            if(planet.getFleet().getCapacity() < planetProduction
+            Integer planetProduction = empire.getProductionOnPlanetInTimeframe(planet);
+            Integer buildAmount = Math.max(planetProduction/(5000 * 5 ), 2);
+            if(empire.getPlanetTotalFleet(planet).getCapacity() < planetProduction
                     && OGameLibrary.canBuild(empire, planet, ShipType.SMALL_CARGO)
-                    && resources.isEnoughFor(OGameLibrary.getShipPrice(ShipType.SMALL_CARGO))){
-                return new ShipyardTask(empire, planet, ShipType.SMALL_CARGO, 1);
+                    && resources.isEnoughFor(OGameLibrary.getShipPrice(ShipType.SMALL_CARGO).multiply(buildAmount))){
+                return new ShipyardTask(empire, planet, ShipType.SMALL_CARGO, buildAmount);
             }
+        }
+        return null;
+    }
+
+
+    private Task getFleetMoveResourcesTask(Planet planet){
+        if(empire.isPlanetMain(planet)){
+            return null;
+        }
+        AbstractPlanet main = empire.getClosestMainPlanet(planet);
+        if( !main.equals(planet) && planet.getResources().getCapacity() > empire.getProductionOnPlanetInTimeframe(planet)
+                && empire.canSendFleet()){
+            return new FleetTask(empire, planet, empire.getClosestMainPlanet(planet),
+                    planet.getFleet().getRequiredFleet(planet.getResources()),
+                    MissionType.TRANSPORT,
+                    planet.getResources());
         }
         return null;
     }

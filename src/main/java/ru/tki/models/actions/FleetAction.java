@@ -47,6 +47,22 @@ public class FleetAction extends Action {
         this.fleetSpeed = fleetSpeed;
     }
 
+    public MissionType getMissionType() {
+        return missionType;
+    }
+
+    public void setMissionType(MissionType missionType) {
+        this.missionType = missionType;
+    }
+
+    public Resources getResources() {
+        return resources;
+    }
+
+    public void setResources(Resources resources) {
+        this.resources = resources;
+    }
+
     @Override
     public void complete(Empire empire) {
         planet.setShipyardBusy(false);

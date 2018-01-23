@@ -32,6 +32,7 @@ public class FactoryTask extends Task {
 
     @Override
     public FactoryAction execute() {
+        super.execute();
         FactoryAction action = new FactoryAction(planet, type);
 
         BasePage basePage = new BasePage();

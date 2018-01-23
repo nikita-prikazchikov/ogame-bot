@@ -16,7 +16,7 @@ public class DefenceTask extends Task {
 
     public DefenceTask(AbstractPlanet planet, DefenceType type, Integer amount) {
         this.amount = amount;
-        this.planet = planet;
+        setPlanet(planet);
         this.type = type;
     }
 
@@ -30,6 +30,7 @@ public class DefenceTask extends Task {
 
     @Override
     public DefenceAction execute() {
+        super.execute();
         DefenceAction action = new DefenceAction(planet);
 
         BasePage basePage = new BasePage();
