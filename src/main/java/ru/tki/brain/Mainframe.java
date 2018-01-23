@@ -30,8 +30,8 @@ public class Mainframe {
     Navigation navigation;
     LoginPage  loginPage;
 
-    public Mainframe(Empire empire) {
-        this.empire = empire;
+    public Mainframe() {
+        this.empire = new Empire();
         navigation = new Navigation();
         loginPage = new LoginPage();
         taskGenerator = new TaskGenerator(empire);
@@ -49,17 +49,24 @@ public class Mainframe {
     }
 
     private void runExecution() {
+        int exceptionCount = 0;
         do {
             try {
                 if(!loginPage.isLoggedIn()){
                     navigation.openHomePage();
                     loginPage.login();
                 }
+                if(exceptionCount >= 20){
+                    restartEmpire();
+                    exceptionCount = 0;
+                }
                 execute();
                 verifySchedules();
                 verifyActions();
                 thinkBuildings();
             } catch (Exception ex) {
+                exceptionCount++;
+                System.out.println("Exception count: " + exceptionCount);
                 ex.printStackTrace();
                 try {
                     Thread.sleep(10000);
@@ -69,6 +76,16 @@ public class Mainframe {
             }
         }
         while (true);
+    }
+
+    private void restartEmpire(){
+        System.out.println("");
+        System.out.println("=========================================================================================");
+        System.out.println("                          Restart current empire details                                 ");
+        System.out.println("=========================================================================================");
+        this.empire = new Empire();
+        empire.addTask(new EmpireTask(empire));
+        empire.addTask(new CheckExistingActionsTask(empire));
     }
 
     private void verifySchedules() {

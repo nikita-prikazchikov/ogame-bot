@@ -72,7 +72,7 @@ public abstract class Action {
     }
 
     public String toLog(){
-        return String.format("%s on planet %s will be executed for %s seconds",
-                this.getClass().getCanonicalName(), planet.getCoordinates().getFormattedCoordinates(), duration.getSeconds());
+        return String.format("%s on planet %s execution time: %s seconds",
+                this.getClass().getCanonicalName().replaceAll("\\w+\\.", ""), planet.getCoordinates().getFormattedCoordinates(), duration.getSeconds());
     }
 }

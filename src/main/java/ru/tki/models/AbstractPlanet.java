@@ -98,4 +98,8 @@ public abstract class AbstractPlanet {
     public String toString() {
         return new Gson().toJson(this);
     }
+
+    public void logResources(){
+        System.out.println(String.format("Resources on %s %s %s", getType(), getCoordinates().getFormattedCoordinates(), getResources()));
+    }
 }

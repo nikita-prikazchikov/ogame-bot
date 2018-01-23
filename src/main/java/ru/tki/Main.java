@@ -1,7 +1,6 @@
 package ru.tki;
 
 import ru.tki.brain.Mainframe;
-import ru.tki.models.Empire;
 
 import java.io.IOException;
 
@@ -15,9 +14,7 @@ public class Main {
         DriverManager driverManager = new DriverManager();
         ContextHolder.setDriverManager(driverManager);
 
-        Empire empire = new Empire();
-
-        Mainframe mainframe = new Mainframe(empire);
+        Mainframe mainframe = new Mainframe();
         mainframe.start();
     }
 }

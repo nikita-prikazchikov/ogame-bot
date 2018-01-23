@@ -54,38 +54,42 @@ public class TaskGenerator {
         Task task = getTaskBuilding(planet, resources, buildings, factories, currentMax);
         if (task != null) return task;
 
-        task = getTaskResearches(planet, resources, researches);
+        task = getTaskResearches(planet, resources, researches, currentMax);
         if (task != null) return task;
 
-        task = getTask(planet, resources, defence, currentMax);
-        if (task != null) return task;
+        task = getDefenceTask(planet, resources, defence, currentMax);
+        if (task != null) {
+            task.setSubtask(new UpdatePlanetInfoTask(empire, planet));
+            return task;
+        }
 
         return null;
     }
 
-    private Task getTask(Planet planet, Resources resources, Defence defence, Integer currentMax) {
-        if (!planet.getShipyardBusy()) {
-            if (defence.getRocket() < optimalDefence.get(DefenceType.ROCKET) * currentMax
+    private Task getDefenceTask(Planet planet, Resources resources, Defence defence, Integer currentMax) {
+        if (!planet.getShipyardBusy() && currentMax > 15) {
+            Integer multiplier = currentMax / 5;
+            if (defence.getRocket() < optimalDefence.get(DefenceType.ROCKET) * multiplier
                     && OGameLibrary.canBuild(empire, planet, DefenceType.ROCKET)
                     && resources.isEnoughFor(OGameLibrary.getDefencePrice(DefenceType.ROCKET).multiply(5))) {
                 return new DefenceTask(planet, DefenceType.ROCKET, 5);
             }
-            if (defence.getLightLaser() < optimalDefence.get(DefenceType.LIGHT_LASER) * currentMax
+            if (defence.getLightLaser() < optimalDefence.get(DefenceType.LIGHT_LASER) * multiplier
                     && OGameLibrary.canBuild(empire, planet, DefenceType.LIGHT_LASER)
                     && resources.isEnoughFor(OGameLibrary.getDefencePrice(DefenceType.LIGHT_LASER).multiply(5))) {
                 return new DefenceTask(planet, DefenceType.LIGHT_LASER, 5);
             }
-            if (defence.getHeavyLaser() < optimalDefence.get(DefenceType.HEAVY_LASER) * currentMax
+            if (defence.getHeavyLaser() < optimalDefence.get(DefenceType.HEAVY_LASER) * multiplier
                     && OGameLibrary.canBuild(empire, planet, DefenceType.HEAVY_LASER)
                     && resources.isEnoughFor(OGameLibrary.getDefencePrice(DefenceType.HEAVY_LASER))) {
                 return new DefenceTask(planet, DefenceType.HEAVY_LASER, 1);
             }
-            if (defence.getGauss() < optimalDefence.get(DefenceType.GAUSS) * currentMax
+            if (defence.getGauss() < optimalDefence.get(DefenceType.GAUSS) * multiplier
                     && OGameLibrary.canBuild(empire, planet, DefenceType.GAUSS)
                     && resources.isEnoughFor(OGameLibrary.getDefencePrice(DefenceType.GAUSS))) {
                 return new DefenceTask(planet, DefenceType.GAUSS, 1);
             }
-            if (defence.getPlasma() < optimalDefence.get(DefenceType.PLASMA) * currentMax
+            if (defence.getPlasma() < optimalDefence.get(DefenceType.PLASMA) * multiplier
                     && OGameLibrary.canBuild(empire, planet, DefenceType.PLASMA)
                     && resources.isEnoughFor(OGameLibrary.getDefencePrice(DefenceType.PLASMA))) {
                 return new DefenceTask(planet, DefenceType.PLASMA, 1);
@@ -110,8 +114,8 @@ public class TaskGenerator {
         return null;
     }
 
-    private Task getTaskResearches(Planet planet, Resources resources, Researches researches) {
-        if (!empire.isResearchInProgress()) {
+    private Task getTaskResearches(Planet planet, Resources resources, Researches researches, Integer currentMax) {
+        if (!empire.isResearchInProgress() && currentMax > 12) {
             if (researches.getComputer() <= 20
                     && OGameLibrary.canBuild(empire, planet, ResearchType.COMPUTER)
                     && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.COMPUTER, researches.getComputer()))) {

@@ -22,12 +22,13 @@ public class UpdateResourcesTask extends Task {
         for (AbstractPlanet planet : empire.getPlanets()){
             navigation.selectPlanet(planet);
             planet.setResources(basePage.resources.getResources());
+            planet.logResources();
         }
         return null;
     }
 
     @Override
     public String toString() {
-        return "Update current resources in the empire";
+        return "Check current resources in the empire";
     }
 }

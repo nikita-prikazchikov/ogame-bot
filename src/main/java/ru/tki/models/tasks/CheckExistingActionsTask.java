@@ -28,6 +28,7 @@ public class CheckExistingActionsTask extends Task {
         for (AbstractPlanet planet : empire.getPlanets()) {
             navigation.selectPlanet(planet);
             planet.setResources(basePage.resources.getResources());
+            planet.logResources();
 
             action = overviewPage.getBuildAction(planet);
             addActionWithUpdateSubtask(action);
