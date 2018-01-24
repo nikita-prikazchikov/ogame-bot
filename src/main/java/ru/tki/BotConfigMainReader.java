@@ -34,6 +34,8 @@ public class BotConfigMainReader {
 
             config.setUniverseSpeed(Integer.parseInt(prop.getProperty("universe.speed", "1")));
             config.setUniverseFleetSpeed(Integer.parseInt(prop.getProperty("universe.fleet.speed", "1")));
+            config.setExecutionHours(Integer.parseInt(prop.getProperty("empire.execution.hours", "0")));
+            config.setExecutionMinutes(Integer.parseInt(prop.getProperty("empire.execution.minutes", "0")));
 
             config.setHeadless(Boolean.parseBoolean(prop.getProperty("chrome.headless", "false")));
 

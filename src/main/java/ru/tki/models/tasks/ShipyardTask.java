@@ -4,7 +4,6 @@ import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
 import ru.tki.models.Fleet;
 import ru.tki.models.actions.ShipyardAction;
-import ru.tki.models.types.PlanetType;
 import ru.tki.models.types.ShipType;
 import ru.tki.po.BasePage;
 import ru.tki.po.ShipyardPage;
@@ -12,6 +11,7 @@ import ru.tki.po.components.BuildDetailComponent;
 
 import java.time.Duration;
 
+//Build new ships on the planet
 public class ShipyardTask extends Task {
 
     ShipType type;
@@ -67,7 +67,7 @@ public class ShipyardTask extends Task {
 
     @Override
     public String toString() {
-        if(planet.getType() == PlanetType.PLANET) {
+        if(planet.isPlanet()) {
             return String.format("Build %d %s on planet %s", amount, type, planet.getCoordinates().getFormattedCoordinates());
         }
         else{

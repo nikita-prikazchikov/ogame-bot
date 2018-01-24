@@ -92,6 +92,15 @@ public class Resources {
         );
     }
 
+    public Resources deduct (Resources resources) {
+        return new Resources(
+                Math.max(0, metal - resources.getMetal()),
+                Math.max(0, crystal - resources.getCrystal()),
+                Math.max(0, deuterium - resources.getDeuterium()),
+                Math.max(0, energy - resources.getEnergy())
+        );
+    }
+
     public Boolean isEnoughFor(Resources resources) {
         return metal >= resources.getMetal()
                 && crystal >= resources.getCrystal()

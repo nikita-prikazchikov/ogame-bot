@@ -6,11 +6,11 @@ import ru.tki.models.Empire;
 import ru.tki.models.Planet;
 import ru.tki.models.actions.BuildingAction;
 import ru.tki.models.types.BuildingType;
-import ru.tki.models.types.PlanetType;
 import ru.tki.po.BasePage;
 import ru.tki.po.BuildingsPage;
 import ru.tki.po.components.BuildDetailComponent;
 
+//Build new resource building in the empire
 public class BuildingTask extends Task {
 
     BuildingType type;
@@ -50,7 +50,7 @@ public class BuildingTask extends Task {
 
         planet.setResources(basePage.resources.getResources());
         planet.setBuildInProgress(true);
-        if(planet.getType() == PlanetType.PLANET){
+        if(planet.isPlanet()){
             buildings.set(type, buildings.get(type) + 1);
             ((Planet)planet).setBuildings(buildings);
         }
@@ -61,7 +61,7 @@ public class BuildingTask extends Task {
 
     @Override
     public String toString() {
-        if(planet.getType() == PlanetType.PLANET) {
+        if(planet.isPlanet()) {
             return String.format("Build new %s level %d on planet %s", type, ((Planet)planet).getBuildings().get(type) + 1, planet.getCoordinates().getFormattedCoordinates());
         }
         else{

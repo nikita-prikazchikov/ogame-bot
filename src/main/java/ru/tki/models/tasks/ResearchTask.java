@@ -9,6 +9,7 @@ import ru.tki.po.BasePage;
 import ru.tki.po.ResearchesPage;
 import ru.tki.po.components.BuildDetailComponent;
 
+//Start new research task
 public class ResearchTask extends Task {
 
     ResearchType type;

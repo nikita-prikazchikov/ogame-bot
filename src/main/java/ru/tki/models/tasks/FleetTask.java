@@ -7,15 +7,16 @@ import ru.tki.models.types.MissionType;
 import ru.tki.po.BasePage;
 import ru.tki.po.FleetPage;
 
+//Send new fleet task
 public class FleetTask extends Task {
 
     protected AbstractPlanet targetPlanet;
-    protected Empire empire;
+    protected Empire         empire;
     protected Fleet          fleet;
     protected Resources      resources;
 
     protected MissionType missionType = MissionType.KEEP;
-    protected FleetSpeed fleetSpeed = FleetSpeed.S100;
+    protected FleetSpeed  fleetSpeed  = FleetSpeed.S100;
 
     public FleetTask(Empire empire, AbstractPlanet planet) {
         this.empire = empire;
@@ -29,12 +30,12 @@ public class FleetTask extends Task {
         this.fleet = fleet;
     }
 
-    public  FleetTask(Empire empire, AbstractPlanet fromPlanet, AbstractPlanet targetPlanet, Fleet fleet, MissionType missionType) {
+    public FleetTask(Empire empire, AbstractPlanet fromPlanet, AbstractPlanet targetPlanet, Fleet fleet, MissionType missionType) {
         this(empire, fromPlanet, targetPlanet, fleet);
         this.missionType = missionType;
     }
 
-    public  FleetTask(Empire empire, AbstractPlanet fromPlanet, AbstractPlanet targetPlanet, Fleet fleet, MissionType missionType, Resources resources) {
+    public FleetTask(Empire empire, AbstractPlanet fromPlanet, AbstractPlanet targetPlanet, Fleet fleet, MissionType missionType, Resources resources) {
         this(empire, fromPlanet, targetPlanet, fleet, missionType);
         this.resources = resources;
     }
@@ -107,7 +108,7 @@ public class FleetTask extends Task {
         action.setDuration(fleetPage.getDuration());
         if (missionType == MissionType.ATTACK
                 || missionType == MissionType.TRANSPORT
-                || missionType == MissionType.KEEP){
+                || missionType == MissionType.KEEP) {
             fleetPage.setResources(resources);
         }
         fleetPage.clickStart();

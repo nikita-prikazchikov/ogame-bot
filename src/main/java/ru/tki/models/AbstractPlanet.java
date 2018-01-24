@@ -52,6 +52,10 @@ public abstract class AbstractPlanet {
         return b;
     }
 
+    public boolean isPlanet(){
+        return getType() == PlanetType.PLANET;
+    }
+
     public void setCoordinates(Coordinates coordinates) {
         this.coordinates = coordinates;
     }

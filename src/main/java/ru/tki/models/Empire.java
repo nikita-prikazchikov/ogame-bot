@@ -13,6 +13,7 @@ import ru.tki.models.types.PlanetType;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -76,8 +77,10 @@ public class Empire {
     }
 
     public void addTask(Task task) {
-        System.out.println("Add task: " + task);
-        tasks.add(task);
+        if (null != task) {
+            System.out.println("Add task: " + task);
+            tasks.add(task);
+        }
     }
 
     public void removeTask(Task task) {
@@ -144,9 +147,9 @@ public class Empire {
     }
 
     public AbstractPlanet getClosestMainPlanet(AbstractPlanet planet) {
-        Stream<AbstractPlanet> mainPlanets = planets.stream().filter(this::isPlanetMain);
-        if (mainPlanets.count() > 0) {
-            return mainPlanets.reduce(planet::closer).get();
+        Supplier<Stream<AbstractPlanet>> mainPlanets = () -> planets.stream().filter(this::isPlanetMain);
+        if (mainPlanets.get().count() > 0) {
+            return mainPlanets.get().reduce(planet::closer).get();
         } else {
             return selectMain();
         }

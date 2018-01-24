@@ -19,6 +19,8 @@ public class BotConfigMain {
     Integer universeSpeed = 1;
     Integer universeFleetSpeed = 1;
 
+    Integer executionHours = 0;
+    Integer executionMinutes = 0;
     Properties properties;
 
     public Properties getProperties() {
@@ -131,5 +133,21 @@ public class BotConfigMain {
 
     public void setUniverseFleetSpeed(Integer universeFleetSpeed) {
         this.universeFleetSpeed = universeFleetSpeed;
+    }
+
+    public Integer getExecutionHours() {
+        return executionHours;
+    }
+
+    public void setExecutionHours(Integer executionHours) {
+        this.executionHours = executionHours;
+    }
+
+    public Integer getExecutionMinutes() {
+        return executionMinutes;
+    }
+
+    public void setExecutionMinutes(Integer executionMinutes) {
+        this.executionMinutes = executionMinutes;
     }
 }

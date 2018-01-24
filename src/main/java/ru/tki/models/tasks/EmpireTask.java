@@ -11,6 +11,7 @@ import ru.tki.po.components.ResourcesComponent;
 
 import java.util.List;
 
+// Collect information about the whole empire
 public class EmpireTask extends Task {
 
     Empire empire;
@@ -39,7 +40,7 @@ public class EmpireTask extends Task {
 
         for (AbstractPlanet planet : planets) {
             basePage.myWorlds.selectPlanet(planet);
-            if (planet.getType() == PlanetType.PLANET) {
+            if (planet.isPlanet()) {
                 Planet p = (Planet) planet;
 
                 navigation.openOverview();

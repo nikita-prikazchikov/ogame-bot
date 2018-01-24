@@ -1,5 +1,6 @@
 package ru.tki.brain;
 
+import ru.tki.ContextHolder;
 import ru.tki.executor.Navigation;
 import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
@@ -25,6 +26,7 @@ public class Mainframe {
     private Empire empire;
     private Instant lastAttackCheck = Instant.now();
     private Instant lastUpdateResources = Instant.now();//.minus(Duration.ofMinutes(15));
+    private Instant executionStopTime;//.minus(Duration.ofMinutes(15));
 
     TaskGenerator taskGenerator;
 
@@ -41,6 +43,17 @@ public class Mainframe {
     public void start() {
         System.out.println("Let's the magic start!");
 
+        Duration duration = Duration.ZERO;
+        duration = duration.plusHours(ContextHolder.getBotConfigMain().getExecutionHours());
+        duration = duration.plusMinutes(ContextHolder.getBotConfigMain().getExecutionMinutes());
+        if(duration.isZero()){
+            executionStopTime = null;
+        }
+        else{
+            executionStopTime = Instant.now().plus(duration);
+            System.out.println("Bot will be executed for the: " + duration.getSeconds() + " seconds");
+        }
+
         if (!empire.load()) {
             empire.addTask(new EmpireTask(empire));
             lastUpdateResources = Instant.now();
@@ -49,17 +62,22 @@ public class Mainframe {
         runExecution();
     }
 
+    // Main bot executor. Infinite loop for operations in the system
     private void runExecution() {
         int exceptionCount = 0;
         do {
             try {
-                if(!loginPage.isLoggedIn()){
+                if (!loginPage.isLoggedIn()) {
                     navigation.openHomePage();
                     loginPage.login();
                 }
-                if(exceptionCount >= 20){
+                if (exceptionCount >= 20) {
                     restartEmpire();
                     exceptionCount = 0;
+                }
+                if (null != executionStopTime && executionStopTime.compareTo(Instant.now()) > 0) {
+                    System.out.println("Bot execution time is over. Buy! Till the next time!");
+                    return;
                 }
                 execute();
                 verifySchedules();
@@ -89,6 +107,8 @@ public class Mainframe {
         empire.addTask(new CheckExistingActionsTask(empire));
     }
 
+    // Add tasks that are periodic in the system
+    // Like: check attack or update existing resources
     private void verifySchedules() {
         if(lastAttackCheck.plus(checkAttackDuration).compareTo(Instant.now())<0){
             empire.addTask(new CheckAttackTask(empire));
@@ -111,7 +131,6 @@ public class Mainframe {
             actions.add(action);
         });
         empire.getActions().stream().filter(action1 -> action1 instanceof FleetAction).forEach(action ->{
-
             if(action.isFinished())
             {action.complete(empire);
                 actions.add(action);}
@@ -130,28 +149,31 @@ public class Mainframe {
         }
     }
 
+    //Get new task for build resource building or factory
     private void thinkBuildings() {
-        Task task;
+        //minimize main planets count first
+        empire.addTask(taskGenerator.checkMainPlanetsCount());
+
+        //Find appropriate task on planets thyself
         for (AbstractPlanet planet : empire.getPlanets()) {
             //avoid 2 tasks on 1 planet
-            if (planet.hasTask()){
+            if (planet.hasTask()) {
                 continue;
             }
-            if (planet.getType() == PlanetType.PLANET) {
-                task = taskGenerator.getTask((Planet) planet);
-                if (null != task) {
-                    empire.addTask(task);
-                }
-                task = taskGenerator.getFleetTask((Planet) planet);
-                if (null != task) {
-                    empire.addTask(task);
-                }
+            if (planet.isPlanet()) {
+                empire.addTask(taskGenerator.getTask((Planet) planet));
+                if (planet.hasTask()) continue;
+                empire.addTask(taskGenerator.getFleetTask((Planet) planet));
             } else if (planet.getType() == PlanetType.MOON) {
                 //Do nothing now
             }
         }
+
+        //Find possible task with adding resources by transport them
+
     }
 
+    //Execute existing tasks
     private void execute() throws InterruptedException {
         if (empire.getTasks().isEmpty()) {
             System.out.print('.');

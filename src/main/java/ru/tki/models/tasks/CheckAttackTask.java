@@ -5,6 +5,7 @@ import ru.tki.models.Empire;
 import ru.tki.models.actions.Action;
 import ru.tki.po.BasePage;
 
+//Verify if the empire is currently under attack
 public class CheckAttackTask extends Task {
 
     Empire empire;

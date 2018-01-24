@@ -8,6 +8,8 @@ import ru.tki.models.types.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class TaskGenerator {
 
@@ -80,6 +82,7 @@ public class TaskGenerator {
         return null;
     }
 
+    //Build minimal amount of transports on planet to move resources out on main planet or keep them in case of attack
     private Task getRequiredCargoTask(Planet planet) {
         Integer currentMax = planet.getLevel();
         Resources resources = planet.getResources();
@@ -95,9 +98,9 @@ public class TaskGenerator {
         return null;
     }
 
-
+    //Check if we need to move resources from colony to main planet
     private Task getFleetMoveResourcesTask(Planet planet){
-        if(empire.isPlanetMain(planet)){
+        if(empire.isPlanetMain(planet) || planet.getLevel() <= 15){
             return null;
         }
         AbstractPlanet main = empire.getClosestMainPlanet(planet);
@@ -107,6 +110,22 @@ public class TaskGenerator {
                     planet.getFleet().getRequiredFleet(planet.getResources()),
                     MissionType.TRANSPORT,
                     planet.getResources());
+        }
+        return null;
+    }
+
+    //Minimize main planets count in the empire
+    // Keep them 3 for now
+    public Task checkMainPlanetsCount() {
+        Supplier<Stream<AbstractPlanet>> mainPlanets = () ->
+                empire.getPlanets().stream().filter(planet -> empire.isPlanetMain(planet));
+        if (mainPlanets.get().count() > 3 && empire.canSendFleet()) {
+            AbstractPlanet smallest = mainPlanets.get().min((a, b) -> a.getLevel() - b.getLevel()).get();
+            AbstractPlanet biggest = mainPlanets.get().max((a, b) -> a.getLevel() - b.getLevel()).get();
+            return new FleetTask(empire, smallest, biggest,
+                    smallest.getFleet().deduct(smallest.getFleet().getRequiredFleet(empire.getProductionOnPlanetInTimeframe(smallest))),
+                    MissionType.KEEP,
+                    smallest.getResources());
         }
         return null;
     }

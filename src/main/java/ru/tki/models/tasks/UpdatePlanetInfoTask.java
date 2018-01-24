@@ -8,6 +8,7 @@ import ru.tki.models.actions.Action;
 import ru.tki.po.*;
 import ru.tki.po.components.ResourcesComponent;
 
+//Go to planet and collect information about current levels of buildins, defence, fleet
 public class UpdatePlanetInfoTask extends Task {
 
     Empire empire;

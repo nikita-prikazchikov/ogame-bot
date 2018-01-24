@@ -9,6 +9,7 @@ import ru.tki.po.components.BuildDetailComponent;
 
 import java.time.Duration;
 
+//Build new defence on the planet
 public class DefenceTask extends Task {
 
     DefenceType type;

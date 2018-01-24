@@ -7,6 +7,7 @@ import ru.tki.models.actions.Action;
 import ru.tki.po.BasePage;
 import ru.tki.po.OverviewPage;
 
+//Identify existing actions like buildings, researches and shipyard action
 public class CheckExistingActionsTask extends Task {
 
     Empire empire;

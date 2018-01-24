@@ -148,6 +148,14 @@ public class Fleet {
         return f;
     }
 
+    public Fleet deduct(Fleet fleet){
+        Fleet f = new Fleet();
+        for (ShipType type : ShipType.values()) {
+            f.set(type, Math.max(0, this.get(type) - fleet.get(type)));
+        }
+        return f;
+    }
+
     public Integer getCapacity(){
         return smallCargo * SMALL_CARGO_CAPACITY + largeCargo * LARGE_CARGO_CAPACITY;
     }
@@ -265,20 +273,22 @@ public class Fleet {
     }
 
     public Fleet getRequiredFleet(Resources resources) {
+        return getRequiredFleet(resources.getCapacity());
+    }
+    public Fleet getRequiredFleet(Integer capacity) {
         Fleet fleet = new Fleet();
-        Integer totalResources = resources.getCapacity();
         if(smallCargo > 0){
-            if(totalResources < smallCargo * SMALL_CARGO_CAPACITY){
-                fleet.setSmallCargo(totalResources / SMALL_CARGO_CAPACITY + 1);
-                totalResources = 0;
+            if(capacity < smallCargo * SMALL_CARGO_CAPACITY){
+                fleet.setSmallCargo(capacity / SMALL_CARGO_CAPACITY + 1);
+                capacity = 0;
             }
             else{
                 fleet.setSmallCargo(smallCargo);
-                totalResources -= smallCargo*SMALL_CARGO_CAPACITY;
+                capacity -= smallCargo*SMALL_CARGO_CAPACITY;
             }
-            if (totalResources > 0 && largeCargo > 0){
-                if(totalResources < largeCargo * LARGE_CARGO_CAPACITY){
-                    fleet.setLargeCargo(totalResources / LARGE_CARGO_CAPACITY + 1);
+            if (capacity > 0 && largeCargo > 0){
+                if(capacity < largeCargo * LARGE_CARGO_CAPACITY){
+                    fleet.setLargeCargo(capacity / LARGE_CARGO_CAPACITY + 1);
                 }
                 else{
                     fleet.setLargeCargo(largeCargo);

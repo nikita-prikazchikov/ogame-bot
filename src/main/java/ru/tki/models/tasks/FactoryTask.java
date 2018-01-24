@@ -4,9 +4,8 @@ import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
 import ru.tki.models.Factories;
 import ru.tki.models.Planet;
-import ru.tki.models.types.FactoryType;
 import ru.tki.models.actions.FactoryAction;
-import ru.tki.models.types.PlanetType;
+import ru.tki.models.types.FactoryType;
 import ru.tki.po.BasePage;
 import ru.tki.po.FactoriesPage;
 import ru.tki.po.components.BuildDetailComponent;
@@ -55,7 +54,7 @@ public class FactoryTask extends Task {
         if (type == FactoryType.RESEARCH_LAB) {
             empire.setResearchInProgress(true);
         }
-        if (planet.getType() == PlanetType.PLANET) {
+        if (planet.isPlanet()) {
             factories.set(type, factories.get(type) + 1);
             ((Planet) planet).setFactories(factories);
         }
@@ -66,7 +65,7 @@ public class FactoryTask extends Task {
 
     @Override
     public String toString() {
-        if(planet.getType() == PlanetType.PLANET) {
+        if(planet.isPlanet()) {
             return String.format("Build new %s level %d on planet %s", type, ((Planet)planet).getFactories().get(type) + 1, planet.getCoordinates().getFormattedCoordinates());
         }
         else{
