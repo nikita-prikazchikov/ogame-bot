@@ -75,7 +75,7 @@ public class Mainframe {
                     restartEmpire();
                     exceptionCount = 0;
                 }
-                if (null != executionStopTime && executionStopTime.compareTo(Instant.now()) > 0) {
+                if (null != executionStopTime && executionStopTime.compareTo(Instant.now()) < 0) {
                     System.out.println("Bot execution time is over. Buy! Till the next time!");
                     return;
                 }
