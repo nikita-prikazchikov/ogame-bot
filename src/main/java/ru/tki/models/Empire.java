@@ -12,9 +12,11 @@ import ru.tki.models.types.PlanetType;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Empire {
@@ -52,6 +54,10 @@ public class Empire {
 
     public List<AbstractPlanet> getPlanets() {
         return planets;
+    }
+
+    public List<AbstractPlanet> getMainPlanets() {
+        return planets.stream().filter(this::isPlanetMain).collect(Collectors.toList());
     }
 
     public void setPlanets(List<AbstractPlanet> planets) {
@@ -143,7 +149,7 @@ public class Empire {
     }
 
     public AbstractPlanet selectMain() {
-        return planets.stream().max((a, b) -> a.getLevel() - b.getLevel()).get();
+        return planets.stream().max(Comparator.comparingInt(AbstractPlanet::getLevel)).get();
     }
 
     public AbstractPlanet getClosestMainPlanet(AbstractPlanet planet) {

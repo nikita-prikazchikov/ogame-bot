@@ -156,8 +156,24 @@ public class Fleet {
         return f;
     }
 
+    public Integer getSmallCargoCapacity(){
+        return smallCargo * SMALL_CARGO_CAPACITY;
+    }
+
     public Integer getCapacity(){
         return smallCargo * SMALL_CARGO_CAPACITY + largeCargo * LARGE_CARGO_CAPACITY;
+    }
+
+    public String getDetails(){
+        StringBuilder res = new StringBuilder("Fleet: ");
+        for(ShipType type:  ShipType.values()){
+            int shipsCount = get(type);
+            if (shipsCount > 0 ){
+                res.append(String.format(" %s: %d", type, shipsCount));
+            }
+        }
+        res.append(";");
+        return res.toString();
     }
 
     public Integer getLightFighter() {
@@ -275,6 +291,7 @@ public class Fleet {
     public Fleet getRequiredFleet(Resources resources) {
         return getRequiredFleet(resources.getCapacity());
     }
+
     public Fleet getRequiredFleet(Integer capacity) {
         Fleet fleet = new Fleet();
         if(smallCargo > 0){

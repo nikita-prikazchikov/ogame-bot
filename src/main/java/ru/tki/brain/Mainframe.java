@@ -82,7 +82,7 @@ public class Mainframe {
                 execute();
                 verifySchedules();
                 verifyActions();
-                thinkBuildings();
+                think();
             } catch (Exception ex) {
                 exceptionCount++;
                 System.out.println("Exception count: " + exceptionCount);
@@ -144,13 +144,13 @@ public class Mainframe {
         });
 
         actions.forEach(action -> empire.removeAction(action));
-        if(!empire.getTasks().isEmpty()){
-            execute();
-        }
+//        if(!empire.getTasks().isEmpty()){
+//            execute();
+//        }
     }
 
     //Get new task for build resource building or factory
-    private void thinkBuildings() {
+    private void think() {
         //minimize main planets count first
         empire.addTask(taskGenerator.checkMainPlanetsCount());
 
@@ -161,8 +161,10 @@ public class Mainframe {
                 continue;
             }
             if (planet.isPlanet()) {
+                //build or research something first
                 empire.addTask(taskGenerator.getTask((Planet) planet));
                 if (planet.hasTask()) continue;
+                //Move resources to main planet if possible
                 empire.addTask(taskGenerator.getFleetTask((Planet) planet));
             } else if (planet.getType() == PlanetType.MOON) {
                 //Do nothing now
@@ -170,7 +172,7 @@ public class Mainframe {
         }
 
         //Find possible task with adding resources by transport them
-
+        empire.addTask(taskGenerator.checkTransportForBuild());
     }
 
     //Execute existing tasks
