@@ -2,6 +2,7 @@ package ru.tki.models.tasks;
 
 import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
+import ru.tki.models.OGameLibrary;
 import ru.tki.models.Researches;
 import ru.tki.models.actions.ResearchAction;
 import ru.tki.models.types.ResearchType;
@@ -19,6 +20,7 @@ public class ResearchTask extends Task {
         this.empire = empire;
         empire.setResearchInProgress(true);
         setPlanet(planet);
+        setResources(OGameLibrary.getResearchPrice(type, empire.getResearches().get(type)));
         this.type = type;
     }
 

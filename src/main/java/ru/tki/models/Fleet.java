@@ -172,7 +172,6 @@ public class Fleet {
                 res.append(String.format(" %s: %d", type, shipsCount));
             }
         }
-        res.append(";");
         return res.toString();
     }
 

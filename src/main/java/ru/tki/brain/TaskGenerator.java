@@ -1,6 +1,5 @@
 package ru.tki.brain;
 
-import org.apache.regexp.RE;
 import ru.tki.BotConfigMain;
 import ru.tki.ContextHolder;
 import ru.tki.models.*;
@@ -129,12 +128,27 @@ public class TaskGenerator {
                 }
                 //planets infrastructure is higher than 13
 
-//                task = getTaskBuilding((Planet) planet);
-//                //build or research something first
-//                empire.addTask(getTask((Planet) planet));
-//                if (planet.hasTask()) continue;
-//                //Move resources to main planet if possible
-//                empire.addTask(getFleetTask((Planet) planet));
+                for (AbstractPlanet main : empire.getMainPlanets()) {
+                    if (!planet.equals(main) && !main.hasTask() && empire.canSendFleet()){
+                        //Find build task with extra resources from main planet
+                        task = getTaskBuilding((Planet) planet, main.getResources());
+                        if (null == task){
+                            //Find research task
+                            task = getTaskResearches((Planet) planet, empire.getResearches(), main.getResources());
+                        }
+                        if( null != task ) {
+                            //If we find possible task then create fleet task for resources transport with subtask for execution
+                            Resources requiredResources = task.getResources().deduct(planet.getResources());
+                            //TODO: Add verification of fleet presence
+                            FleetTask task1 = new FleetTask(empire, main, planet,
+                                    main.getFleet().getRequiredFleet(requiredResources),
+                                    MissionType.TRANSPORT,
+                                    requiredResources);
+                            task1.setSubtask(task);
+                            return task1;
+                        }
+                    }
+                }
             } else if (planet.getType() == PlanetType.MOON) {
                 //Do nothing now
             }
@@ -217,7 +231,7 @@ public class TaskGenerator {
         Resources resources = planet.getResources();
         Defence defence = planet.getDefence();
         if (!planet.getShipyardBusy() && currentMax > 15 && botConfig.getBuildDefence()) {
-            Integer multiplier = currentMax / 5;
+            Integer multiplier = currentMax * currentMax / 120 - 1;
             if (defence.getRocket() < optimalDefence.get(DefenceType.ROCKET) * multiplier
                     && OGameLibrary.canBuild(empire, planet, DefenceType.ROCKET)
                     && resources.isEnoughFor(OGameLibrary.getDefencePrice(DefenceType.ROCKET).multiply(5))) {
@@ -264,8 +278,12 @@ public class TaskGenerator {
     }
 
     private Task getTaskResearches(Planet planet, Researches researches) {
+        return this.getTaskResearches(planet, researches, new Resources());
+    }
+
+    private Task getTaskResearches(Planet planet, Researches researches, Resources additionalResources) {
         Integer currentMax = planet.getLevel();
-        Resources resources = planet.getResources();
+        Resources resources = planet.getResources().add(additionalResources);
         if (!empire.isResearchInProgress() && currentMax > 12 && botConfig.getDoResearches()) {
             if (researches.getComputer() <= 20
                     && OGameLibrary.canBuild(empire, planet, ResearchType.COMPUTER)
@@ -350,8 +368,12 @@ public class TaskGenerator {
     }
 
     private Task getTaskBuilding(Planet planet) {
+        return this.getTaskBuilding(planet, new Resources());
+    }
+
+    private Task getTaskBuilding(Planet planet, Resources additionalResources) {
         Integer currentMax = planet.getLevel();
-        Resources resources = planet.getResources();
+        Resources resources = planet.getResources().add(additionalResources);
         Buildings buildings = planet.getBuildings();
         Factories factories = planet.getFactories();
         if (!planet.getBuildInProgress() && botConfig.getBuildFactories()) {

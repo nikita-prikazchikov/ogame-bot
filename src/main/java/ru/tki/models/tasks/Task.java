@@ -1,6 +1,7 @@
 package ru.tki.models.tasks;
 
 import ru.tki.models.AbstractPlanet;
+import ru.tki.models.Resources;
 import ru.tki.models.actions.Action;
 
 import java.time.Instant;
@@ -9,6 +10,7 @@ public abstract class Task {
 
     private   Instant        executionDate;
     protected AbstractPlanet planet;
+    protected Resources resources = new Resources();
     protected Task subtask = null;
 
     public Action execute() {
@@ -25,6 +27,10 @@ public abstract class Task {
 
     public AbstractPlanet getPlanet() {
         return planet;
+    }
+
+    public boolean canExecute() {
+        return (null == executionDate || Instant.now().compareTo(executionDate) < 0);
     }
 
     public Instant getExecutionDate() {
@@ -47,7 +53,11 @@ public abstract class Task {
         this.subtask = subtask;
     }
 
-    public boolean canExecute() {
-        return (null == executionDate || Instant.now().compareTo(executionDate) < 0);
+    public Resources getResources() {
+        return resources;
+    }
+
+    public void setResources(Resources resources) {
+        this.resources = resources;
     }
 }

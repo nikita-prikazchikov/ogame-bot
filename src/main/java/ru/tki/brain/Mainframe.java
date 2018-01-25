@@ -58,6 +58,12 @@ public class Mainframe {
             empire.addTask(new EmpireTask(empire));
             lastUpdateResources = Instant.now();
         }
+        else {
+            for (AbstractPlanet planet : empire.getPlanets()) {
+                //Loaded empire can't has tasks
+                planet.setHasTask(false);
+            }
+        }
         empire.addTask(new CheckExistingActionsTask(empire));
         runExecution();
     }
@@ -123,30 +129,25 @@ public class Mainframe {
 
     private void verifyActions() throws InterruptedException {
         List<Action> actions = new ArrayList<>();
-        empire.getActions().stream().filter(action1 -> !(action1 instanceof FleetAction)).filter(Action::isFinished).forEach(action ->{
+        empire.getActions().stream().filter(action1 -> !(action1 instanceof FleetAction)).filter(Action::isFinished).forEach(action -> {
             action.complete(empire);
-            if(action.hasSubtask()){
+            if (action.hasSubtask()) {
                 empire.addTask(action.getSubtask());
             }
             actions.add(action);
         });
-        empire.getActions().stream().filter(action1 -> action1 instanceof FleetAction).forEach(action ->{
-            if(action.isFinished())
-            {action.complete(empire);
-                actions.add(action);}
-            else if(true){
-                if(action.hasSubtask()){
+        empire.getActions().stream().filter(action1 -> action1 instanceof FleetAction).map(a -> (FleetAction)a).forEach(action -> {
+            if (action.isFinished()) {
+                empire.addTask(new UpdatePlanetInfoTask(empire, action.getPlanet()));
+                actions.add(action);
+            } else if (action.isTargetAchieved()) {
+                if (action.hasSubtask()) {
                     empire.addTask(action.getSubtask());
-                    //TODO update fleet actions processing
                 }
+                empire.addTask(new UpdatePlanetInfoTask(empire, action.getTargetPlanet()));
             }
-
         });
-
         actions.forEach(action -> empire.removeAction(action));
-//        if(!empire.getTasks().isEmpty()){
-//            execute();
-//        }
     }
 
     //Get new task for build resource building or factory

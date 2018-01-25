@@ -112,11 +112,19 @@ public class FleetTask extends Task {
             fleetPage.setResources(resources);
         }
         fleetPage.clickStart();
+        fleetPage.waitPage1();
 
         planet.setFleet(fleetPage.getFleet());
         planet.setResources(basePage.resources.getResources());
         empire.savePlanet(planet);
 
         return action;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Sent fleet %s from planet %s to %s with %s mission and %s",
+                fleet.getDetails(), planet.getCoordinates().getFormattedCoordinates(), targetPlanet.getCoordinates().getFormattedCoordinates(),
+                missionType, resources == null? "empty" : resources);
     }
 }

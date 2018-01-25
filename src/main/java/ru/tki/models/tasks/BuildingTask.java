@@ -1,9 +1,6 @@
 package ru.tki.models.tasks;
 
-import ru.tki.models.AbstractPlanet;
-import ru.tki.models.Buildings;
-import ru.tki.models.Empire;
-import ru.tki.models.Planet;
+import ru.tki.models.*;
 import ru.tki.models.actions.BuildingAction;
 import ru.tki.models.types.BuildingType;
 import ru.tki.po.BasePage;
@@ -20,6 +17,9 @@ public class BuildingTask extends Task {
         this.empire = empire;
         this.planet = planet;
         this.type = type;
+        if(planet.isPlanet()) {
+            setResources(OGameLibrary.getBuildingPrice(type, ((Planet)planet).getBuildings().get(type)));
+        }
     }
 
     public BuildingType getType() {

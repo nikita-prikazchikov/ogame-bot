@@ -16,5 +16,6 @@ public class Main {
 
         Mainframe mainframe = new Mainframe();
         mainframe.start();
+        driverManager.closeDriver();
     }
 }

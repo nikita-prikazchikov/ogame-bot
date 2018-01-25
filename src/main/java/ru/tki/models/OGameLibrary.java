@@ -76,7 +76,6 @@ public class OGameLibrary {
         put(ResearchType.GRAVITY, new Resources(0, 0, 0, 300000));
         put(ResearchType.WEAPON, new Resources(800, 200));
         put(ResearchType.SHIELDS, new Resources(0, 800, 400));
-        put(ResearchType.ENERGY, new Resources(200, 600));
         put(ResearchType.ARMOR, new Resources(1000, 0));
     }};
 

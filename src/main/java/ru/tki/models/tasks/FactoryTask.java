@@ -1,9 +1,6 @@
 package ru.tki.models.tasks;
 
-import ru.tki.models.AbstractPlanet;
-import ru.tki.models.Empire;
-import ru.tki.models.Factories;
-import ru.tki.models.Planet;
+import ru.tki.models.*;
 import ru.tki.models.actions.FactoryAction;
 import ru.tki.models.types.FactoryType;
 import ru.tki.po.BasePage;
@@ -19,6 +16,9 @@ public class FactoryTask extends Task {
         this.empire = empire;
         this.planet = planet;
         this.type = type;
+        if(planet.isPlanet()) {
+            setResources(OGameLibrary.getFactoryPrice(type, ((Planet)planet).getFactories().get(type)));
+        }
     }
 
     public FactoryType getType() {

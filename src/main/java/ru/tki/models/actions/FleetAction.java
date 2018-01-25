@@ -5,6 +5,8 @@ import ru.tki.models.tasks.FleetTask;
 import ru.tki.models.types.FleetSpeed;
 import ru.tki.models.types.MissionType;
 
+import java.time.Instant;
+
 public class FleetAction extends Action {
 
     protected AbstractPlanet targetPlanet;
@@ -21,6 +23,30 @@ public class FleetAction extends Action {
         this.resources = task.getResources();
         this.fleetSpeed = task.getFleetSpeed();
         this.missionType = task.getMissionType();
+    }
+
+    public Boolean isFinished() {
+        switch (missionType) {
+            case COLONIZATION:
+            case HOLD_ON:
+            case KEEP:
+                return Instant.now().compareTo(startDate.plus(duration)) > 0;
+        }
+        return Instant.now().compareTo(startDate.plus(duration.multipliedBy(2))) > 0;
+    }
+
+    public Boolean isTargetAchieved() {
+        switch (missionType){
+            case EXPEDITION:
+            case RECYCLING:
+            case TRANSPORT:
+            case ESPIONAGE:
+            case ATTACK:
+            case JOINT_ATTACK:
+            case DESTROY:
+                return Instant.now().compareTo(startDate.plus(duration)) > 0;
+        }
+        return false;
     }
 
     public AbstractPlanet getTargetPlanet() {
@@ -65,6 +91,5 @@ public class FleetAction extends Action {
 
     @Override
     public void complete(Empire empire) {
-        planet.setShipyardBusy(false);
     }
 }
