@@ -4,8 +4,12 @@ import ru.tki.executor.Navigation;
 import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
 import ru.tki.models.actions.Action;
+import ru.tki.models.actions.FleetAction;
 import ru.tki.po.BasePage;
+import ru.tki.po.FleetDetailsPage;
 import ru.tki.po.OverviewPage;
+
+import java.util.List;
 
 //Identify existing actions like buildings, researches and shipyard action
 public class CheckExistingActionsTask extends Task {
@@ -25,6 +29,11 @@ public class CheckExistingActionsTask extends Task {
 
         Action action = overviewPage.getResearchAction(empire, empire.getPlanets().get(0));
         addActionWithUpdateSubtask(action);
+
+        navigation.openFleetMove();
+        FleetDetailsPage fleetDetailsPage = new FleetDetailsPage();
+        List<FleetAction> actions = fleetDetailsPage.getFleetActions(empire);
+        actions.forEach(a -> empire.addAction(a));
 
         for (AbstractPlanet planet : empire.getPlanets()) {
             navigation.selectPlanet(planet);

@@ -43,8 +43,10 @@ public class DefenceTask extends Task {
 
         BuildDetailComponent buildDetailComponent = new BuildDetailComponent();
         Duration duration = buildDetailComponent.getDuration();
-        action.setDuration(duration.multipliedBy(amount));
-        buildDetailComponent.setAmount(amount);
+        action.addDuration(duration.multipliedBy(amount));
+        if(type != DefenceType.SMALL_SHIELD && type != DefenceType.BIG_SHIELD) {
+            buildDetailComponent.setAmount(amount);
+        }
         buildDetailComponent.build();
 
         planet.setResources(basePage.resources.getResources());

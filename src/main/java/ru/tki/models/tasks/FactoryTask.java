@@ -43,7 +43,7 @@ public class FactoryTask extends Task {
         factoriesPage.select(type);
 
         BuildDetailComponent buildDetailComponent = new BuildDetailComponent();
-        action.setDuration(buildDetailComponent.getDuration());
+        action.addDuration(buildDetailComponent.getDuration());
         buildDetailComponent.build();
 
         planet.setResources(basePage.resources.getResources());

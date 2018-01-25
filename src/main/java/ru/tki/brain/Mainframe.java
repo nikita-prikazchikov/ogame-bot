@@ -138,13 +138,16 @@ public class Mainframe {
         });
         empire.getActions().stream().filter(action1 -> action1 instanceof FleetAction).map(a -> (FleetAction)a).forEach(action -> {
             if (action.isFinished()) {
+                action.complete(empire);
                 empire.addTask(new UpdatePlanetInfoTask(empire, action.getPlanet()));
                 actions.add(action);
             } else if (action.isTargetAchieved()) {
                 if (action.hasSubtask()) {
                     empire.addTask(action.getSubtask());
                 }
-                empire.addTask(new UpdatePlanetInfoTask(empire, action.getTargetPlanet()));
+                if(empire.isMyPlanet(action.getTargetPlanet())) {
+                    empire.addTask(new UpdatePlanetInfoTask(empire, action.getTargetPlanet()));
+                }
             }
         });
         actions.forEach(action -> empire.removeAction(action));
@@ -182,6 +185,8 @@ public class Mainframe {
             System.out.print('.');
             Thread.sleep(10000);
         }
+
+        //TODO: in case 2nd task fail then 1st task will be executed second time
         List<Task> tasksForRemove = new ArrayList<>();
         empire.getTasks().stream().filter(Task::canExecute).forEach(task -> {
             System.out.println("Execute task: " + task.toString());

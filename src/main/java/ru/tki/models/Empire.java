@@ -140,6 +140,20 @@ public class Empire {
         return researches.getComputer();
     }
 
+    public AbstractPlanet findPlanet(Coordinates coordinates){
+        for(AbstractPlanet planet :  planets){
+            if(planet.equals(coordinates)){
+                return planet;
+
+            }
+        }
+        return null;
+    }
+
+    public boolean isMyPlanet(AbstractPlanet planet){
+        return null != findPlanet(planet.getCoordinates());
+    }
+
     public boolean canSendFleet(){
         return activeFleets < getMaxFleets();
     }

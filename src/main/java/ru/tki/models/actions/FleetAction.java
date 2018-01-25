@@ -5,6 +5,7 @@ import ru.tki.models.tasks.FleetTask;
 import ru.tki.models.types.FleetSpeed;
 import ru.tki.models.types.MissionType;
 
+import java.time.Duration;
 import java.time.Instant;
 
 public class FleetAction extends Action {
@@ -13,8 +14,13 @@ public class FleetAction extends Action {
     protected Fleet          fleet;
     protected Resources      resources;
     protected MissionType    missionType;
+    protected Instant        oneSideFleetTime = null;
 
     protected FleetSpeed fleetSpeed = FleetSpeed.S100;
+
+    public FleetAction() {
+
+    }
 
     public FleetAction(FleetTask task) {
         this.planet = task.getPlanet();
@@ -25,28 +31,8 @@ public class FleetAction extends Action {
         this.missionType = task.getMissionType();
     }
 
-    public Boolean isFinished() {
-        switch (missionType) {
-            case COLONIZATION:
-            case HOLD_ON:
-            case KEEP:
-                return Instant.now().compareTo(startDate.plus(duration)) > 0;
-        }
-        return Instant.now().compareTo(startDate.plus(duration.multipliedBy(2))) > 0;
-    }
-
     public Boolean isTargetAchieved() {
-        switch (missionType){
-            case EXPEDITION:
-            case RECYCLING:
-            case TRANSPORT:
-            case ESPIONAGE:
-            case ATTACK:
-            case JOINT_ATTACK:
-            case DESTROY:
-                return Instant.now().compareTo(startDate.plus(duration)) > 0;
-        }
-        return false;
+        return null != oneSideFleetTime && Instant.now().compareTo(oneSideFleetTime) > 0;
     }
 
     public AbstractPlanet getTargetPlanet() {
@@ -89,7 +75,12 @@ public class FleetAction extends Action {
         this.resources = resources;
     }
 
+    public void setDurationOfFlight(Duration duration){
+        this.oneSideFleetTime = Instant.now().plus(duration).plus(Duration.ofSeconds(10));
+    }
+
     @Override
     public void complete(Empire empire) {
+        empire.removeActiveFleet();
     }
 }

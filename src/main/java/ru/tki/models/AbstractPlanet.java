@@ -133,6 +133,10 @@ public abstract class AbstractPlanet {
         return this.coordinates.equals(planet.getCoordinates()) && this.getType().equals(planet.getType());
     }
 
+    public boolean equals(Coordinates coordinates) {
+        return this.coordinates.equals(coordinates);
+    }
+
     public void logResources(){
         System.out.println(String.format("Resources on %s %s %s", getType(), getCoordinates().getFormattedCoordinates(), getResources()));
     }

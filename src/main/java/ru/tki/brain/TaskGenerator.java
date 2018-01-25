@@ -393,7 +393,7 @@ public class TaskGenerator {
                 }
                 if (!empire.isResearchInProgress()
                         && factories.getResearchLab() <= 10
-                        && factories.getResearchLab() < currentMax / 3
+                        && factories.getResearchLab() < currentMax / 2.5
                         && OGameLibrary.canBuild(empire, planet, FactoryType.RESEARCH_LAB)
                         && resources.isEnoughFor(OGameLibrary.getFactoryPrice(FactoryType.RESEARCH_LAB, factories.getResearchLab()))) {
                     return new FactoryTask(empire, planet, FactoryType.RESEARCH_LAB);

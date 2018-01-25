@@ -141,6 +141,9 @@ public class Fleet {
     }
 
     public Fleet add(Fleet fleet){
+        if (null == fleet) {
+            return this;
+        }
         Fleet f = new Fleet();
         for (ShipType type : ShipType.values()) {
             f.set(type, this.get(type) + fleet.get(type));

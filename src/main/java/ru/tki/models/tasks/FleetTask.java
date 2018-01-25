@@ -105,7 +105,7 @@ public class FleetTask extends Task {
 
         //Fleet page 3
         fleetPage.setMission(missionType);
-        action.setDuration(fleetPage.getDuration());
+        action.addDuration(fleetPage.getDuration());
         if (missionType == MissionType.ATTACK
                 || missionType == MissionType.TRANSPORT
                 || missionType == MissionType.KEEP) {

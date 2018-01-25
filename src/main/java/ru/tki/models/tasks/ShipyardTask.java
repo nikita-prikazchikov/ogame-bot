@@ -52,7 +52,7 @@ public class ShipyardTask extends Task {
 
         BuildDetailComponent buildDetailComponent = new BuildDetailComponent();
         Duration duration = buildDetailComponent.getDuration();
-        action.setDuration(duration.multipliedBy(amount));
+        action.addDuration(duration.multipliedBy(amount));
         buildDetailComponent.setAmount(amount);
         buildDetailComponent.build();
 
