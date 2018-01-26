@@ -27,7 +27,7 @@ public class DataParser {
             d = d.plusMinutes(Integer.parseInt(m.group(1)));
         }
 
-        m = Pattern.compile("(/d+)ч").matcher(text);
+        m = Pattern.compile("(\\d+)ч").matcher(text);
         if(m.find()){
             d = d.plusHours(Integer.parseInt(m.group(1)));
         }
