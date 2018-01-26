@@ -156,6 +156,19 @@ public class TaskGenerator {
         return null;
     }
 
+    public Task sendExpedition(){
+        if(empire.getMaxExpeditions() > empire.getActiveExpeditions()
+                && empire.canSendFleet()){
+            for(AbstractPlanet planet: empire.getMainPlanets()){
+                if(!planet.hasTask()
+                        ){
+
+                }
+            }
+        }
+        return null;
+    }
+
     private Task findResourcesOnMain(AbstractPlanet planet, Resources resources, Task subtask){
         for (AbstractPlanet main : empire.getMainPlanets()) {
             if (!planet.equals(main) && !main.hasTask() && main.hasResources(resources) && empire.canSendFleet()){

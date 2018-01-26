@@ -30,6 +30,9 @@ public class FactoriesPage extends PageObject {
     }
 
     public int getBuildingLevel(FactoryType type) {
+        if(isElementExists(getElement(elements.get(type)), By.cssSelector(".eckeoben"))){
+            return Integer.parseInt(getElement(getElement(elements.get(type)), By.cssSelector(".eckeoben")).getText().trim());
+        }
         return Integer.parseInt(
                 getElement(getElement(elements.get(type)), By.cssSelector(".level")).getText().trim());
     }

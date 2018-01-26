@@ -3,6 +3,8 @@ package ru.tki.models;
 
 import ru.tki.models.types.ShipType;
 
+import java.util.Arrays;
+
 public class Fleet {
 
     private final static Integer SMALL_CARGO_CAPACITY = 5000;
@@ -157,6 +159,10 @@ public class Fleet {
             f.set(type, Math.max(0, this.get(type) - fleet.get(type)));
         }
         return f;
+    }
+
+    public boolean isEmpty(){
+        return Arrays.stream(ShipType.values()).anyMatch(shipType -> get(shipType)>0);
     }
 
     public Integer getSmallCargoCapacity(){

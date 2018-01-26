@@ -40,6 +40,7 @@ public class Empire {
     private boolean isUnderAttack;
     private boolean researchInProgress = false;
     private Integer activeFleets       = 0;
+    private Integer activeExpeditions  = 0;
 
     // value of hours to take resources off the planet
     private Integer productionTimeHours;
@@ -96,7 +97,7 @@ public class Empire {
         if (null != task) {
             System.out.println("Add task: " + task);
             tasks.add(task);
-            if(null != task.getSubtask()){
+            if (null != task.getSubtask()) {
                 System.out.println("With subtask: " + task.getSubtask());
             }
             if (doLogState) {
@@ -156,6 +157,34 @@ public class Empire {
         return researches.getComputer();
     }
 
+    public Integer getMaxExpeditions() {
+        int level = researches.getAstrophysics();
+        if (level == 0) {
+            return 0;
+        } else if (level < 4) {
+            return 1;
+        } else if (level < 9) {
+            return 2;
+        }
+        return 3;
+    }
+
+    public Integer getActiveExpeditions() {
+        return activeExpeditions;
+    }
+
+    public void setActiveExpeditions(Integer count) {
+        this.activeExpeditions = count;
+    }
+
+    public void addActiveExpedition() {
+        this.activeExpeditions++;
+    }
+
+    public void removeActiveExpedition() {
+        this.activeExpeditions--;
+    }
+
     public AbstractPlanet findPlanet(Coordinates coordinates) {
         for (AbstractPlanet planet : planets) {
             if (planet.equals(coordinates)) {
@@ -175,6 +204,11 @@ public class Empire {
 
     public boolean isPlanetMain(AbstractPlanet planet) {
         return getPlanetTotalFleet(planet).getCapacity() * .95 > getProductionOnPlanetInTimeframe(planet);
+    }
+
+    public Fleet getFleetForExpedition(){
+        Fleet fleet = new Fleet();
+        return fleet;
     }
 
     public AbstractPlanet selectMain() {
