@@ -142,10 +142,10 @@ public class Mainframe {
                 empire.addTask(new UpdatePlanetInfoTask(empire, action.getPlanet()));
                 actions.add(action);
             } else if (action.isTargetAchieved()) {
+                action.setTargetAchieved();
                 if (action.hasSubtask()) {
                     empire.addTask(action.getSubtask());
                     action.setSubtask(null);
-                    action.setTargetAchieved();
                 }
                 if(empire.isMyPlanet(action.getTargetPlanet())) {
                     empire.addTask(new UpdatePlanetInfoTask(empire, action.getTargetPlanet()));

@@ -246,17 +246,16 @@ public class Empire {
     }
 
     public Fleet getPlanetTotalFleet(AbstractPlanet planet) {
+        Supplier<Stream<FleetAction>> fleetActions = () -> actions.stream().filter(action -> action instanceof FleetAction).map(action -> (FleetAction) action);
         Fleet fleet = planet.getFleet();
-        actions.stream().filter(action -> action instanceof FleetAction).map(action -> (FleetAction) action)
-                .filter(fleetAction -> fleetAction.getTargetPlanet().equals(planet)
-                        && fleetAction.getMissionType() == MissionType.KEEP)
+        fleetActions.get().filter(fleetAction -> fleetAction.getTargetPlanet() != null && fleetAction.getTargetPlanet().equals(planet)
+                && fleetAction.getMissionType() == MissionType.KEEP)
                 .map(FleetAction::getFleet)
                 .reduce(fleet, Fleet::add);
-        actions.stream().filter(action -> action instanceof FleetAction).map(action -> (FleetAction) action)
-                .filter(fleetAction -> fleetAction.getPlanet().equals(planet)
-                        && (fleetAction.getMissionType() == MissionType.TRANSPORT
-                        || fleetAction.getMissionType() == MissionType.ATTACK
-                        || fleetAction.getMissionType() == MissionType.EXPEDITION))
+        fleetActions.get().filter(fleetAction -> fleetAction.getPlanet().equals(planet)
+                && (fleetAction.getMissionType() == MissionType.TRANSPORT
+                || fleetAction.getMissionType() == MissionType.ATTACK
+                || fleetAction.getMissionType() == MissionType.EXPEDITION))
                 .map(FleetAction::getFleet)
                 .reduce(fleet, Fleet::add);
         return fleet;
