@@ -98,6 +98,7 @@ public class FleetTask extends Task {
 
         //Fleet page 3
         fleetPage.setMission(missionType);
+        Duration duration;
         switch (missionType){
             case EXPEDITION:
                 //TODO: calculate duration of expedition
@@ -105,7 +106,9 @@ public class FleetTask extends Task {
             case COLONIZATION:
             case KEEP:
             case HOLD_ON:
-                action.addDuration(fleetPage.getDuration());
+                duration = fleetPage.getDuration();
+                action.setDurationOfFlight(duration);
+                action.addDuration(duration.plusSeconds(30));
                 break;
             case RECYCLING:
             case TRANSPORT:
@@ -113,7 +116,7 @@ public class FleetTask extends Task {
             case ATTACK:
             case JOINT_ATTACK:
             case DESTROY:
-                Duration duration = fleetPage.getDuration();
+                duration = fleetPage.getDuration();
                 action.addDuration(duration.multipliedBy(2));
                 action.setDurationOfFlight(duration);
                 break;
