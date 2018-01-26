@@ -136,6 +136,7 @@ public class FleetPage extends PageObject {
     }
 
     public void setCoordinates(Coordinates coordinates){
+        waitForWebElement(GALAXY);
         setValue(getElement(GALAXY), coordinates.getGalaxy());
         setValue(getElement(SYSTEM), coordinates.getSystem());
         setValue(getElement(POSITION), coordinates.getPlanet());

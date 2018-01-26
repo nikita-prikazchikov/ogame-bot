@@ -100,9 +100,11 @@ public class FleetTask extends Task {
         //Fleet page 3
         fleetPage.setMission(missionType);
         Duration duration;
-        switch (missionType){
+        switch (missionType) {
             case EXPEDITION:
-                //TODO: calculate duration of expedition
+                duration = fleetPage.getDuration();
+                //All expeditions are 1 hour long
+                action.addDuration(duration.multipliedBy(2).plusHours(1));
                 break;
             case COLONIZATION:
             case KEEP:
@@ -133,7 +135,10 @@ public class FleetTask extends Task {
         getPlanet().setFleet(fleetPage.getFleet());
         getPlanet().setResources(basePage.resources.getResources());
         empire.savePlanet(getPlanet());
-
+        //Add expedition only after it was actually sent
+        if (missionType == MissionType.EXPEDITION) {
+            empire.addActiveExpedition();
+        }
         return action;
     }
 

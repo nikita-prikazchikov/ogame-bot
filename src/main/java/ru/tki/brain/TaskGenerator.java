@@ -160,9 +160,11 @@ public class TaskGenerator {
         if(empire.getMaxExpeditions() > empire.getActiveExpeditions()
                 && empire.canSendFleet()){
             for(AbstractPlanet planet: empire.getMainPlanets()){
-                if(!planet.hasTask()
-                        ){
-
+                if(!planet.hasTask()){
+                    Fleet fleet = empire.getFleetForExpedition(planet);
+                    if(!fleet.isEmpty()) {
+                        return new FleetTask(empire, planet, empire.getPlanetForExpedition(planet), fleet, MissionType.EXPEDITION);
+                    }
                 }
             }
         }

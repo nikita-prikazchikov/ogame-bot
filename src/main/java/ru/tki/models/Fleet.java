@@ -162,7 +162,7 @@ public class Fleet {
     }
 
     public boolean isEmpty(){
-        return Arrays.stream(ShipType.values()).anyMatch(shipType -> get(shipType)>0);
+        return !Arrays.stream(ShipType.values()).anyMatch(shipType -> get(shipType)>0);
     }
 
     public Integer getSmallCargoCapacity(){

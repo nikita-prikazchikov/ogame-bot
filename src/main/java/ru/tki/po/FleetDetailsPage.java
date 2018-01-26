@@ -10,23 +10,23 @@ import ru.tki.utils.DataParser;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class FleetDetailsPage extends PageObject {
 
     private static final By CURRENT_FLEETS_COUNT        = By.cssSelector(".fleetStatus .fleetSlots .current");
     private static final By ALL_FLEETS_COUNT            = By.cssSelector(".fleetStatus .fleetSlots .all");
-    private static final By EXPEDITION_FLEETS_COUNT     = By.cssSelector(".fleetStatus .fleetSlots .all");
-    private static final By ALL_EXPEDITION_FLEETS_COUNT = By.cssSelector(".fleetStatus .fleetSlots .all");
+    private static final By EXPEDITION_FLEETS_COUNT     = By.cssSelector(".fleetStatus .expSlots .current");
+    private static final By ALL_EXPEDITION_FLEETS_COUNT = By.cssSelector(".fleetStatus .expSlots .all");
 
     private static final By FLEET_LOCATOR = By.cssSelector(".fleetDetails");
 
     public List<FleetAction> getFleetActions(Empire empire){
         List<FleetAction> fleetActions = new ArrayList<>();
         if (isElementExists(FLEET_LOCATOR)){
-            for(WebElement fleetElement :findElements(FLEET_LOCATOR)) {
-                fleetActions.add(getFleetAction(empire, fleetElement));
-            }
+            fleetActions.addAll(findElements(FLEET_LOCATOR).stream().map(fleetElement ->
+                    getFleetAction(empire, fleetElement)).collect(Collectors.toList()));
         }
         return fleetActions;
     }
@@ -34,6 +34,10 @@ public class FleetDetailsPage extends PageObject {
     private FleetAction getFleetAction(Empire empire, WebElement element){
         FleetAction fleetAction = new FleetAction();
         fleetAction.setMissionType(getMissionType(element));
+        if(fleetAction.getMissionType() == MissionType.EXPEDITION){
+            empire.addActiveExpedition();
+
+        }
         AbstractPlanet planet = empire.findPlanet(getFrom(element));
         if (null != planet) {
             fleetAction.setPlanet(planet);
@@ -122,5 +126,9 @@ public class FleetDetailsPage extends PageObject {
     public void revertFleet(FleetAction action){
         //TODO: add revert fleet actions
         return;
+    }
+
+    public Integer getActiveExpeditions() {
+        return Integer.parseInt(getElement(EXPEDITION_FLEETS_COUNT).getText());
     }
 }

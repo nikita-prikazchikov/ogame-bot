@@ -179,6 +179,7 @@ public class Mainframe {
 
         //Find possible task with adding resources by transport them
         empire.addTask(taskGenerator.checkTransportForBuild());
+        empire.addTask(taskGenerator.sendExpedition());
     }
 
     //Execute existing tasks

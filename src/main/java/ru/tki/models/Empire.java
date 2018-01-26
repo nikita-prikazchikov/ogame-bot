@@ -182,7 +182,9 @@ public class Empire {
     }
 
     public void removeActiveExpedition() {
-        this.activeExpeditions--;
+        if (this.activeExpeditions > 0) {
+            this.activeExpeditions--;
+        }
     }
 
     public AbstractPlanet findPlanet(Coordinates coordinates) {
@@ -206,8 +208,14 @@ public class Empire {
         return getPlanetTotalFleet(planet).getCapacity() * .95 > getProductionOnPlanetInTimeframe(planet);
     }
 
-    public Fleet getFleetForExpedition(){
+    public Fleet getFleetForExpedition(AbstractPlanet planet) {
         Fleet fleet = new Fleet();
+        Fleet existingFleet = planet.getFleet();
+        if (existingFleet.getLargeCargo() > 0) {
+            fleet.setLargeCargo(Math.max(1, existingFleet.getLargeCargo() / 5));
+        } else if (existingFleet.getSmallCargo() > 0) {
+            fleet.setSmallCargo(Math.max(1, existingFleet.getSmallCargo() / 5));
+        }
         return fleet;
     }
 
@@ -222,6 +230,19 @@ public class Empire {
         } else {
             return selectMain();
         }
+    }
+
+    public AbstractPlanet getPlanetForExpedition(AbstractPlanet planet) {
+        Coordinates coordinates = planet.getCoordinates();
+        Long system = Long.parseLong(coordinates.getSystem());
+        Long newSystem;
+        do {
+            newSystem = system + Math.round(Math.random() * 30 - 15);
+        }
+        while (newSystem < 1 || newSystem > 499);
+        Planet planet1 = new Planet();
+        planet1.setCoordinates(new Coordinates(Integer.parseInt(coordinates.getGalaxy()), newSystem.intValue(), 16));
+        return planet1;
     }
 
     public Fleet getPlanetTotalFleet(AbstractPlanet planet) {
@@ -382,4 +403,5 @@ public class Empire {
     public void setProductionTimeHours(Integer productionTimeHours) {
         this.productionTimeHours = productionTimeHours;
     }
+
 }
