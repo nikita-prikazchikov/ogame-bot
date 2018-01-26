@@ -96,6 +96,9 @@ public class Empire {
         if (null != task) {
             System.out.println("Add task: " + task);
             tasks.add(task);
+            if(null != task.getSubtask()){
+                System.out.println("With subtask: " + task.getSubtask());
+            }
             if (doLogState) {
                 System.out.println("Save empire state to : " + saveState());
             }
