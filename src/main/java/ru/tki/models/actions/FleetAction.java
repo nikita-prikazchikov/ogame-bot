@@ -79,6 +79,10 @@ public class FleetAction extends Action {
         this.oneSideFleetTime = Instant.now().plus(duration).plus(Duration.ofSeconds(10));
     }
 
+    public void setTargetAchieved(){
+        this.oneSideFleetTime = null;
+    }
+
     @Override
     public void complete(Empire empire) {
         empire.removeActiveFleet();

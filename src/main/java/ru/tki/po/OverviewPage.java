@@ -25,6 +25,7 @@ public class OverviewPage extends PageObject {
 
 
     public String getPlanetName() {
+        waitForWebElement(PLANET_NAME);
         return getElement(PLANET_NAME).getText();
     }
 
