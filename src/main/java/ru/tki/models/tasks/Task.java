@@ -8,8 +8,9 @@ import java.time.Instant;
 
 public abstract class Task {
 
-    private Instant        executionDate;
-    private AbstractPlanet planet;
+    private   Instant        executionDate;
+    private   AbstractPlanet planet;
+    protected String         name;
 
     protected Resources resources  = new Resources();
     protected Task      subtask    = null;

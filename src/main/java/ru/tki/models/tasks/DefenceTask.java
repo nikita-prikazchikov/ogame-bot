@@ -16,6 +16,7 @@ public class DefenceTask extends Task {
     Integer amount;
 
     public DefenceTask(AbstractPlanet planet, DefenceType type, Integer amount) {
+        name = "Defence task";
         this.amount = amount;
         setPlanet(planet);
         this.type = type;

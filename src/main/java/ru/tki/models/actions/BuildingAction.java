@@ -7,6 +7,7 @@ public class BuildingAction extends Action {
 
     public BuildingAction(AbstractPlanet planet) {
         super(planet);
+        name = "Building";
     }
 
     @Override

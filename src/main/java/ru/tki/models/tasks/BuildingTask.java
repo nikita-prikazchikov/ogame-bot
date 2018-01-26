@@ -14,6 +14,7 @@ public class BuildingTask extends Task {
     transient Empire empire;
 
     public BuildingTask(Empire empire, AbstractPlanet planet, BuildingType type) {
+        name = "Building";
         this.empire = empire;
         this.type = type;
         setPlanet(planet);

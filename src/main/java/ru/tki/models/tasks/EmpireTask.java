@@ -18,6 +18,7 @@ public class EmpireTask extends Task {
 
     public EmpireTask(Empire empire) {
         this.empire = empire;
+        name = "Collect full information about empire";
     }
 
     @Override

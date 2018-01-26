@@ -21,6 +21,7 @@ public class FleetTask extends Task {
 
     public FleetTask(Empire empire, AbstractPlanet planet) {
         this.empire = empire;
+        name = "Fleet task";
         setPlanet(planet);
         empire.addActiveFleet();
     }

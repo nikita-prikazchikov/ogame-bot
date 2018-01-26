@@ -17,6 +17,7 @@ public class ResearchTask extends Task {
     transient Empire empire;
 
     public ResearchTask(Empire empire, AbstractPlanet planet, ResearchType type) {
+        name = "Research task";
         this.empire = empire;
         empire.setResearchInProgress(true);
         setPlanet(planet);

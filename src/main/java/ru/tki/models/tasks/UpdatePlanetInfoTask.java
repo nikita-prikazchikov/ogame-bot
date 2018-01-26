@@ -14,6 +14,7 @@ public class UpdatePlanetInfoTask extends Task {
     transient Empire empire;
 
     public UpdatePlanetInfoTask(Empire empire, AbstractPlanet planet) {
+        name = "Update information about planet: resources, fleets, defence etc";
         setPlanet(planet, false);
         this.empire = empire;
     }

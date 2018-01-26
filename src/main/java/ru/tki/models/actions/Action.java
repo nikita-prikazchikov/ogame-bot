@@ -14,6 +14,7 @@ public abstract class Action {
     protected Duration       duration;
     protected Instant        finishTime;
     protected Task           subtask;
+    protected String         name;
 
     public Action() {
         finishTime = Instant.now();
@@ -59,7 +60,7 @@ public abstract class Action {
         return new Gson().toJson(this);
     }
 
-    public String toLog(){
+    public String toLog() {
         return String.format("%s on planet %s finish time: %s",
                 this.getClass().getCanonicalName().replaceAll("\\w+\\.", ""), planet.getCoordinates().getFormattedCoordinates(), finishTime);
     }

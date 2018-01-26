@@ -13,6 +13,7 @@ public class FactoryTask extends Task {
     transient Empire  empire;
 
     public FactoryTask(Empire empire, AbstractPlanet planet, FactoryType type) {
+        name = "Factory task";
         this.empire = empire;
         this.type = type;
         setPlanet(planet);

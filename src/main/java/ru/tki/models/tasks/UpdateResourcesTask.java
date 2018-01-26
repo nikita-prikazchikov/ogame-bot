@@ -13,6 +13,7 @@ public class UpdateResourcesTask extends Task {
 
     public UpdateResourcesTask(Empire empire) {
         this.empire = empire;
+        name = "Update existing resources on the planets";
     }
 
     @Override

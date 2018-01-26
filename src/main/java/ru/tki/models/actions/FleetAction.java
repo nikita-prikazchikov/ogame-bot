@@ -19,10 +19,11 @@ public class FleetAction extends Action {
     protected FleetSpeed fleetSpeed = FleetSpeed.S100;
 
     public FleetAction() {
-
+        name = "Fleet";
     }
 
     public FleetAction(FleetTask task) {
+        this();
         this.planet = task.getPlanet();
         this.targetPlanet = task.getTargetPlanet();
         this.fleet = task.getFleet();

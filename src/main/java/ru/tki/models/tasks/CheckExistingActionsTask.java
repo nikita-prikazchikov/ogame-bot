@@ -18,6 +18,7 @@ public class CheckExistingActionsTask extends Task {
 
     public CheckExistingActionsTask(Empire empire) {
         this.empire = empire;
+        name = "Check if empire has active tasks and fleet flights";
     }
 
     @Override

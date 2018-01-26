@@ -11,6 +11,7 @@ public class FactoryAction extends Action {
     public FactoryAction(AbstractPlanet planet, FactoryType factoryType) {
         super(planet);
         this.factoryType = factoryType;
+        name = "Factory";
     }
 
     @Override

@@ -19,6 +19,7 @@ public class ShipyardTask extends Task {
     transient Empire empire;
 
     public ShipyardTask(Empire empire, AbstractPlanet planet, ShipType type, Integer amount) {
+        name = "Shipyard task";
         this.empire = empire;
         this.amount = amount;
         setPlanet(planet);
