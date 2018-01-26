@@ -186,16 +186,18 @@ public class Mainframe {
             Thread.sleep(10000);
         }
 
-        //TODO: in case 2nd task fail then 1st task will be executed second time
         List<Task> tasksForRemove = new ArrayList<>();
         empire.getTasks().stream().filter(Task::canExecute).forEach(task -> {
-            System.out.println("Execute task: " + task.toString());
-            Action action = task.execute();
-            if (null != action) {
-                if (task.hasSubtask()){
-                    action.setSubtask(task.getSubtask());
+            if(!task.isExecuted()) {
+                System.out.println("Execute task: " + task.toString());
+                Action action = task.execute();
+                if (null != action) {
+                    if (task.hasSubtask()) {
+                        action.setSubtask(task.getSubtask());
+                    }
+                    empire.addAction(action);
                 }
-                empire.addAction(action);
+                task.setExecuted(true);
             }
             tasksForRemove.add(task);
         });

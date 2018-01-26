@@ -11,6 +11,7 @@ import ru.tki.models.types.MissionType;
 import ru.tki.models.types.PlanetType;
 
 import java.io.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -32,8 +33,9 @@ public class Empire {
     private List<Task>   tasks   = new ArrayList<>();
     private List<Action> actions = new ArrayList<>();
 
-    private File directory;
-    private Gson gson;
+    private           File storageDirectory;
+    private           File stateDirectory;
+    private transient Gson gson;
 
     private boolean isUnderAttack;
     private boolean researchInProgress = false;
@@ -42,14 +44,22 @@ public class Empire {
     // value of hours to take resources off the planet
     private Integer productionTimeHours;
 
+    private Boolean doLogState = false;
+
     public Empire() {
-        directory = new File(STORAGE + File.separator +
+        storageDirectory = new File(STORAGE + File.separator +
                 ContextHolder.getBotConfigMain().getUniverse().toLowerCase() + File.separator +
                 ContextHolder.getBotConfigMain().getLogin().toLowerCase());
+
+        stateDirectory = new File(storageDirectory, "stateLogs");
+        createDirectory(storageDirectory);
+        createDirectory(stateDirectory);
+
         gson = new GsonBuilder().setPrettyPrinting().create();
 
         // Timeframe for transport resources from colony to main planet
         productionTimeHours = 4;
+        doLogState = ContextHolder.getBotConfigMain().getLogState();
     }
 
     public List<AbstractPlanet> getPlanets() {
@@ -86,6 +96,9 @@ public class Empire {
         if (null != task) {
             System.out.println("Add task: " + task);
             tasks.add(task);
+            if (doLogState) {
+                System.out.println("Save empire state to : " + saveState());
+            }
         }
     }
 
@@ -131,30 +144,29 @@ public class Empire {
         this.activeFleets++;
     }
 
-    public void removeActiveFleet(){
+    public void removeActiveFleet() {
         this.activeFleets--;
     }
 
-    public Integer getMaxFleets(){
+    public Integer getMaxFleets() {
         //Actually +1 has to be here but need to keep at least one slot for save fleet in future
         return researches.getComputer();
     }
 
-    public AbstractPlanet findPlanet(Coordinates coordinates){
-        for(AbstractPlanet planet :  planets){
-            if(planet.equals(coordinates)){
+    public AbstractPlanet findPlanet(Coordinates coordinates) {
+        for (AbstractPlanet planet : planets) {
+            if (planet.equals(coordinates)) {
                 return planet;
-
             }
         }
         return null;
     }
 
-    public boolean isMyPlanet(AbstractPlanet planet){
+    public boolean isMyPlanet(AbstractPlanet planet) {
         return null != findPlanet(planet.getCoordinates());
     }
 
-    public boolean canSendFleet(){
+    public boolean canSendFleet() {
         return activeFleets < getMaxFleets();
     }
 
@@ -206,15 +218,10 @@ public class Empire {
     }
 
     public void save() {
-        save(directory);
+        save(storageDirectory);
     }
 
     private void save(File directory) {
-        if (!directory.exists()) {
-            if (!directory.mkdirs()) {
-                throw new InvalidArgumentException("Unable to create directory: " + directory);
-            }
-        }
         savePlanets(directory);
         saveResearches(directory);
     }
@@ -222,18 +229,14 @@ public class Empire {
     private void savePlanets(File directory) {
         File planetsDir = new File(directory, PLANETS);
 
-        if (!planetsDir.exists()) {
-            if (!planetsDir.mkdirs()) {
-                throw new InvalidArgumentException("Unable to create directory: " + planetsDir);
-            }
-        }
+        createDirectory(planetsDir);
         for (AbstractPlanet planet : planets) {
             savePlanet(planetsDir, planet);
         }
     }
 
     public void savePlanet(AbstractPlanet planet) {
-        savePlanet(new File(directory, PLANETS), planet);
+        savePlanet(new File(storageDirectory, PLANETS), planet);
     }
 
     private void savePlanet(File directory, AbstractPlanet planet) {
@@ -243,7 +246,7 @@ public class Empire {
     }
 
     public void saveResearches() {
-        saveResearches(directory);
+        saveResearches(storageDirectory);
     }
 
     private void saveResearches(File directory) {
@@ -263,7 +266,7 @@ public class Empire {
     }
 
     public boolean load() {
-        return load(directory);
+        return load(storageDirectory);
     }
 
     public boolean load(File directory) {
@@ -307,6 +310,22 @@ public class Empire {
             return true;
         }
         return false;
+    }
+
+    private void createDirectory(File directory) {
+        if (!directory.exists()) {
+            if (!directory.mkdirs()) {
+                throw new InvalidArgumentException("Unable to create directory: " + directory);
+            }
+        }
+    }
+
+    private String saveState() {
+        String fileName = "empire_" + Instant.now().toString().replace(":", "-") + ".json";
+        File directory = new File(stateDirectory, fileName);
+        String jsonString = gson.toJson(this);
+        writeToFile(directory, jsonString);
+        return fileName;
     }
 
     private <T> T readFromFile(File file, Class<T> classOfT) {

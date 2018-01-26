@@ -46,6 +46,8 @@ public class BotConfigMainReader {
             config.setBuildColonies(Boolean.parseBoolean(prop.getProperty("empire.build.colonies", "true")));
             config.setDoResearches(Boolean.parseBoolean(prop.getProperty("empire.do.researches", "true")));
 
+            config.setLogState(Boolean.parseBoolean(prop.getProperty("empire.log.state", "false")));
+
             //Setup required local property for chrome driver
             System.setProperty("webdriver.chrome.driver", prop.getProperty("webdriver.chrome.driver"));
 

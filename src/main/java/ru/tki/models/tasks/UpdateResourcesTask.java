@@ -9,7 +9,7 @@ import ru.tki.po.BasePage;
 //Go to each planet and check current resources amount on it
 public class UpdateResourcesTask extends Task {
 
-    Empire empire;
+    transient Empire empire;
 
     public UpdateResourcesTask(Empire empire) {
         this.empire = empire;

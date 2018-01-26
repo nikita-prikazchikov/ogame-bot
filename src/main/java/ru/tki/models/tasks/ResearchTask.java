@@ -14,7 +14,7 @@ import ru.tki.po.components.BuildDetailComponent;
 public class ResearchTask extends Task {
 
     ResearchType type;
-    Empire       empire;
+    transient Empire empire;
 
     public ResearchTask(Empire empire, AbstractPlanet planet, ResearchType type) {
         this.empire = empire;
@@ -35,10 +35,10 @@ public class ResearchTask extends Task {
     @Override
     public ResearchAction execute() {
         super.execute();
-        ResearchAction action = new ResearchAction(planet);
+        ResearchAction action = new ResearchAction(getPlanet());
 
         BasePage basePage = new BasePage();
-        basePage.myWorlds.selectPlanet(planet);
+        basePage.myWorlds.selectPlanet(getPlanet());
         basePage.leftMenu.openResearch();
 
         ResearchesPage researchesPage = new ResearchesPage();
@@ -49,8 +49,8 @@ public class ResearchTask extends Task {
         action.addDuration(buildDetailComponent.getDuration());
         buildDetailComponent.build();
 
-        planet.setResources(basePage.resources.getResources());
-        researches.set(type, researches.get(type) +1 );
+        getPlanet().setResources(basePage.resources.getResources());
+        researches.set(type, researches.get(type) + 1);
         empire.setResearchInProgress(true);
         empire.setResearches(researches);
         empire.saveResearches();
@@ -60,6 +60,6 @@ public class ResearchTask extends Task {
 
     @Override
     public String toString() {
-        return String.format("Research %s technology level %d on planet %s", type, empire.getResearches().get(type) + 1, planet.getCoordinates().getFormattedCoordinates());
+        return String.format("Research %s technology level %d on planet %s", type, empire.getResearches().get(type) + 1, getPlanet().getCoordinates().getFormattedCoordinates());
     }
 }

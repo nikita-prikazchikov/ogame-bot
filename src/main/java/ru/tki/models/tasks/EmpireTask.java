@@ -14,7 +14,7 @@ import java.util.List;
 // Collect information about the whole empire
 public class EmpireTask extends Task {
 
-    Empire empire;
+    transient Empire empire;
 
     public EmpireTask(Empire empire) {
         this.empire = empire;

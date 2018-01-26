@@ -8,20 +8,26 @@ import java.time.Instant;
 
 public abstract class Task {
 
-    private   Instant        executionDate;
-    protected AbstractPlanet planet;
-    protected Resources resources = new Resources();
-    protected Task subtask = null;
+    private Instant        executionDate;
+    private AbstractPlanet planet;
+
+    protected Resources resources  = new Resources();
+    protected Task      subtask    = null;
+    protected Boolean   isExecuted = false;
 
     public Action execute() {
-        if (null != planet) {
-            planet.setHasTask(false);
+        if (null != getPlanet()) {
+            getPlanet().setHasTask(false);
         }
         return null;
     }
 
     public void setPlanet(AbstractPlanet planet) {
-        planet.setHasTask(true);
+        setPlanet(planet, true);
+    }
+
+    public void setPlanet(AbstractPlanet planet, Boolean planetWillBeChanged) {
+        planet.setHasTask(planetWillBeChanged);
         this.planet = planet;
     }
 
@@ -59,5 +65,13 @@ public abstract class Task {
 
     public void setResources(Resources resources) {
         this.resources = resources;
+    }
+
+    public Boolean isExecuted() {
+        return isExecuted;
+    }
+
+    public void setExecuted(Boolean executed) {
+        isExecuted = executed;
     }
 }

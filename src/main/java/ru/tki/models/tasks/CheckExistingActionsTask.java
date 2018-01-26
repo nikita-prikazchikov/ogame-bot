@@ -14,7 +14,7 @@ import java.util.List;
 //Identify existing actions like buildings, researches and shipyard action
 public class CheckExistingActionsTask extends Task {
 
-    Empire empire;
+    transient  Empire empire;
 
     public CheckExistingActionsTask(Empire empire) {
         this.empire = empire;
@@ -34,6 +34,8 @@ public class CheckExistingActionsTask extends Task {
         FleetDetailsPage fleetDetailsPage = new FleetDetailsPage();
         List<FleetAction> actions = fleetDetailsPage.getFleetActions(empire);
         actions.forEach(a -> empire.addAction(a));
+
+        navigation.openOverview();
 
         for (AbstractPlanet planet : empire.getPlanets()) {
             navigation.selectPlanet(planet);

@@ -11,16 +11,17 @@ import ru.tki.po.components.ResourcesComponent;
 //Go to planet and collect information about current levels of buildins, defence, fleet
 public class UpdatePlanetInfoTask extends Task {
 
-    Empire empire;
+    transient Empire empire;
 
     public UpdatePlanetInfoTask(Empire empire, AbstractPlanet planet) {
-        setPlanet(planet);
+        setPlanet(planet, false);
         this.empire = empire;
     }
 
     @Override
     public Action execute() {
-        super.execute();
+        //Do not call parent execute, because this task should not make planet free for new tasks
+        //super.execute();
         Navigation navigation = new Navigation();
         OverviewPage overviewPage = new OverviewPage();
         BuildingsPage buildingsPage = new BuildingsPage();
@@ -29,12 +30,12 @@ public class UpdatePlanetInfoTask extends Task {
         FleetPage fleetPage = new FleetPage();
         ResourcesComponent resourcesComponent = new ResourcesComponent();
 
-        Planet p = (Planet) planet;
-        navigation.selectPlanet(planet);
+        Planet p = (Planet) getPlanet();
+        navigation.selectPlanet(getPlanet());
         navigation.openOverview();
-        planet.setName(overviewPage.getPlanetName());
-        planet.setSize(overviewPage.getPlanetSize());
-        planet.setResources(resourcesComponent.getResources());
+        getPlanet().setName(overviewPage.getPlanetName());
+        getPlanet().setSize(overviewPage.getPlanetSize());
+        getPlanet().setResources(resourcesComponent.getResources());
 
         navigation.openResources();
         p.setBuildings(buildingsPage.getBuildings());
@@ -46,15 +47,15 @@ public class UpdatePlanetInfoTask extends Task {
         p.setDefence(defencePage.getDefence());
 
         navigation.openFleet();
-        planet.setFleet(fleetPage.getFleet());
+        getPlanet().setFleet(fleetPage.getFleet());
 
-        empire.savePlanet(planet);
-        planet.logResources();
+        empire.savePlanet(getPlanet());
+        getPlanet().logResources();
         return null;
     }
 
     @Override
     public String toString() {
-        return String.format("Update planet %s information", planet.getCoordinates().getFormattedCoordinates());
+        return String.format("Update planet %s information", getPlanet().getCoordinates().getFormattedCoordinates());
     }
 }

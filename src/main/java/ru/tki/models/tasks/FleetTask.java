@@ -7,13 +7,14 @@ import ru.tki.models.types.MissionType;
 import ru.tki.po.BasePage;
 import ru.tki.po.FleetPage;
 
+import java.time.Duration;
+
 //Send new fleet task
 public class FleetTask extends Task {
 
-    protected AbstractPlanet targetPlanet;
-    protected Empire         empire;
-    protected Fleet          fleet;
-    protected Resources      resources;
+    protected           AbstractPlanet targetPlanet;
+    protected transient Empire         empire;
+    protected           Fleet          fleet;
 
     protected MissionType missionType = MissionType.KEEP;
     protected FleetSpeed  fleetSpeed  = FleetSpeed.S100;
@@ -56,14 +57,6 @@ public class FleetTask extends Task {
         this.fleet = fleet;
     }
 
-    public Resources getResources() {
-        return resources;
-    }
-
-    public void setResources(Resources resources) {
-        this.resources = resources;
-    }
-
     public FleetSpeed getFleetSpeed() {
         return fleetSpeed;
     }
@@ -86,7 +79,7 @@ public class FleetTask extends Task {
         FleetAction action = new FleetAction(this);
 
         BasePage basePage = new BasePage();
-        basePage.myWorlds.selectPlanet(planet);
+        basePage.myWorlds.selectPlanet(getPlanet());
         basePage.leftMenu.openFleet();
 
         FleetPage fleetPage = new FleetPage();
@@ -105,7 +98,26 @@ public class FleetTask extends Task {
 
         //Fleet page 3
         fleetPage.setMission(missionType);
-        action.addDuration(fleetPage.getDuration());
+        switch (missionType){
+            case EXPEDITION:
+                //TODO: calculate duration of expedition
+                break;
+            case COLONIZATION:
+            case KEEP:
+            case HOLD_ON:
+                action.addDuration(fleetPage.getDuration());
+                break;
+            case RECYCLING:
+            case TRANSPORT:
+            case ESPIONAGE:
+            case ATTACK:
+            case JOINT_ATTACK:
+            case DESTROY:
+                Duration duration = fleetPage.getDuration();
+                action.addDuration(duration.multipliedBy(2));
+                action.setDurationOfFlight(duration);
+                break;
+        }
         if (missionType == MissionType.ATTACK
                 || missionType == MissionType.TRANSPORT
                 || missionType == MissionType.KEEP) {
@@ -114,9 +126,9 @@ public class FleetTask extends Task {
         fleetPage.clickStart();
         fleetPage.waitPage1();
 
-        planet.setFleet(fleetPage.getFleet());
-        planet.setResources(basePage.resources.getResources());
-        empire.savePlanet(planet);
+        getPlanet().setFleet(fleetPage.getFleet());
+        getPlanet().setResources(basePage.resources.getResources());
+        empire.savePlanet(getPlanet());
 
         return action;
     }
@@ -124,7 +136,7 @@ public class FleetTask extends Task {
     @Override
     public String toString() {
         return String.format("Sent fleet %s from planet %s to %s with %s mission and %s",
-                fleet.getDetails(), planet.getCoordinates().getFormattedCoordinates(), targetPlanet.getCoordinates().getFormattedCoordinates(),
-                missionType, resources == null? "empty" : resources);
+                fleet.getDetails(), getPlanet().getCoordinates().getFormattedCoordinates(), targetPlanet.getCoordinates().getFormattedCoordinates(),
+                missionType, resources == null ? "empty" : resources);
     }
 }

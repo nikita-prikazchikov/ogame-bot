@@ -10,12 +10,12 @@ import ru.tki.po.components.BuildDetailComponent;
 public class FactoryTask extends Task {
 
     FactoryType type;
-    Empire  empire;
+    transient Empire  empire;
 
     public FactoryTask(Empire empire, AbstractPlanet planet, FactoryType type) {
         this.empire = empire;
-        this.planet = planet;
         this.type = type;
+        setPlanet(planet);
         if(planet.isPlanet()) {
             setResources(OGameLibrary.getFactoryPrice(type, ((Planet)planet).getFactories().get(type)));
         }
@@ -32,10 +32,10 @@ public class FactoryTask extends Task {
     @Override
     public FactoryAction execute() {
         super.execute();
-        FactoryAction action = new FactoryAction(planet, type);
+        FactoryAction action = new FactoryAction(getPlanet(), type);
 
         BasePage basePage = new BasePage();
-        basePage.myWorlds.selectPlanet(planet);
+        basePage.myWorlds.selectPlanet(getPlanet());
         basePage.leftMenu.openFactory();
 
         FactoriesPage factoriesPage = new FactoriesPage();
@@ -46,27 +46,27 @@ public class FactoryTask extends Task {
         action.addDuration(buildDetailComponent.getDuration());
         buildDetailComponent.build();
 
-        planet.setResources(basePage.resources.getResources());
-        planet.setBuildInProgress(true);
+        getPlanet().setResources(basePage.resources.getResources());
+        getPlanet().setBuildInProgress(true);
         if (type == FactoryType.SHIPYARD) {
-            planet.setShipyardBusy(true);
+            getPlanet().setShipyardBusy(true);
         }
         if (type == FactoryType.RESEARCH_LAB) {
             empire.setResearchInProgress(true);
         }
-        if (planet.isPlanet()) {
+        if (getPlanet().isPlanet()) {
             factories.set(type, factories.get(type) + 1);
-            ((Planet) planet).setFactories(factories);
+            ((Planet) getPlanet()).setFactories(factories);
         }
-        empire.savePlanet(planet);
+        empire.savePlanet(getPlanet());
 
         return action;
     }
 
     @Override
     public String toString() {
-        if(planet.isPlanet()) {
-            return String.format("Build new %s level %d on planet %s", type, ((Planet)planet).getFactories().get(type) + 1, planet.getCoordinates().getFormattedCoordinates());
+        if(getPlanet().isPlanet()) {
+            return String.format("Build new %s level %d on planet %s", type, ((Planet) getPlanet()).getFactories().get(type) + 1, getPlanet().getCoordinates().getFormattedCoordinates());
         }
         else{
             return "Build some factory";

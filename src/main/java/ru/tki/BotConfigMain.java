@@ -21,6 +21,9 @@ public class BotConfigMain {
 
     Integer executionHours = 0;
     Integer executionMinutes = 0;
+
+    Boolean logState = true;
+
     Properties properties;
 
     public Properties getProperties() {
@@ -149,5 +152,13 @@ public class BotConfigMain {
 
     public void setExecutionMinutes(Integer executionMinutes) {
         this.executionMinutes = executionMinutes;
+    }
+
+    public Boolean getLogState() {
+        return logState;
+    }
+
+    public void setLogState(Boolean logState) {
+        this.logState = logState;
     }
 }

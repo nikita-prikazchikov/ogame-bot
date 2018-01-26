@@ -32,10 +32,10 @@ public class DefenceTask extends Task {
     @Override
     public DefenceAction execute() {
         super.execute();
-        DefenceAction action = new DefenceAction(planet);
+        DefenceAction action = new DefenceAction(getPlanet());
 
         BasePage basePage = new BasePage();
-        basePage.myWorlds.selectPlanet(planet);
+        basePage.myWorlds.selectPlanet(getPlanet());
         basePage.leftMenu.openDefense();
 
         DefencePage defencePage = new DefencePage();
@@ -49,14 +49,14 @@ public class DefenceTask extends Task {
         }
         buildDetailComponent.build();
 
-        planet.setResources(basePage.resources.getResources());
-        planet.setShipyardBusy(true);
+        getPlanet().setResources(basePage.resources.getResources());
+        getPlanet().setShipyardBusy(true);
 
         return action;
     }
 
     @Override
     public String toString() {
-        return String.format("Build %d %s on planet %s", amount, type, planet.getCoordinates().getFormattedCoordinates());
+        return String.format("Build %d %s on planet %s", amount, type, getPlanet().getCoordinates().getFormattedCoordinates());
     }
 }

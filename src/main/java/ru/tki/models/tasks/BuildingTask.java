@@ -11,12 +11,12 @@ import ru.tki.po.components.BuildDetailComponent;
 public class BuildingTask extends Task {
 
     BuildingType type;
-    Empire empire;
+    transient Empire empire;
 
     public BuildingTask(Empire empire, AbstractPlanet planet, BuildingType type) {
         this.empire = empire;
-        this.planet = planet;
         this.type = type;
+        setPlanet(planet);
         if(planet.isPlanet()) {
             setResources(OGameLibrary.getBuildingPrice(type, ((Planet)planet).getBuildings().get(type)));
         }
@@ -33,11 +33,11 @@ public class BuildingTask extends Task {
     @Override
     public BuildingAction execute() {
         super.execute();
-        BuildingAction action = new BuildingAction(planet);
+        BuildingAction action = new BuildingAction(getPlanet());
 
 
         BasePage basePage = new BasePage();
-        basePage.myWorlds.selectPlanet(planet);
+        basePage.myWorlds.selectPlanet(getPlanet());
         basePage.leftMenu.openResources();
 
         BuildingsPage buildingsPage = new BuildingsPage();
@@ -48,21 +48,21 @@ public class BuildingTask extends Task {
         action.addDuration(buildDetailComponent.getDuration());
         buildDetailComponent.build();
 
-        planet.setResources(basePage.resources.getResources());
-        planet.setBuildInProgress(true);
-        if(planet.isPlanet()){
+        getPlanet().setResources(basePage.resources.getResources());
+        getPlanet().setBuildInProgress(true);
+        if(getPlanet().isPlanet()){
             buildings.set(type, buildings.get(type) + 1);
-            ((Planet)planet).setBuildings(buildings);
+            ((Planet) getPlanet()).setBuildings(buildings);
         }
-        empire.savePlanet(planet);
+        empire.savePlanet(getPlanet());
 
         return action;
     }
 
     @Override
     public String toString() {
-        if(planet.isPlanet()) {
-            return String.format("Build new %s level %d on planet %s", type, ((Planet)planet).getBuildings().get(type) + 1, planet.getCoordinates().getFormattedCoordinates());
+        if(getPlanet().isPlanet()) {
+            return String.format("Build new %s level %d on planet %s", type, ((Planet) getPlanet()).getBuildings().get(type) + 1, getPlanet().getCoordinates().getFormattedCoordinates());
         }
         else{
             return "Build some building";

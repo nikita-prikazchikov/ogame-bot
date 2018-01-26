@@ -15,8 +15,8 @@ import java.time.Duration;
 public class ShipyardTask extends Task {
 
     ShipType type;
-    Integer amount;
-    Empire empire;
+    Integer  amount;
+    transient Empire empire;
 
     public ShipyardTask(Empire empire, AbstractPlanet planet, ShipType type, Integer amount) {
         this.empire = empire;
@@ -40,10 +40,10 @@ public class ShipyardTask extends Task {
     @Override
     public ShipyardAction execute() {
         super.execute();
-        ShipyardAction action = new ShipyardAction(planet);
+        ShipyardAction action = new ShipyardAction(getPlanet());
 
         BasePage basePage = new BasePage();
-        basePage.myWorlds.selectPlanet(planet);
+        basePage.myWorlds.selectPlanet(getPlanet());
         basePage.leftMenu.openShipyard();
 
         ShipyardPage shipyardPage = new ShipyardPage();
@@ -56,21 +56,20 @@ public class ShipyardTask extends Task {
         buildDetailComponent.setAmount(amount);
         buildDetailComponent.build();
 
-        planet.setResources(basePage.resources.getResources());
-        planet.setShipyardBusy(true);
+        getPlanet().setResources(basePage.resources.getResources());
+        getPlanet().setShipyardBusy(true);
         fleet.set(type, fleet.get(type) + 1);
-        planet.setFleet(fleet);
-        empire.savePlanet(planet);
+        getPlanet().setFleet(fleet);
+        empire.savePlanet(getPlanet());
 
         return action;
     }
 
     @Override
     public String toString() {
-        if(planet.isPlanet()) {
-            return String.format("Build %d %s on planet %s", amount, type, planet.getCoordinates().getFormattedCoordinates());
-        }
-        else{
+        if (getPlanet().isPlanet()) {
+            return String.format("Build %d %s on planet %s", amount, type, getPlanet().getCoordinates().getFormattedCoordinates());
+        } else {
             return "Build some ships";
         }
     }
