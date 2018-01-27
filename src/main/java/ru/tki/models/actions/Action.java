@@ -40,7 +40,7 @@ public abstract class Action {
     }
 
     public void addDuration(Duration duration) {
-        this.finishTime = finishTime.plus(duration).plus(Duration.ofSeconds(15));
+        this.finishTime = finishTime.plus(duration).plus(Duration.ofSeconds(5));
     }
 
     public Task getSubtask() {
