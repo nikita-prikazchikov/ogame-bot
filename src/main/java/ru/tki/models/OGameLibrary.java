@@ -115,7 +115,13 @@ public class OGameLibrary {
 
     public static Resources getResearchPrice(ResearchType type, Integer currentLevel) {
         switch (type) {
-            case ENERGY:
+                case ASTROPHYSICS:
+                return researches.get(type).multiply(Math.pow(1.75, currentLevel));
+            case MIS:
+            case GRAVITY:
+            case WEAPON:
+            case SHIELDS:
+            case ARMOR:
             case LASER:
             case ION:
             case HYPER:
@@ -125,12 +131,7 @@ public class OGameLibrary {
             case HYPER_ENGINE:
             case ESPIONAGE:
             case COMPUTER:
-            case ASTROPHYSICS:
-            case MIS:
-            case GRAVITY:
-            case WEAPON:
-            case SHIELDS:
-            case ARMOR:
+            case ENERGY:
                 return researches.get(type).multiply(Math.pow(2, currentLevel));
         }
         return null;

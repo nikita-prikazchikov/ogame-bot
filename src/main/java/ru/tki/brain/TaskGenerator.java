@@ -300,15 +300,15 @@ public class TaskGenerator {
         Integer currentMax = planet.getLevel();
         Resources resources = planet.getResources().add(additionalResources);
         if (!empire.isResearchInProgress() && currentMax > 12 && botConfig.getDoResearches()) {
-            if (researches.getComputer() <= 20
-                    && OGameLibrary.canBuild(empire, planet, ResearchType.COMPUTER)
-                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.COMPUTER, researches.getComputer()))) {
-                return new ResearchTask(empire, planet, ResearchType.COMPUTER);
-            }
             if (researches.getAstrophysics() <= 20
                     && OGameLibrary.canBuild(empire, planet, ResearchType.ASTROPHYSICS)
                     && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.ASTROPHYSICS, researches.getAstrophysics()))) {
                 return new ResearchTask(empire, planet, ResearchType.ASTROPHYSICS);
+            }
+            if (researches.getComputer() <= 20
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.COMPUTER)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.COMPUTER, researches.getComputer()))) {
+                return new ResearchTask(empire, planet, ResearchType.COMPUTER);
             }
             if (researches.getPlasma() <= 20
                     && OGameLibrary.canBuild(empire, planet, ResearchType.PLASMA)
