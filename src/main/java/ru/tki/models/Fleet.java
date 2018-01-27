@@ -161,6 +161,14 @@ public class Fleet {
         return f;
     }
 
+    public boolean has(Fleet fleet) {
+        boolean has = true;
+        for (ShipType type : ShipType.values()) {
+            has = has & this.get(type) >= fleet.get(type);
+        }
+        return has;
+    }
+
     public boolean isEmpty(){
         return !Arrays.stream(ShipType.values()).anyMatch(shipType -> get(shipType)>0);
     }
@@ -182,6 +190,33 @@ public class Fleet {
             }
         }
         return res.toString();
+    }
+
+    public Fleet getRequiredFleet(Resources resources) {
+        return getRequiredFleet(resources.getCapacity());
+    }
+
+    public Fleet getRequiredFleet(Integer capacity) {
+        Fleet fleet = new Fleet();
+        if(smallCargo > 0){
+            if(capacity < smallCargo * SMALL_CARGO_CAPACITY){
+                fleet.setSmallCargo(capacity / SMALL_CARGO_CAPACITY + 1);
+                capacity = 0;
+            }
+            else{
+                fleet.setSmallCargo(smallCargo);
+                capacity -= smallCargo*SMALL_CARGO_CAPACITY;
+            }
+            if (capacity > 0 && largeCargo > 0){
+                if(capacity < largeCargo * LARGE_CARGO_CAPACITY){
+                    fleet.setLargeCargo(capacity / LARGE_CARGO_CAPACITY + 1);
+                }
+                else{
+                    fleet.setLargeCargo(largeCargo);
+                }
+            }
+        }
+        return fleet;
     }
 
     public Integer getLightFighter() {
@@ -294,32 +329,5 @@ public class Fleet {
 
     public void setSolarSatellite(Integer solarSatellite) {
         this.solarSatellite = solarSatellite;
-    }
-
-    public Fleet getRequiredFleet(Resources resources) {
-        return getRequiredFleet(resources.getCapacity());
-    }
-
-    public Fleet getRequiredFleet(Integer capacity) {
-        Fleet fleet = new Fleet();
-        if(smallCargo > 0){
-            if(capacity < smallCargo * SMALL_CARGO_CAPACITY){
-                fleet.setSmallCargo(capacity / SMALL_CARGO_CAPACITY + 1);
-                capacity = 0;
-            }
-            else{
-                fleet.setSmallCargo(smallCargo);
-                capacity -= smallCargo*SMALL_CARGO_CAPACITY;
-            }
-            if (capacity > 0 && largeCargo > 0){
-                if(capacity < largeCargo * LARGE_CARGO_CAPACITY){
-                    fleet.setLargeCargo(capacity / LARGE_CARGO_CAPACITY + 1);
-                }
-                else{
-                    fleet.setLargeCargo(largeCargo);
-                }
-            }
-        }
-        return fleet;
     }
 }

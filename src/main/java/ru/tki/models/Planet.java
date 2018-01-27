@@ -22,6 +22,10 @@ public class Planet extends AbstractPlanet {
         super(coordinates, name);
     }
 
+    public Planet(Coordinates coordinates){
+        setCoordinates(coordinates);
+    }
+
     public Planet(Coordinates coordinates, String name) {
         super(coordinates, name);
     }

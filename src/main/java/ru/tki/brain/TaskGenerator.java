@@ -106,7 +106,6 @@ public class TaskGenerator {
     // Don't sent single level building until level 13
     public Task checkTransportForBuild() {
         Task task;
-        Resources resources;
         for (AbstractPlanet planet : empire.getPlanets()) {
             //avoid 2 tasks on 1 planet
             if (planet.hasTask()) {
@@ -139,19 +138,18 @@ public class TaskGenerator {
                         if( null != task ) {
                             //If we find possible task then create fleet task for resources transport with subtask for execution
                             Resources requiredResources = task.getResources().deduct(planet.getResources());
+                            Fleet fleet = main.getFleet().getRequiredFleet(requiredResources);
                             //TODO: Add verification of fleet presence
-                            FleetTask task1 = new FleetTask(empire, main, planet,
-                                    main.getFleet().getRequiredFleet(requiredResources),
-                                    MissionType.TRANSPORT,
-                                    requiredResources);
+                            FleetTask task1 = new FleetTask(empire, main, planet, fleet, MissionType.TRANSPORT, requiredResources);
                             task1.setSubtask(task);
                             return task1;
                         }
                     }
                 }
-            } else if (planet.getType() == PlanetType.MOON) {
-                //Do nothing now
             }
+//            else if (planet.getType() == PlanetType.MOON) {
+//                //Do nothing now
+//            }
         }
         return null;
     }

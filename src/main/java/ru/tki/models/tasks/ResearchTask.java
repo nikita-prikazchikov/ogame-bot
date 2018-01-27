@@ -51,10 +51,8 @@ public class ResearchTask extends Task {
         buildDetailComponent.build();
 
         getPlanet().setResources(basePage.resources.getResources());
-        researches.set(type, researches.get(type) + 1);
         empire.setResearchInProgress(true);
-        empire.setResearches(researches);
-        empire.saveResearches();
+        action.setSubtask(new UpdateCurrentResearchesTask(empire));
 
         return action;
     }

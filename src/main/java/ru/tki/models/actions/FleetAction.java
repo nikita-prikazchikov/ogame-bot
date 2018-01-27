@@ -1,7 +1,7 @@
 package ru.tki.models.actions;
 
 import ru.tki.models.*;
-import ru.tki.models.tasks.CheckExpeditionsCountTask;
+import ru.tki.models.tasks.CheckFleetsCountTask;
 import ru.tki.models.tasks.FleetTask;
 import ru.tki.models.types.FleetSpeed;
 import ru.tki.models.types.MissionType;
@@ -90,7 +90,7 @@ public class FleetAction extends Action {
         empire.removeActiveFleet();
         if(missionType == MissionType.EXPEDITION){
             empire.removeActiveExpedition();
-            empire.addTask(new CheckExpeditionsCountTask(empire));
+            empire.addTask(new CheckFleetsCountTask(empire));
         }
     }
 }

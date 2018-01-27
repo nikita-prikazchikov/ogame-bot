@@ -29,12 +29,15 @@ public class CheckExistingActionsTask extends Task {
         OverviewPage overviewPage = new OverviewPage();
 
         Action action = overviewPage.getResearchAction(empire, empire.getPlanets().get(0));
-        addActionWithUpdateSubtask(action);
+        addActionWithUpdateSubtask(action, new UpdateCurrentResearchesTask(empire));
 
         navigation.openFleetMove();
         FleetDetailsPage fleetDetailsPage = new FleetDetailsPage();
         List<FleetAction> actions = fleetDetailsPage.getFleetActions(empire);
-        actions.forEach(a -> empire.addAction(a));
+        actions.forEach(a -> {
+            empire.addAction(a);
+            empire.addActiveFleet();
+        });
 
         navigation.openOverview();
 
@@ -44,18 +47,16 @@ public class CheckExistingActionsTask extends Task {
             planet.logResources();
 
             action = overviewPage.getBuildAction(planet);
-            addActionWithUpdateSubtask(action);
+            addActionWithUpdateSubtask(action, new UpdatePlanetInfoTask(empire, planet));
 
             action = overviewPage.getShipyardAction(planet);
-            addActionWithUpdateSubtask(action);
+            addActionWithUpdateSubtask(action, new UpdatePlanetInfoTask(empire, planet));
         }
         return null;
     }
 
-    private void addActionWithUpdateSubtask(Action action) {
-        Task task;
+    private void addActionWithUpdateSubtask(Action action, Task task) {
         if (null != action) {
-            task = new UpdatePlanetInfoTask(empire, action.getPlanet());
             action.setSubtask(task);
             empire.addAction(action);
         }

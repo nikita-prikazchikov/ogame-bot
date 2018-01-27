@@ -23,6 +23,13 @@ public abstract class Task {
         return null;
     }
 
+    //Delete task and all it blocking requirements
+    public void remove(){
+        if (null != getPlanet()) {
+            getPlanet().setHasTask(false);
+        }
+    }
+
     public void setPlanet(AbstractPlanet planet) {
         setPlanet(planet, true);
     }

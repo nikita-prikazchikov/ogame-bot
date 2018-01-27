@@ -144,12 +144,18 @@ public class Empire {
         return activeFleets;
     }
 
+    public void setActiveFleets(Integer count){
+        this.activeFleets = count;
+    }
+
     public void addActiveFleet() {
         this.activeFleets++;
     }
 
     public void removeActiveFleet() {
-        this.activeFleets--;
+        if (this.activeFleets > 0) {
+            this.activeFleets--;
+        }
     }
 
     public Integer getMaxFleets() {
@@ -234,6 +240,13 @@ public class Empire {
 
     public AbstractPlanet getPlanetForExpedition(AbstractPlanet planet) {
         Coordinates coordinates = planet.getCoordinates();
+        if(getMaxExpeditions() == 1 || getActiveExpeditions() == 0 || Math.random() > 0.4) {
+            return new Planet(new Coordinates(
+                    Integer.parseInt(coordinates.getGalaxy()),
+                    Integer.parseInt(coordinates.getSystem()),
+                    16
+            ));
+        }
         Long system = Long.parseLong(coordinates.getSystem());
         Long newSystem;
         do {

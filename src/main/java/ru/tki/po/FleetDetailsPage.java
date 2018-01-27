@@ -131,4 +131,8 @@ public class FleetDetailsPage extends PageObject {
     public Integer getActiveExpeditions() {
         return Integer.parseInt(getElement(EXPEDITION_FLEETS_COUNT).getText());
     }
+
+    public Integer getActiveFleets() {
+        return Integer.parseInt(getElement(CURRENT_FLEETS_COUNT).getText());
+    }
 }
