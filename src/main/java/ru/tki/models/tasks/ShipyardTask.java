@@ -4,7 +4,6 @@ import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
 import ru.tki.models.Fleet;
 import ru.tki.models.actions.ShipyardAction;
-import ru.tki.models.types.PlanetType;
 import ru.tki.models.types.ShipType;
 import ru.tki.po.BasePage;
 import ru.tki.po.ShipyardPage;
@@ -12,16 +11,18 @@ import ru.tki.po.components.BuildDetailComponent;
 
 import java.time.Duration;
 
+//Build new ships on the planet
 public class ShipyardTask extends Task {
 
     ShipType type;
-    Integer amount;
-    Empire empire;
+    Integer  amount;
+    transient Empire empire;
 
     public ShipyardTask(Empire empire, AbstractPlanet planet, ShipType type, Integer amount) {
+        name = "Shipyard task";
         this.empire = empire;
         this.amount = amount;
-        this.planet = planet;
+        setPlanet(planet);
         this.type = type;
     }
 
@@ -39,10 +40,11 @@ public class ShipyardTask extends Task {
 
     @Override
     public ShipyardAction execute() {
-        ShipyardAction action = new ShipyardAction(planet);
+        super.execute();
+        ShipyardAction action = new ShipyardAction(getPlanet());
 
         BasePage basePage = new BasePage();
-        basePage.myWorlds.selectPlanet(planet);
+        basePage.myWorlds.selectPlanet(getPlanet());
         basePage.leftMenu.openShipyard();
 
         ShipyardPage shipyardPage = new ShipyardPage();
@@ -51,25 +53,24 @@ public class ShipyardTask extends Task {
 
         BuildDetailComponent buildDetailComponent = new BuildDetailComponent();
         Duration duration = buildDetailComponent.getDuration();
-        action.setDuration(duration.multipliedBy(amount));
+        action.addDuration(duration.multipliedBy(amount));
         buildDetailComponent.setAmount(amount);
         buildDetailComponent.build();
 
-        planet.setResources(basePage.resources.getResources());
-        planet.setShipyardBusy(true);
+        getPlanet().setResources(basePage.resources.getResources());
+        getPlanet().setShipyardBusy(true);
         fleet.set(type, fleet.get(type) + 1);
-        planet.setFleet(fleet);
-        empire.savePlanet(planet);
+        getPlanet().setFleet(fleet);
+        empire.savePlanet(getPlanet());
 
         return action;
     }
 
     @Override
     public String toString() {
-        if(planet.getType() == PlanetType.PLANET) {
-            return String.format("Build %d %s on planet %s", amount, type, planet.getCoordinates().getFormattedCoordinates());
-        }
-        else{
+        if (getPlanet().isPlanet()) {
+            return String.format("Build %d %s on planet %s", amount, type, getPlanet().getCoordinates().getFormattedCoordinates());
+        } else {
             return "Build some ships";
         }
     }

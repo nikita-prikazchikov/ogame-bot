@@ -63,6 +63,10 @@ public class Resources {
         return this;
     }
 
+    public Integer getCapacity(){
+        return metal + crystal + deuterium;
+    }
+
     public Resources multiply(Double value){
         return new Resources(
                 ((Double)(metal * value)).intValue(),
@@ -85,6 +89,15 @@ public class Resources {
                 crystal + resources.getCrystal(),
                 deuterium + resources.getDeuterium(),
                 energy + resources.getEnergy()
+        );
+    }
+
+    public Resources deduct (Resources resources) {
+        return new Resources(
+                Math.max(0, metal - resources.getMetal()),
+                Math.max(0, crystal - resources.getCrystal()),
+                Math.max(0, deuterium - resources.getDeuterium()),
+                Math.max(0, energy - resources.getEnergy())
         );
     }
 

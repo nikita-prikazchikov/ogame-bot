@@ -22,6 +22,10 @@ public class Planet extends AbstractPlanet {
         super(coordinates, name);
     }
 
+    public Planet(Coordinates coordinates){
+        setCoordinates(coordinates);
+    }
+
     public Planet(Coordinates coordinates, String name) {
         super(coordinates, name);
     }
@@ -66,5 +70,17 @@ public class Planet extends AbstractPlanet {
     public String toString() {
         Gson gson = new Gson();
         return gson.toJson(this);
+    }
+
+    @Override
+    public Integer getLevel() {
+        return buildings.getSolarPlant();
+    }
+
+    @Override
+    public Integer getProduction() {
+        return OGameLibrary.getMetalProduction(buildings.getMetalMine())
+                + OGameLibrary.getCrystalProduction(buildings.getCrystalMine())
+                + OGameLibrary.getDeuteriumProduction(buildings.getDeuteriumMine());
     }
 }

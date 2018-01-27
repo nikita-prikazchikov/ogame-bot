@@ -12,11 +12,12 @@ public abstract class Action {
 
     protected AbstractPlanet planet;
     protected Duration       duration;
-    protected Instant        startDate;
+    protected Instant        finishTime;
     protected Task           subtask;
+    protected String         name;
 
     public Action() {
-        startDate = Instant.now();
+        finishTime = Instant.now();
     }
 
     public Action(AbstractPlanet planet) {
@@ -27,11 +28,7 @@ public abstract class Action {
     abstract public void complete(Empire empire);
 
     public Boolean isFinished() {
-        if (null != duration) {
-            return Instant.now().compareTo(startDate.plus(duration)) > 0;
-        } else {
-            return Instant.now().compareTo(startDate) > 0;
-        }
+        return Instant.now().compareTo(finishTime) > 0;
     }
 
     public AbstractPlanet getPlanet() {
@@ -42,16 +39,8 @@ public abstract class Action {
         this.planet = planet;
     }
 
-    public Duration getDuration() {
-        return duration;
-    }
-
-    public void setDuration(Duration duration) {
-        this.duration = duration.plus(Duration.ofSeconds(10));
-    }
-
-    public Instant getStartDate() {
-        return startDate;
+    public void addDuration(Duration duration) {
+        this.finishTime = finishTime.plus(duration).plus(Duration.ofSeconds(15));
     }
 
     public Task getSubtask() {
@@ -71,8 +60,8 @@ public abstract class Action {
         return new Gson().toJson(this);
     }
 
-    public String toLog(){
-        return String.format("%s on planet %s execution time: %s seconds",
-                this.getClass().getCanonicalName().replaceAll("\\w+\\.", ""), planet.getCoordinates().getFormattedCoordinates(), duration.getSeconds());
+    public String toLog() {
+        return String.format("%s on planet %s finish time: %s",
+                this.getClass().getCanonicalName().replaceAll("\\w+\\.", ""), planet.getCoordinates().getFormattedCoordinates(), finishTime);
     }
 }

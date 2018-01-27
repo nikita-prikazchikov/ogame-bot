@@ -3,7 +3,12 @@ package ru.tki.models;
 
 import ru.tki.models.types.ShipType;
 
+import java.util.Arrays;
+
 public class Fleet {
+
+    private final static Integer SMALL_CARGO_CAPACITY = 5000;
+    private final static Integer LARGE_CARGO_CAPACITY = 25000;
 
     Integer lightFighter,
             heavyFighter,
@@ -135,6 +140,83 @@ public class Fleet {
                 setSolarSatellite(count);
                 break;
         }
+    }
+
+    public Fleet add(Fleet fleet){
+        if (null == fleet) {
+            return this;
+        }
+        Fleet f = new Fleet();
+        for (ShipType type : ShipType.values()) {
+            f.set(type, this.get(type) + fleet.get(type));
+        }
+        return f;
+    }
+
+    public Fleet deduct(Fleet fleet){
+        Fleet f = new Fleet();
+        for (ShipType type : ShipType.values()) {
+            f.set(type, Math.max(0, this.get(type) - fleet.get(type)));
+        }
+        return f;
+    }
+
+    public boolean has(Fleet fleet) {
+        boolean has = true;
+        for (ShipType type : ShipType.values()) {
+            has = has & this.get(type) >= fleet.get(type);
+        }
+        return has;
+    }
+
+    public boolean isEmpty(){
+        return !Arrays.stream(ShipType.values()).anyMatch(shipType -> get(shipType)>0);
+    }
+
+    public Integer getSmallCargoCapacity(){
+        return smallCargo * SMALL_CARGO_CAPACITY;
+    }
+
+    public Integer getCapacity(){
+        return smallCargo * SMALL_CARGO_CAPACITY + largeCargo * LARGE_CARGO_CAPACITY;
+    }
+
+    public String getDetails(){
+        StringBuilder res = new StringBuilder("Fleet: ");
+        for(ShipType type:  ShipType.values()){
+            int shipsCount = get(type);
+            if (shipsCount > 0 ){
+                res.append(String.format(" %s: %d", type, shipsCount));
+            }
+        }
+        return res.toString();
+    }
+
+    public Fleet getRequiredFleet(Resources resources) {
+        return getRequiredFleet(resources.getCapacity());
+    }
+
+    public Fleet getRequiredFleet(Integer capacity) {
+        Fleet fleet = new Fleet();
+        if(smallCargo > 0){
+            if(capacity < smallCargo * SMALL_CARGO_CAPACITY){
+                fleet.setSmallCargo(capacity / SMALL_CARGO_CAPACITY + 1);
+                capacity = 0;
+            }
+            else{
+                fleet.setSmallCargo(smallCargo);
+                capacity -= smallCargo*SMALL_CARGO_CAPACITY;
+            }
+            if (capacity > 0 && largeCargo > 0){
+                if(capacity < largeCargo * LARGE_CARGO_CAPACITY){
+                    fleet.setLargeCargo(capacity / LARGE_CARGO_CAPACITY + 1);
+                }
+                else{
+                    fleet.setLargeCargo(largeCargo);
+                }
+            }
+        }
+        return fleet;
     }
 
     public Integer getLightFighter() {

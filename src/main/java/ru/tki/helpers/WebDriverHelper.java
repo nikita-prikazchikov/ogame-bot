@@ -101,7 +101,7 @@ public class WebDriverHelper {
     }
 
     public WebElement waitForWebElement(final SearchContext parent, final By bySelector){
-        WebElement element = null;
+        WebElement element;
         try{
             final WebDriverHelper that = this;
             element = (new WebDriverWait(ContextHolder.getDriver(), DriverManager.getImplicitlyWait()))

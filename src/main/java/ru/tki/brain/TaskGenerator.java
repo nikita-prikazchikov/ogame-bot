@@ -6,8 +6,11 @@ import ru.tki.models.*;
 import ru.tki.models.tasks.*;
 import ru.tki.models.types.*;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class TaskGenerator {
 
@@ -30,8 +33,8 @@ public class TaskGenerator {
         put(DefenceType.MISSILE, 1);
     }};
 
-    Empire        empire;
-    BotConfigMain botConfig;
+    private Empire        empire;
+    private BotConfigMain botConfig;
 
     public TaskGenerator(Empire empire) {
         this.empire = empire;
@@ -40,28 +43,31 @@ public class TaskGenerator {
 
     public Task getTask(Planet planet) {
         Resources resources = planet.getResources();
-        Buildings buildings = planet.getBuildings();
-        Factories factories = planet.getFactories();
         Researches researches = empire.getResearches();
-        Defence defence = planet.getDefence();
-        Integer currentMax = buildings.getSolarPlant();
 
         if (!planet.getShipyardBusy()) {
             if (planet.getResources().getEnergy() < 0) {
                 if (OGameLibrary.canBuild(empire, planet, ShipType.SOLAR_SATELLITE)
                         && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.SOLAR_SATELLITE, 1))) {
-                    return new ShipyardTask(empire, planet, ShipType.SOLAR_SATELLITE, 1);
+                    Task task = new ShipyardTask(empire, planet, ShipType.SOLAR_SATELLITE, 1);
+                    task.setSubtask(new UpdatePlanetInfoTask(empire, planet));
+                    return task;
                 }
             }
         }
 
-        Task task = getTaskBuilding(planet, resources, buildings, factories, currentMax);
+        Task task = getTaskBuilding(planet);
         if (task != null) return task;
 
-        task = getTaskResearches(planet, resources, researches, currentMax);
+        task = getTaskResearches(planet, researches);
         if (task != null) return task;
 
-        task = getDefenceTask(planet, resources, defence, currentMax);
+        task = getRequiredCargoTask(planet);
+        if (task != null) {
+            task.setSubtask(new UpdatePlanetInfoTask(empire, planet));
+            return task;
+        }
+        task = getDefenceTask(planet);
         if (task != null) {
             task.setSubtask(new UpdatePlanetInfoTask(empire, planet));
             return task;
@@ -70,9 +76,175 @@ public class TaskGenerator {
         return null;
     }
 
-    private Task getDefenceTask(Planet planet, Resources resources, Defence defence, Integer currentMax) {
+    public Task getFleetTask(Planet planet) {
+        Task task = getFleetMoveResourcesTask(planet);
+        if (task != null) return task;
+
+        return null;
+    }
+
+
+    //Minimize main planets count in the empire
+    // Keep them 3 for now
+    public Task checkMainPlanetsCount() {
+        Supplier<Stream<AbstractPlanet>> mainPlanets = () ->
+                empire.getPlanets().stream().filter(planet -> empire.isPlanetMain(planet));
+        if (mainPlanets.get().count() > 2 && empire.canSendFleet()) {
+            AbstractPlanet smallest = mainPlanets.get().min(Comparator.comparingInt(AbstractPlanet::getLevel)).get();
+            AbstractPlanet biggest = mainPlanets.get().max(Comparator.comparingInt(AbstractPlanet::getLevel)).get();
+            System.out.println(String.format("There are more than 2 main planets. Move resources from planet %s to %s",
+                    smallest.getCoordinates(), biggest.getCoordinates()));
+            return new FleetTask(empire, smallest, biggest,
+                    smallest.getFleet().deduct(smallest.getFleet().getRequiredFleet(empire.getProductionOnPlanetInTimeframe(smallest))),
+                    MissionType.KEEP,
+                    smallest.getResources());
+        }
+        return null;
+    }
+
+    // Verify if we can build or research something with move of resources from one planet to another
+    // Don't sent single level building until level 13
+    public Task checkTransportForBuild() {
+        Task task;
+        for (AbstractPlanet planet : empire.getPlanets()) {
+            //avoid 2 tasks on 1 planet
+            if (planet.hasTask()) {
+                continue;
+            }
+            if (planet.isPlanet()) {
+                //Initial planet build
+                if (planet.getLevel() < 10) {
+                    // resources to build to 10 8 5 10 robots factory 4
+                    return findResourcesOnMain(planet, new Resources(28000, 9600, 3000),
+                            new UpdatePlanetInfoTask(empire, planet));
+                }
+
+                //Second level planet build
+                if (planet.getLevel() < 13) {
+                    // resources to build from 10 8 5 10 to 13 11 8 7 13
+                    return findResourcesOnMain(planet, new Resources(37500, 13500, 1600),
+                            new UpdatePlanetInfoTask(empire, planet));
+                }
+                //planets infrastructure is higher than 13
+
+                for (AbstractPlanet main : empire.getMainPlanets()) {
+                    if (!planet.equals(main) && !main.hasTask() && empire.canSendFleet()){
+                        //Find build task with extra resources from main planet
+                        task = getTaskBuilding((Planet) planet, main.getResources());
+                        if (null == task){
+                            //Find research task
+                            task = getTaskResearches((Planet) planet, empire.getResearches(), main.getResources());
+                        }
+                        if( null != task ) {
+                            //If we find possible task then create fleet task for resources transport with subtask for execution
+                            Resources requiredResources = task.getResources().deduct(planet.getResources());
+                            Fleet fleet = main.getFleet().getRequiredFleet(requiredResources);
+                            //TODO: Add verification of fleet presence
+                            FleetTask task1 = new FleetTask(empire, main, planet, fleet, MissionType.TRANSPORT, requiredResources);
+                            task1.setSubtask(task);
+                            return task1;
+                        }
+                    }
+                }
+            }
+//            else if (planet.getType() == PlanetType.MOON) {
+//                //Do nothing now
+//            }
+        }
+        return null;
+    }
+
+    public Task sendExpedition(){
+        if(empire.getMaxExpeditions() > empire.getActiveExpeditions()
+                && empire.canSendFleet()){
+            for(AbstractPlanet planet: empire.getMainPlanets()){
+                if(!planet.hasTask()){
+                    Fleet fleet = empire.getFleetForExpedition(planet);
+                    if(!fleet.isEmpty()) {
+                        return new FleetTask(empire, planet, empire.getPlanetForExpedition(planet), fleet, MissionType.EXPEDITION);
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private Task findResourcesOnMain(AbstractPlanet planet, Resources resources, Task subtask){
+        for (AbstractPlanet main : empire.getMainPlanets()) {
+            if (!planet.equals(main) && !main.hasTask() && main.hasResources(resources) && empire.canSendFleet()){
+                System.out.println(String.format("Move resources %s from main %s to colony planet %s for initial builds",
+                        resources, main, planet));
+                FleetTask task = new FleetTask(empire, main, planet,
+                        main.getFleet().getRequiredFleet(resources),
+                        MissionType.TRANSPORT,
+                        resources);
+                task.setSubtask(subtask);
+                return task;
+            }
+        }
+        return null;
+    }
+
+    //Build minimal amount of transports on planet to move resources out on main planet or keep them in case of attack
+    private Task getRequiredCargoTask(Planet planet) {
+        Integer currentMax = planet.getLevel();
+        Resources resources = planet.getResources();
+        if (!planet.getShipyardBusy() && currentMax > 12 && botConfig.getBuildFleet()) {
+            Integer planetProduction = empire.getProductionOnPlanetInTimeframe(planet);
+            //task to build 1/5 of transports required to cover full planet production
+            Integer buildAmount = Math.max(planetProduction / (5000 * 5), 2);
+            if (empire.getPlanetTotalFleet(planet).getSmallCargoCapacity() < planetProduction
+                    && OGameLibrary.canBuild(empire, planet, ShipType.SMALL_CARGO)
+                    && resources.isEnoughFor(OGameLibrary.getShipPrice(ShipType.SMALL_CARGO).multiply(buildAmount))) {
+
+                System.out.println(String.format("Details: need to build %d %s on %s planet to meet production capacity %s by small cargo" +
+                                " Current fleet: %s" ,
+                        buildAmount, ShipType.SMALL_CARGO, planet.getCoordinates(), planetProduction, planet.getFleet().getDetails()));
+                return new ShipyardTask(empire, planet, ShipType.SMALL_CARGO, buildAmount);
+            }
+            //Main planet need to have minimum double amount of transports for regular production or full coverage for existing fleet
+            buildAmount = Math.max(buildAmount / 5, 2);
+            if (empire.isPlanetMain(planet)
+                    && (empire.getPlanetTotalFleet(planet).getCapacity() < planetProduction * 2
+                    || planet.getFleet().getCapacity() < planet.getResources().getCapacity())
+                    && OGameLibrary.canBuild(empire, planet, ShipType.LARGE_CARGO)
+                    && resources.isEnoughFor(OGameLibrary.getShipPrice(ShipType.LARGE_CARGO).multiply(buildAmount))) {
+
+                System.out.println(String.format("Details: need to build %d %s on %s planet to meet double production capacity %s or current resources %s" +
+                                " Current fleet: %s",
+                        buildAmount, ShipType.LARGE_CARGO, planet.getCoordinates(), planetProduction * 2, planet.getResources(), planet.getFleet().getDetails()));
+                return new ShipyardTask(empire, planet, ShipType.LARGE_CARGO, buildAmount);
+            }
+        }
+        return null;
+    }
+
+    //Check if we need to move resources from colony to main planet
+    private Task getFleetMoveResourcesTask(Planet planet) {
+        if (empire.isPlanetMain(planet) || planet.getLevel() <= 15) {
+            return null;
+        }
+        AbstractPlanet target = empire.getClosestMainPlanet(planet);
+        if (!target.equals(planet)
+                && planet.getResources().getCapacity() > empire.getProductionOnPlanetInTimeframe(planet)
+                && empire.canSendFleet()) {
+
+            System.out.println(String.format("Move resources %s from colony %s to main planet %s",
+                    planet.getResources(), planet, target));
+            return new FleetTask(empire, planet, target,
+                    planet.getFleet().getRequiredFleet(planet.getResources()),
+                    MissionType.TRANSPORT,
+                    planet.getResources());
+        }
+        return null;
+    }
+
+    private Task getDefenceTask(Planet planet) {
+        Integer currentMax = planet.getLevel();
+        Resources resources = planet.getResources();
+        Defence defence = planet.getDefence();
         if (!planet.getShipyardBusy() && currentMax > 15 && botConfig.getBuildDefence()) {
-            Integer multiplier = currentMax / 5;
+            Integer multiplier = currentMax * currentMax / 120 - 1;
             if (defence.getRocket() < optimalDefence.get(DefenceType.ROCKET) * multiplier
                     && OGameLibrary.canBuild(empire, planet, DefenceType.ROCKET)
                     && resources.isEnoughFor(OGameLibrary.getDefencePrice(DefenceType.ROCKET).multiply(5))) {
@@ -118,17 +290,23 @@ public class TaskGenerator {
         return null;
     }
 
-    private Task getTaskResearches(Planet planet, Resources resources, Researches researches, Integer currentMax) {
+    private Task getTaskResearches(Planet planet, Researches researches) {
+        return this.getTaskResearches(planet, researches, new Resources());
+    }
+
+    private Task getTaskResearches(Planet planet, Researches researches, Resources additionalResources) {
+        Integer currentMax = planet.getLevel();
+        Resources resources = planet.getResources().add(additionalResources);
         if (!empire.isResearchInProgress() && currentMax > 12 && botConfig.getDoResearches()) {
-            if (researches.getComputer() <= 20
-                    && OGameLibrary.canBuild(empire, planet, ResearchType.COMPUTER)
-                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.COMPUTER, researches.getComputer()))) {
-                return new ResearchTask(empire, planet, ResearchType.COMPUTER);
-            }
             if (researches.getAstrophysics() <= 20
                     && OGameLibrary.canBuild(empire, planet, ResearchType.ASTROPHYSICS)
                     && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.ASTROPHYSICS, researches.getAstrophysics()))) {
                 return new ResearchTask(empire, planet, ResearchType.ASTROPHYSICS);
+            }
+            if (researches.getComputer() <= 20
+                    && OGameLibrary.canBuild(empire, planet, ResearchType.COMPUTER)
+                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.COMPUTER, researches.getComputer()))) {
+                return new ResearchTask(empire, planet, ResearchType.COMPUTER);
             }
             if (researches.getPlasma() <= 20
                     && OGameLibrary.canBuild(empire, planet, ResearchType.PLASMA)
@@ -140,12 +318,12 @@ public class TaskGenerator {
                     && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.ESPIONAGE, researches.getEspionage()))) {
                 return new ResearchTask(empire, planet, ResearchType.ESPIONAGE);
             }
-            if (researches.getHyper() <= 8
+            if (researches.getHyper() < 8
                     && OGameLibrary.canBuild(empire, planet, ResearchType.HYPER)
                     && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.HYPER, researches.getHyper()))) {
                 return new ResearchTask(empire, planet, ResearchType.HYPER);
             }
-            if (researches.getIon() <= 5
+            if (researches.getIon() < 5
                     && OGameLibrary.canBuild(empire, planet, ResearchType.ION)
                     && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.ION, researches.getIon()))) {
                 return new ResearchTask(empire, planet, ResearchType.ION);
@@ -171,27 +349,29 @@ public class TaskGenerator {
                     && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.REACTIVE_ENGINE, researches.getReactiveEngine()))) {
                 return new ResearchTask(empire, planet, ResearchType.REACTIVE_ENGINE);
             }
-            if (researches.getWeapon() <= 25
-                    && OGameLibrary.canBuild(empire, planet, ResearchType.WEAPON)
-                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.WEAPON, researches.getEspionage()))) {
-                return new ResearchTask(empire, planet, ResearchType.WEAPON);
+            if (currentMax > 20) {
+                if (researches.getWeapon() <= 25
+                        && OGameLibrary.canBuild(empire, planet, ResearchType.WEAPON)
+                        && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.WEAPON, researches.getEspionage()))) {
+                    return new ResearchTask(empire, planet, ResearchType.WEAPON);
+                }
+                if (researches.getShields() <= 25
+                        && OGameLibrary.canBuild(empire, planet, ResearchType.SHIELDS)
+                        && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.SHIELDS, researches.getShields()))) {
+                    return new ResearchTask(empire, planet, ResearchType.SHIELDS);
+                }
+                if (researches.getArmor() <= 25
+                        && OGameLibrary.canBuild(empire, planet, ResearchType.ARMOR)
+                        && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.ARMOR, researches.getArmor()))) {
+                    return new ResearchTask(empire, planet, ResearchType.ARMOR);
+                }
             }
-            if (researches.getShields() <= 25
-                    && OGameLibrary.canBuild(empire, planet, ResearchType.SHIELDS)
-                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.SHIELDS, researches.getShields()))) {
-                return new ResearchTask(empire, planet, ResearchType.SHIELDS);
-            }
-            if (researches.getArmor() <= 25
-                    && OGameLibrary.canBuild(empire, planet, ResearchType.ARMOR)
-                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.ARMOR, researches.getArmor()))) {
-                return new ResearchTask(empire, planet, ResearchType.ARMOR);
-            }
-            if (researches.getLaser() <= 12
+            if (researches.getLaser() < 12
                     && OGameLibrary.canBuild(empire, planet, ResearchType.LASER)
                     && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.LASER, researches.getLaser()))) {
                 return new ResearchTask(empire, planet, ResearchType.LASER);
             }
-            if (researches.getEnergy() <= 12
+            if (researches.getEnergy() < 12
                     && OGameLibrary.canBuild(empire, planet, ResearchType.ENERGY)
                     && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.ENERGY, researches.getEnergy()))) {
                 return new ResearchTask(empire, planet, ResearchType.ENERGY);
@@ -200,33 +380,46 @@ public class TaskGenerator {
         return null;
     }
 
-    private Task getTaskBuilding(Planet planet, Resources resources, Buildings buildings, Factories factories, Integer currentMax) {
-        if (!planet.getBuildInProgress() && botConfig.getBuildResources()) {
-            if (factories.getRobotsFactory() <= 10
-                    && factories.getRobotsFactory() < currentMax / 3
+    private Task getTaskBuilding(Planet planet) {
+        return this.getTaskBuilding(planet, new Resources());
+    }
+
+    private Task getTaskBuilding(Planet planet, Resources additionalResources) {
+        Integer currentMax = planet.getLevel();
+        Resources resources = planet.getResources().add(additionalResources);
+        Buildings buildings = planet.getBuildings();
+        Factories factories = planet.getFactories();
+        if (!planet.getBuildInProgress() && botConfig.getBuildFactories()) {
+            if (factories.getRobotsFactory() < 10
+                    && currentMax > 8
+                    && factories.getRobotsFactory() < currentMax / 2.5
                     && resources.isEnoughFor(OGameLibrary.getFactoryPrice(FactoryType.ROBOTS_FACTORY, factories.getRobotsFactory()))) {
                 return new FactoryTask(empire, planet, FactoryType.ROBOTS_FACTORY);
+            }
+            if (currentMax > 12) {
+                if (!planet.getShipyardBusy() && factories.getShipyard() <= 9
+                        && factories.getShipyard() < currentMax / 3
+                        && OGameLibrary.canBuild(empire, planet, FactoryType.SHIPYARD)
+                        && resources.isEnoughFor(OGameLibrary.getFactoryPrice(FactoryType.SHIPYARD, factories.getShipyard()))) {
+                    return new FactoryTask(empire, planet, FactoryType.SHIPYARD);
 
+                }
+                if (!empire.isResearchInProgress()
+                        && factories.getResearchLab() <= 10
+                        && factories.getResearchLab() < currentMax / 2.5
+                        && OGameLibrary.canBuild(empire, planet, FactoryType.RESEARCH_LAB)
+                        && resources.isEnoughFor(OGameLibrary.getFactoryPrice(FactoryType.RESEARCH_LAB, factories.getResearchLab()))) {
+                    return new FactoryTask(empire, planet, FactoryType.RESEARCH_LAB);
+                }
             }
-            if (!planet.getShipyardBusy() && factories.getShipyard() <= 9
-                    && factories.getShipyard() < currentMax / 3
-                    && OGameLibrary.canBuild(empire, planet, FactoryType.SHIPYARD)
-                    && resources.isEnoughFor(OGameLibrary.getFactoryPrice(FactoryType.SHIPYARD, factories.getShipyard()))) {
-                return new FactoryTask(empire, planet, FactoryType.SHIPYARD);
-
-            }
-            if (!empire.isResearchInProgress()
-                    && factories.getResearchLab() <= 10
-                    && factories.getResearchLab() < currentMax / 3
-                    && OGameLibrary.canBuild(empire, planet, FactoryType.RESEARCH_LAB)
-                    && resources.isEnoughFor(OGameLibrary.getFactoryPrice(FactoryType.RESEARCH_LAB, factories.getResearchLab()))) {
-                return new FactoryTask(empire, planet, FactoryType.RESEARCH_LAB);
-            }
-            if (factories.getMissileSilos() < currentMax / 5
+            if (currentMax > 20
+                    && factories.getMissileSilos() < currentMax / 5
                     && OGameLibrary.canBuild(empire, planet, FactoryType.MISSILE_SILOS)
                     && resources.isEnoughFor(OGameLibrary.getFactoryPrice(FactoryType.MISSILE_SILOS, factories.getMissileSilos()))) {
                 return new FactoryTask(empire, planet, FactoryType.MISSILE_SILOS);
             }
+        }
+        if (!planet.getBuildInProgress() && botConfig.getBuildResources()) {
 
             if (buildings.getMetalMine() < currentMax
                     && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.METAL_MINE, buildings.getMetalMine()))) {
@@ -236,25 +429,26 @@ public class TaskGenerator {
                     && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.CRYSTAL_MINE, buildings.getCrystalMine()))) {
                 return new BuildingTask(empire, planet, BuildingType.CRYSTAL_MINE);
             }
-            if (buildings.getDeuteriumMine() < currentMax / 2
+            if (currentMax > 8
+                    && buildings.getDeuteriumMine() < currentMax / 2
                     && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.DEUTERIUM_MINE, buildings.getDeuteriumMine()))) {
                 return new BuildingTask(empire, planet, BuildingType.DEUTERIUM_MINE);
             }
-            if (buildings.getMetalStorage() < currentMax / 3
-                    && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.METAL_STORAGE, buildings.getMetalStorage()))) {
-                return new BuildingTask(empire, planet, BuildingType.METAL_STORAGE);
-            }
-            if (buildings.getCrystalStorage() < (currentMax - 2) / 3
-                    && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.CRYSTAL_STORAGE, buildings.getCrystalStorage()))) {
-                return new BuildingTask(empire, planet, BuildingType.CRYSTAL_STORAGE);
-            }
-            if (buildings.getDeuteriumStorage() < currentMax / 6
-                    && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.DEUTERIUM_STORAGE, buildings.getDeuteriumStorage()))) {
-                return new BuildingTask(empire, planet, BuildingType.DEUTERIUM_STORAGE);
-            }
-            if (resources.getEnergy() < 0
-                    && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.SOLAR_SATELLITE, buildings.getDeuteriumStorage()))) {
-                return new ShipyardTask(empire, planet, ShipType.SOLAR_SATELLITE, 1);
+            if (currentMax > 12) {
+                //TODO: Review storages amount for actual required value of buildings
+                //Build storages after solar plant level 13
+                if (buildings.getMetalStorage() < currentMax / 3
+                        && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.METAL_STORAGE, buildings.getMetalStorage()))) {
+                    return new BuildingTask(empire, planet, BuildingType.METAL_STORAGE);
+                }
+                if (buildings.getCrystalStorage() < (currentMax - 2) / 3
+                        && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.CRYSTAL_STORAGE, buildings.getCrystalStorage()))) {
+                    return new BuildingTask(empire, planet, BuildingType.CRYSTAL_STORAGE);
+                }
+                if (buildings.getDeuteriumStorage() < currentMax / 6
+                        && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.DEUTERIUM_STORAGE, buildings.getDeuteriumStorage()))) {
+                    return new BuildingTask(empire, planet, BuildingType.DEUTERIUM_STORAGE);
+                }
             }
             if (resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.SOLAR_PLANT, buildings.getSolarPlant()))) {
                 return new BuildingTask(empire, planet, BuildingType.SOLAR_PLANT);

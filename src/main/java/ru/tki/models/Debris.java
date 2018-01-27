@@ -23,4 +23,14 @@ public class Debris extends AbstractPlanet {
     public PlanetType getType() {
         return PlanetType.DEBRIS;
     }
+
+    @Override
+    public Integer getLevel() {
+        return 0;
+    }
+
+    @Override
+    public Integer getProduction() {
+        return 0;
+    }
 }

@@ -11,8 +11,10 @@ public abstract class AbstractPlanet {
     protected Integer     size;
     protected Boolean     buildInProgress = false;
     protected Boolean     shipyardBusy = false;
-    Resources resources = new Resources();
-    Fleet fleet = new Fleet();
+    protected Boolean     hasTask = false;
+
+    protected Resources resources = new Resources();
+    protected Fleet fleet = new Fleet();
 
     public AbstractPlanet() {
     }
@@ -33,9 +35,29 @@ public abstract class AbstractPlanet {
 
     public abstract PlanetType getType();
 
+    //Current planet level. Most of the logic of building relates on it.
+    public abstract Integer getLevel();
+
+    public abstract Integer getProduction();
+
     public void navigate() {
         BasePage basePage = new BasePage();
         basePage.myWorlds.selectPlanet(this);
+    }
+
+    public AbstractPlanet closer(AbstractPlanet a, AbstractPlanet b) {
+        if( a.getCoordinates().equals(coordinates.closer(a.getCoordinates(), b.getCoordinates()))){
+            return a;
+        }
+        return b;
+    }
+
+    public boolean isPlanet(){
+        return getType() == PlanetType.PLANET;
+    }
+
+    public boolean hasResources(Resources resources){
+        return this.resources.isEnoughFor(resources);
     }
 
     public void setCoordinates(Coordinates coordinates) {
@@ -94,12 +116,29 @@ public abstract class AbstractPlanet {
         this.fleet = fleet;
     }
 
+    public Boolean hasTask() {
+        return hasTask;
+    }
+
+    public void setHasTask(Boolean hasTask) {
+        this.hasTask = hasTask;
+    }
+
     @Override
     public String toString() {
         return new Gson().toJson(this);
     }
 
+    public boolean equals(AbstractPlanet planet) {
+        return this.coordinates.equals(planet.getCoordinates()) && this.getType().equals(planet.getType());
+    }
+
+    public boolean equals(Coordinates coordinates) {
+        return this.coordinates.equals(coordinates);
+    }
+
     public void logResources(){
         System.out.println(String.format("Resources on %s %s %s", getType(), getCoordinates().getFormattedCoordinates(), getResources()));
     }
+
 }

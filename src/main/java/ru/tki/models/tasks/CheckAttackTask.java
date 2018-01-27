@@ -5,12 +5,14 @@ import ru.tki.models.Empire;
 import ru.tki.models.actions.Action;
 import ru.tki.po.BasePage;
 
+//Verify if the empire is currently under attack
 public class CheckAttackTask extends Task {
 
-    Empire empire;
+    transient Empire empire;
 
     public CheckAttackTask(Empire empire) {
         this.empire = empire;
+        name = "Check empire under attack";
     }
 
     @Override

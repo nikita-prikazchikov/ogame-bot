@@ -9,14 +9,16 @@ import ru.tki.po.components.BuildDetailComponent;
 
 import java.time.Duration;
 
+//Build new defence on the planet
 public class DefenceTask extends Task {
 
     DefenceType type;
     Integer amount;
 
     public DefenceTask(AbstractPlanet planet, DefenceType type, Integer amount) {
+        name = "Defence task";
         this.amount = amount;
-        this.planet = planet;
+        setPlanet(planet);
         this.type = type;
     }
 
@@ -30,10 +32,11 @@ public class DefenceTask extends Task {
 
     @Override
     public DefenceAction execute() {
-        DefenceAction action = new DefenceAction(planet);
+        super.execute();
+        DefenceAction action = new DefenceAction(getPlanet());
 
         BasePage basePage = new BasePage();
-        basePage.myWorlds.selectPlanet(planet);
+        basePage.myWorlds.selectPlanet(getPlanet());
         basePage.leftMenu.openDefense();
 
         DefencePage defencePage = new DefencePage();
@@ -41,18 +44,20 @@ public class DefenceTask extends Task {
 
         BuildDetailComponent buildDetailComponent = new BuildDetailComponent();
         Duration duration = buildDetailComponent.getDuration();
-        action.setDuration(duration.multipliedBy(amount));
-        buildDetailComponent.setAmount(amount);
+        action.addDuration(duration.multipliedBy(amount));
+        if(type != DefenceType.SMALL_SHIELD && type != DefenceType.BIG_SHIELD) {
+            buildDetailComponent.setAmount(amount);
+        }
         buildDetailComponent.build();
 
-        planet.setResources(basePage.resources.getResources());
-        planet.setShipyardBusy(true);
+        getPlanet().setResources(basePage.resources.getResources());
+        getPlanet().setShipyardBusy(true);
 
         return action;
     }
 
     @Override
     public String toString() {
-        return String.format("Build %d %s on planet %s", amount, type, planet.getCoordinates().getFormattedCoordinates());
+        return String.format("Build %d %s on planet %s", amount, type, getPlanet().getCoordinates().getFormattedCoordinates());
     }
 }

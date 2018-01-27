@@ -58,6 +58,10 @@ public class Navigation {
         leftMenu.openFactory();
     }
 
+    public void openFleetMove() {
+        leftMenu.openFleetMove();
+    }
+
     public void selectPlanet(AbstractPlanet planet) {
         myWorldsComponent.selectPlanet(planet);
     }

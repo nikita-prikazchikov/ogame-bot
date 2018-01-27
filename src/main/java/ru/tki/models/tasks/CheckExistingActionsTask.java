@@ -4,15 +4,21 @@ import ru.tki.executor.Navigation;
 import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
 import ru.tki.models.actions.Action;
+import ru.tki.models.actions.FleetAction;
 import ru.tki.po.BasePage;
+import ru.tki.po.FleetDetailsPage;
 import ru.tki.po.OverviewPage;
 
+import java.util.List;
+
+//Identify existing actions like buildings, researches and shipyard action
 public class CheckExistingActionsTask extends Task {
 
-    Empire empire;
+    transient  Empire empire;
 
     public CheckExistingActionsTask(Empire empire) {
         this.empire = empire;
+        name = "Check if empire has active tasks and fleet flights";
     }
 
     @Override
@@ -23,7 +29,17 @@ public class CheckExistingActionsTask extends Task {
         OverviewPage overviewPage = new OverviewPage();
 
         Action action = overviewPage.getResearchAction(empire, empire.getPlanets().get(0));
-        addActionWithUpdateSubtask(action);
+        addActionWithUpdateSubtask(action, new UpdateCurrentResearchesTask(empire));
+
+        navigation.openFleetMove();
+        FleetDetailsPage fleetDetailsPage = new FleetDetailsPage();
+        List<FleetAction> actions = fleetDetailsPage.getFleetActions(empire);
+        actions.forEach(a -> {
+            empire.addAction(a);
+            empire.addActiveFleet();
+        });
+
+        navigation.openOverview();
 
         for (AbstractPlanet planet : empire.getPlanets()) {
             navigation.selectPlanet(planet);
@@ -31,18 +47,16 @@ public class CheckExistingActionsTask extends Task {
             planet.logResources();
 
             action = overviewPage.getBuildAction(planet);
-            addActionWithUpdateSubtask(action);
+            addActionWithUpdateSubtask(action, new UpdatePlanetInfoTask(empire, planet));
 
             action = overviewPage.getShipyardAction(planet);
-            addActionWithUpdateSubtask(action);
+            addActionWithUpdateSubtask(action, new UpdatePlanetInfoTask(empire, planet));
         }
         return null;
     }
 
-    private void addActionWithUpdateSubtask(Action action) {
-        Task task;
+    private void addActionWithUpdateSubtask(Action action, Task task) {
         if (null != action) {
-            task = new UpdatePlanetInfoTask(empire, action.getPlanet());
             action.setSubtask(task);
             empire.addAction(action);
         }

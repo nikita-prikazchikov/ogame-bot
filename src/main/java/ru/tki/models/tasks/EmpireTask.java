@@ -11,12 +11,14 @@ import ru.tki.po.components.ResourcesComponent;
 
 import java.util.List;
 
+// Collect information about the whole empire
 public class EmpireTask extends Task {
 
-    Empire empire;
+    transient Empire empire;
 
     public EmpireTask(Empire empire) {
         this.empire = empire;
+        name = "Collect full information about empire";
     }
 
     @Override
@@ -39,7 +41,7 @@ public class EmpireTask extends Task {
 
         for (AbstractPlanet planet : planets) {
             basePage.myWorlds.selectPlanet(planet);
-            if (planet.getType() == PlanetType.PLANET) {
+            if (planet.isPlanet()) {
                 Planet p = (Planet) planet;
 
                 navigation.openOverview();

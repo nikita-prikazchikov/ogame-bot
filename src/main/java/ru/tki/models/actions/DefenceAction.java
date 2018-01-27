@@ -7,6 +7,7 @@ public class DefenceAction extends Action {
 
     public DefenceAction(AbstractPlanet planet) {
         super(planet);
+        name = "Defence";
     }
 
     @Override

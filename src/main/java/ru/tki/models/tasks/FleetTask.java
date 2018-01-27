@@ -7,32 +7,38 @@ import ru.tki.models.types.MissionType;
 import ru.tki.po.BasePage;
 import ru.tki.po.FleetPage;
 
+import java.time.Duration;
+
+//Send new fleet task
 public class FleetTask extends Task {
 
-    protected AbstractPlanet targetPlanet;
-    protected Fleet          fleet;
-    protected Resources      resources;
-    protected MissionType missionType = MissionType.TRANSPORT;
+    protected           AbstractPlanet targetPlanet;
+    protected transient Empire         empire;
+    protected           Fleet          fleet;
 
-    protected FleetSpeed fleetSpeed = FleetSpeed.S100;
+    protected MissionType missionType = MissionType.KEEP;
+    protected FleetSpeed  fleetSpeed  = FleetSpeed.S100;
 
-    public FleetTask(AbstractPlanet planet) {
-        this.planet = planet;
+    public FleetTask(Empire empire, AbstractPlanet planet) {
+        this.empire = empire;
+        name = "Fleet task";
+        setPlanet(planet);
+        empire.addActiveFleet();
     }
 
-    public FleetTask(AbstractPlanet fromPlanet, AbstractPlanet targetPlanet, Fleet fleet) {
-        this(fromPlanet);
+    public FleetTask(Empire empire, AbstractPlanet fromPlanet, AbstractPlanet targetPlanet, Fleet fleet) {
+        this(empire, fromPlanet);
         this.targetPlanet = targetPlanet;
         this.fleet = fleet;
     }
 
-    public  FleetTask(AbstractPlanet fromPlanet, AbstractPlanet targetPlanet, Fleet fleet, MissionType missionType) {
-        this(fromPlanet, targetPlanet, fleet);
+    public FleetTask(Empire empire, AbstractPlanet fromPlanet, AbstractPlanet targetPlanet, Fleet fleet, MissionType missionType) {
+        this(empire, fromPlanet, targetPlanet, fleet);
         this.missionType = missionType;
     }
 
-    public  FleetTask(AbstractPlanet fromPlanet, AbstractPlanet targetPlanet, Fleet fleet, MissionType missionType, Resources resources) {
-        this(fromPlanet, targetPlanet, fleet, missionType);
+    public FleetTask(Empire empire, AbstractPlanet fromPlanet, AbstractPlanet targetPlanet, Fleet fleet, MissionType missionType, Resources resources) {
+        this(empire, fromPlanet, targetPlanet, fleet, missionType);
         this.resources = resources;
     }
 
@@ -50,14 +56,6 @@ public class FleetTask extends Task {
 
     public void setFleet(Fleet fleet) {
         this.fleet = fleet;
-    }
-
-    public Resources getResources() {
-        return resources;
-    }
-
-    public void setResources(Resources resources) {
-        this.resources = resources;
     }
 
     public FleetSpeed getFleetSpeed() {
@@ -78,10 +76,11 @@ public class FleetTask extends Task {
 
     @Override
     public FleetAction execute() {
+        super.execute();
         FleetAction action = new FleetAction(this);
 
         BasePage basePage = new BasePage();
-        basePage.myWorlds.selectPlanet(planet);
+        basePage.myWorlds.selectPlanet(getPlanet());
         basePage.leftMenu.openFleet();
 
         FleetPage fleetPage = new FleetPage();
@@ -100,14 +99,53 @@ public class FleetTask extends Task {
 
         //Fleet page 3
         fleetPage.setMission(missionType);
-        action.setDuration(fleetPage.getDuration());
+        Duration duration;
+        switch (missionType) {
+            case EXPEDITION:
+                duration = fleetPage.getDuration();
+                //All expeditions are 1 hour long
+                action.addDuration(duration.multipliedBy(2).plusHours(1));
+                break;
+            case COLONIZATION:
+            case KEEP:
+            case HOLD_ON:
+                duration = fleetPage.getDuration();
+                action.setDurationOfFlight(duration);
+                action.addDuration(duration.plusSeconds(30));
+                break;
+            case RECYCLING:
+            case TRANSPORT:
+            case ESPIONAGE:
+            case ATTACK:
+            case JOINT_ATTACK:
+            case DESTROY:
+                duration = fleetPage.getDuration();
+                action.addDuration(duration.multipliedBy(2));
+                action.setDurationOfFlight(duration);
+                break;
+        }
         if (missionType == MissionType.ATTACK
                 || missionType == MissionType.TRANSPORT
-                || missionType == MissionType.KEEP){
+                || missionType == MissionType.KEEP) {
             fleetPage.setResources(resources);
         }
         fleetPage.clickStart();
+        fleetPage.waitPage1();
 
+        getPlanet().setFleet(fleetPage.getFleet());
+        getPlanet().setResources(basePage.resources.getResources());
+        empire.savePlanet(getPlanet());
+        //Add expedition only after it was actually sent
+        if (missionType == MissionType.EXPEDITION) {
+            empire.addActiveExpedition();
+        }
         return action;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Sent fleet %s from planet %s to %s with %s mission and %s",
+                fleet.getDetails(), getPlanet().getCoordinates().getFormattedCoordinates(), targetPlanet.getCoordinates().getFormattedCoordinates(),
+                missionType, resources == null ? "empty" : resources);
     }
 }

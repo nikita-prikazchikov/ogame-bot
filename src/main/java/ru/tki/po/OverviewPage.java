@@ -25,6 +25,7 @@ public class OverviewPage extends PageObject {
 
 
     public String getPlanetName() {
+        waitForWebElement(PLANET_NAME);
         return getElement(PLANET_NAME).getText();
     }
 
@@ -39,7 +40,7 @@ public class OverviewPage extends PageObject {
     public Action getBuildAction(AbstractPlanet planet) {
         BuildingAction buildingAction = new BuildingAction(planet);
         if (isElementExists(BUILDING_DURATION)) {
-            buildingAction.setDuration(DataParser.parseDuration(getElement(BUILDING_DURATION).getText()));
+            buildingAction.addDuration(DataParser.parseDuration(getElement(BUILDING_DURATION).getText()));
             planet.setBuildInProgress(true);
             return buildingAction;
         }
@@ -50,7 +51,7 @@ public class OverviewPage extends PageObject {
     public Action getResearchAction(Empire empire, AbstractPlanet planet) {
         ResearchAction researchAction = new ResearchAction(planet);
         if (isElementExists(RESEARCH_DURATION)) {
-            researchAction.setDuration(DataParser.parseDuration(getElement(RESEARCH_DURATION).getText()));
+            researchAction.addDuration(DataParser.parseDuration(getElement(RESEARCH_DURATION).getText()));
             empire.setResearchInProgress(true);
             return researchAction;
         }
@@ -61,7 +62,7 @@ public class OverviewPage extends PageObject {
     public Action getShipyardAction(AbstractPlanet planet) {
         ShipyardAction shipyardAction = new ShipyardAction(planet);
         if (isElementExists(SHIPYARD_DURATION)) {
-            shipyardAction.setDuration(DataParser.parseDuration(getElement(SHIPYARD_DURATION).getText()));
+            shipyardAction.addDuration(DataParser.parseDuration(getElement(SHIPYARD_DURATION).getText()));
             planet.setShipyardBusy(true);
             return shipyardAction;
         }

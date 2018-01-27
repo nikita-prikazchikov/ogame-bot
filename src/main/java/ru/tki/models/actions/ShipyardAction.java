@@ -7,6 +7,7 @@ public class ShipyardAction extends Action {
 
     public ShipyardAction(AbstractPlanet planet) {
         super(planet);
+        name = "Shipyard";
     }
 
     @Override

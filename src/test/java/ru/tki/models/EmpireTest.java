@@ -7,6 +7,7 @@ import ru.tki.BotConfigMainReader;
 import ru.tki.ContextHolder;
 import ru.tki.DriverManager;
 
+import java.time.Instant;
 import java.util.logging.Logger;
 
 
@@ -47,4 +48,11 @@ public class EmpireTest {
         empire.load();
         empire.getPlanets();
     }
+
+    @Test
+    public void testFormats() throws Exception {
+        System.out.println(Instant.now());
+    }
+
+
 }

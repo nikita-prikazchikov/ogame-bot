@@ -6,6 +6,7 @@ import ru.tki.po.PageObject;
 public class LeftMenuComponent extends PageObject {
 
     private final String itemLocator = "//div[@id='links']//a[contains(@class, 'menubutton') and contains(., '%s')]";
+    private final String FLEET_MOVE = "a div.menuImage.fleet1";
 
     private final String ITEM_OVERVIEW        = "Обзор";
     private final String ITEM_RESOURCES       = "Сырьё";
@@ -57,5 +58,8 @@ public class LeftMenuComponent extends PageObject {
         this.openPage(ITEM_GALAXY);
     }
 
+    public void openFleetMove(){
+        getElement(By.cssSelector(FLEET_MOVE)).click();
+    }
 
 }

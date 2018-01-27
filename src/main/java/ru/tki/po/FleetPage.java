@@ -78,43 +78,43 @@ public class FleetPage extends PageObject {
     }};
 
     public void selectFleet(Fleet fleet) {
-        if (fleet.getLightFighter() != null) {
+        if (fleet.getLightFighter() != null && fleet.getLightFighter() > 0) {
             selectShip(ShipType.LIGHT_FIGHTER, fleet.getLightFighter());
         }
-        if (fleet.getHeavyFighter() != null) {
+        if (fleet.getHeavyFighter() != null && fleet.getHeavyFighter() > 0) {
             selectShip(ShipType.HEAVY_FIGHTER, fleet.getHeavyFighter());
         }
-        if (fleet.getCruiser() != null) {
+        if (fleet.getCruiser() != null && fleet.getCruiser() > 0) {
             selectShip(ShipType.CRUISER, fleet.getCruiser());
         }
-        if (fleet.getBattleship() != null) {
+        if (fleet.getBattleship() != null && fleet.getBattleship() > 0) {
             selectShip(ShipType.BATTLESHIP, fleet.getBattleship());
         }
-        if (fleet.getBattlecruiser() != null) {
+        if (fleet.getBattlecruiser() != null && fleet.getBattlecruiser() > 0) {
             selectShip(ShipType.BATTLECRUISER, fleet.getBattlecruiser());
         }
-        if (fleet.getBomber() != null) {
+        if (fleet.getBomber() != null && fleet.getBomber() > 0) {
             selectShip(ShipType.BOMBER, fleet.getBomber());
         }
-        if (fleet.getDestroyer() != null) {
+        if (fleet.getDestroyer() != null && fleet.getDestroyer() > 0) {
             selectShip(ShipType.DESTROYER, fleet.getDestroyer());
         }
-        if (fleet.getDeathStar() != null) {
+        if (fleet.getDeathStar() != null && fleet.getDeathStar() > 0) {
             selectShip(ShipType.DEATHSTAR, fleet.getDeathStar());
         }
-        if (fleet.getSmallCargo() != null) {
+        if (fleet.getSmallCargo() != null && fleet.getSmallCargo() > 0) {
             selectShip(ShipType.SMALL_CARGO, fleet.getSmallCargo());
         }
-        if (fleet.getLargeCargo() != null) {
+        if (fleet.getLargeCargo() != null && fleet.getLargeCargo() > 0) {
             selectShip(ShipType.LARGE_CARGO, fleet.getLargeCargo());
         }
-        if (fleet.getColonyShip() != null) {
+        if (fleet.getColonyShip() != null && fleet.getColonyShip() > 0) {
             selectShip(ShipType.COLONY_SHIP, fleet.getColonyShip());
         }
-        if (fleet.getRecycler() != null) {
+        if (fleet.getRecycler() != null && fleet.getRecycler() > 0) {
             selectShip(ShipType.RECYCLER, fleet.getRecycler());
         }
-        if (fleet.getEspionageProbe() != null) {
+        if (fleet.getEspionageProbe() != null && fleet.getEspionageProbe() > 0) {
             selectShip(ShipType.ESPIONAGE_PROBE, fleet.getEspionageProbe());
         }
     }
@@ -136,6 +136,7 @@ public class FleetPage extends PageObject {
     }
 
     public void setCoordinates(Coordinates coordinates){
+        waitForWebElement(GALAXY);
         setValue(getElement(GALAXY), coordinates.getGalaxy());
         setValue(getElement(SYSTEM), coordinates.getSystem());
         setValue(getElement(POSITION), coordinates.getPlanet());
@@ -188,5 +189,9 @@ public class FleetPage extends PageObject {
             fleet.set(type, getShipCount(type));
         }
         return fleet;
+    }
+
+    public boolean waitPage1(){
+        return waitForWebElement(ships.get(ShipType.LIGHT_FIGHTER)) != null;
     }
 }

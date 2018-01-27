@@ -2,25 +2,26 @@ package ru.tki.models.tasks;
 
 import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
-import ru.tki.models.Planet;
+import ru.tki.models.OGameLibrary;
 import ru.tki.models.Researches;
-import ru.tki.models.types.FactoryType;
-import ru.tki.models.types.PlanetType;
-import ru.tki.models.types.ResearchType;
 import ru.tki.models.actions.ResearchAction;
+import ru.tki.models.types.ResearchType;
 import ru.tki.po.BasePage;
 import ru.tki.po.ResearchesPage;
 import ru.tki.po.components.BuildDetailComponent;
 
+//Start new research task
 public class ResearchTask extends Task {
 
     ResearchType type;
-    Empire       empire;
+    transient Empire empire;
 
     public ResearchTask(Empire empire, AbstractPlanet planet, ResearchType type) {
+        name = "Research task";
         this.empire = empire;
         empire.setResearchInProgress(true);
-        this.planet = planet;
+        setPlanet(planet);
+        setResources(OGameLibrary.getResearchPrice(type, empire.getResearches().get(type)));
         this.type = type;
     }
 
@@ -34,10 +35,11 @@ public class ResearchTask extends Task {
 
     @Override
     public ResearchAction execute() {
-        ResearchAction action = new ResearchAction(planet);
+        super.execute();
+        ResearchAction action = new ResearchAction(getPlanet());
 
         BasePage basePage = new BasePage();
-        basePage.myWorlds.selectPlanet(planet);
+        basePage.myWorlds.selectPlanet(getPlanet());
         basePage.leftMenu.openResearch();
 
         ResearchesPage researchesPage = new ResearchesPage();
@@ -45,20 +47,18 @@ public class ResearchTask extends Task {
         researchesPage.select(type);
 
         BuildDetailComponent buildDetailComponent = new BuildDetailComponent();
-        action.setDuration(buildDetailComponent.getDuration());
+        action.addDuration(buildDetailComponent.getDuration());
         buildDetailComponent.build();
 
-        planet.setResources(basePage.resources.getResources());
-        researches.set(type, researches.get(type) +1 );
+        getPlanet().setResources(basePage.resources.getResources());
         empire.setResearchInProgress(true);
-        empire.setResearches(researches);
-        empire.saveResearches();
+        action.setSubtask(new UpdateCurrentResearchesTask(empire));
 
         return action;
     }
 
     @Override
     public String toString() {
-        return String.format("Research %s technology level %d on planet %s", type, empire.getResearches().get(type) + 1, planet.getCoordinates().getFormattedCoordinates());
+        return String.format("Research %s technology level %d on planet %s", type, empire.getResearches().get(type) + 1, getPlanet().getCoordinates().getFormattedCoordinates());
     }
 }
