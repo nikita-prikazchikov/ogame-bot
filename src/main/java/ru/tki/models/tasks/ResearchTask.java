@@ -25,6 +25,12 @@ public class ResearchTask extends Task {
         this.type = type;
     }
 
+    @Override
+    public void remove() {
+        super.remove();
+        empire.setResearchInProgress(false);
+    }
+
     public ResearchType getType() {
         return type;
     }

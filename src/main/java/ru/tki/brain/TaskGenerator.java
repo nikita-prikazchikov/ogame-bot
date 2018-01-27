@@ -139,10 +139,14 @@ public class TaskGenerator {
                             //If we find possible task then create fleet task for resources transport with subtask for execution
                             Resources requiredResources = task.getResources().deduct(planet.getResources());
                             Fleet fleet = main.getFleet().getRequiredFleet(requiredResources);
-                            //TODO: Add verification of fleet presence
-                            FleetTask task1 = new FleetTask(empire, main, planet, fleet, MissionType.TRANSPORT, requiredResources);
-                            task1.setSubtask(task);
-                            return task1;
+                            if(main.getFleet().has(fleet)) {
+                                FleetTask task1 = new FleetTask(empire, main, planet, fleet, MissionType.TRANSPORT, requiredResources);
+                                task1.setSubtask(task);
+                                return task1;
+                            }
+                            else{
+                                task.remove();
+                            }
                         }
                     }
                 }
