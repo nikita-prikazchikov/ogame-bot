@@ -24,18 +24,18 @@ public class WebDriverHelper {
         }
     }
 
-    public void sendKeysSlow(WebElement element, String value) {
+    protected void sendKeysSlow(WebElement element, String value) {
         for (int i = 0; i < value.length(); i++) {
             element.sendKeys(String.valueOf(value.charAt(i)));
         }
     }
 
-    public void setValue(WebElement element, String value){
+    protected void setValue(WebElement element, String value){
         element.clear();
         element.sendKeys(value);
     }
 
-    public WebElement getElement(SearchContext parent, By bySelector) {
+    protected WebElement getElement(SearchContext parent, By bySelector) {
         WebElement element = findElement(parent, bySelector);
         if (element == null){
             throw new InvalidArgumentException(String.format(ELEMENT_NOT_FOUND, bySelector));
@@ -43,11 +43,11 @@ public class WebDriverHelper {
         return element;
     }
 
-    public WebElement getElement(By bySelector) {
+    protected WebElement getElement(By bySelector) {
         return this.getElement(ContextHolder.getDriver(), bySelector);
     }
 
-    public WebElement findElement(SearchContext parent, By bySelector) {
+    protected WebElement findElement(SearchContext parent, By bySelector) {
         WebElement element = null;
         if (parent != null) {
             try {
@@ -61,11 +61,11 @@ public class WebDriverHelper {
         return element;
     }
 
-    public WebElement findElement(By bySelector) {
+    protected WebElement findElement(By bySelector) {
         return this.findElement(ContextHolder.getDriver(), bySelector);
     }
 
-    public List<WebElement> findElements(SearchContext parent, By bySelector) {
+    protected List<WebElement> findElements(SearchContext parent, By bySelector) {
         List<WebElement> elements = new ArrayList<WebElement>();
         if (parent != null) {
             try {
@@ -79,11 +79,11 @@ public class WebDriverHelper {
         return elements;
     }
 
-    public List<WebElement> findElements(By bySelector) {
+    protected List<WebElement> findElements(By bySelector) {
         return this.findElements(ContextHolder.getDriver(), bySelector);
     }
 
-    public boolean isElementExists(SearchContext parent, By bySelector) {
+    protected boolean isElementExists(SearchContext parent, By bySelector) {
         try {
             ContextHolder.getDriverManager().resetImplicitlyWait();
             return this.findElement(parent, bySelector) != null;
@@ -96,11 +96,42 @@ public class WebDriverHelper {
         }
     }
 
-    public boolean isElementExists(By bySelector) {
+    protected boolean isElementExists(By bySelector) {
         return this.isElementExists(ContextHolder.getDriver(), bySelector);
     }
 
-    public WebElement waitForWebElement(final SearchContext parent, final By bySelector){
+    protected boolean isElementDisplayed(WebElement element){
+        boolean displayed = false;
+        if(element != null){
+            try{
+                displayed = element.isDisplayed();
+            } catch(NoSuchElementException | StaleElementReferenceException ex){
+                displayed = false;
+            }
+        }
+        return displayed;
+    }
+
+    protected boolean isElementDisplayed(SearchContext parent, By bySelector){
+        try {
+            ContextHolder.getDriverManager().resetImplicitlyWait();
+            return this.isElementDisplayed( this.findElement(parent, bySelector) );
+        }
+        catch (Exception ignored){
+            return false;
+        }
+        finally {
+            ContextHolder.getDriverManager().setImplicitlyWait();
+        }
+    }
+
+    protected boolean isElementDisplayed(By bySelector){
+        return isElementDisplayed(ContextHolder.getDriver(), bySelector);
+    }
+
+    //=====================    Wait elements section   ==================================
+
+    protected WebElement waitForWebElement(final SearchContext parent, final By bySelector){
         WebElement element;
         try{
             final WebDriverHelper that = this;
@@ -112,7 +143,91 @@ public class WebDriverHelper {
         return element;
     }
 
-    public WebElement waitForWebElement(final By bySelector) {
+    protected WebElement waitForWebElement(final By bySelector) {
         return this.waitForWebElement(ContextHolder.getDriver(), bySelector);
+    }
+
+    protected boolean waitForWebElementNotExist(final SearchContext parent, final By bySelector, Integer timeout){
+        boolean result = false;
+        try{
+            final WebDriverHelper that = this;
+            ContextHolder.getDriverManager().resetImplicitlyWait();
+            result = (new WebDriverWait(ContextHolder.getDriver(), timeout))
+                    .until(d -> !that.isElementExists(parent, bySelector));
+        } catch (TimeoutException ex) {
+            result = false;
+        }
+        finally {
+            ContextHolder.getDriverManager().setImplicitlyWait();
+        }
+        return result;
+    }
+
+    protected boolean waitForWebElementNotExist(final SearchContext parent, final By bySelector) {
+        return waitForWebElementNotExist(parent, bySelector, DriverManager.getImplicitlyWait());
+    }
+
+    protected boolean waitForWebElementNotExist(final By bySelector, Integer timeout) {
+        return waitForWebElementNotExist(ContextHolder.getDriver(), bySelector, timeout);
+    }
+
+    protected boolean waitForWebElementNotExist(final By bySelector){
+        return this.waitForWebElementNotExist(ContextHolder.getDriver(), bySelector, DriverManager.getImplicitlyWait());
+    }
+
+    protected Boolean waitForWebElementIsDisplayed(final SearchContext parent, final By bySelector, Integer timeout){
+        Boolean result = false;
+        try{
+            final WebDriverHelper that = this;
+            ContextHolder.getDriverManager().resetImplicitlyWait();
+            result = (new WebDriverWait(ContextHolder.getDriver(), timeout))
+                    .until(d -> that.isElementDisplayed(parent, bySelector));
+        } catch (TimeoutException ex){
+            result = false;
+        }
+        finally {
+            ContextHolder.getDriverManager().setImplicitlyWait();
+        }
+        return result;
+    }
+
+    protected Boolean waitForWebElementIsDisplayed(final SearchContext parent, final By bySelector) {
+        return waitForWebElementIsDisplayed(parent, bySelector, DriverManager.getImplicitlyWait());
+    }
+
+    protected Boolean waitForWebElementIsDisplayed(final By bySelector, Integer timeout) {
+        return waitForWebElementIsDisplayed(ContextHolder.getDriver(), bySelector, timeout);
+    }
+
+    protected Boolean waitForWebElementIsDisplayed(final By bySelector){
+        return this.waitForWebElementIsDisplayed(ContextHolder.getDriver(), bySelector, DriverManager.getImplicitlyWait());
+    }
+
+    protected Boolean waitForWebElementNotDisplayed(final SearchContext parent, final By bySelector, Integer timeout){
+        Boolean result = false;
+        try{
+            final WebDriverHelper that = this;
+            ContextHolder.getDriverManager().resetImplicitlyWait();
+            result = (new WebDriverWait(ContextHolder.getDriver(), timeout))
+                    .until(d -> !that.isElementDisplayed(parent, bySelector));
+        } catch (TimeoutException ex){
+            result = false;
+        }
+        finally {
+            ContextHolder.getDriverManager().setImplicitlyWait();
+        }
+        return result;
+    }
+
+    protected Boolean waitForWebElementNotDisplayed(final SearchContext parent, final By bySelector) {
+        return waitForWebElementNotDisplayed(parent, bySelector, DriverManager.getImplicitlyWait());
+    }
+
+    protected Boolean waitForWebElementNotDisplayed(final By bySelector, Integer timeout) {
+        return waitForWebElementNotDisplayed(ContextHolder.getDriver(), bySelector, timeout);
+    }
+
+    protected Boolean waitForWebElementNotDisplayed(final By bySelector){
+        return this.waitForWebElementNotDisplayed(ContextHolder.getDriver(), bySelector, DriverManager.getImplicitlyWait());
     }
 }

@@ -2,8 +2,10 @@ package ru.tki.po;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import ru.tki.ContextHolder;
 import ru.tki.models.*;
 import ru.tki.models.actions.FleetAction;
+import ru.tki.models.tasks.CheckColonyTask;
 import ru.tki.models.types.MissionType;
 import ru.tki.utils.DataParser;
 
@@ -36,7 +38,6 @@ public class FleetDetailsPage extends PageObject {
         fleetAction.setMissionType(getMissionType(element));
         if(fleetAction.getMissionType() == MissionType.EXPEDITION){
             empire.addActiveExpedition();
-
         }
         AbstractPlanet planet = empire.findPlanet(getFrom(element));
         if (null != planet) {
@@ -66,6 +67,9 @@ public class FleetDetailsPage extends PageObject {
             if (null != duration) {
                 fleetAction.addDuration(duration);
             }
+        }
+        if(fleetAction.getMissionType() == MissionType.COLONIZATION){
+            fleetAction.setSubtask(new CheckColonyTask(empire, fleetAction.getTargetPlanet(), ContextHolder.getBotConfigMain().getColonyMinSize()));
         }
         return fleetAction;
     }
@@ -129,10 +133,16 @@ public class FleetDetailsPage extends PageObject {
     }
 
     public Integer getActiveExpeditions() {
-        return Integer.parseInt(getElement(EXPEDITION_FLEETS_COUNT).getText());
+        if(isElementExists(EXPEDITION_FLEETS_COUNT)) {
+            return Integer.parseInt(getElement(EXPEDITION_FLEETS_COUNT).getText());
+        }
+        return 0;
     }
 
     public Integer getActiveFleets() {
-        return Integer.parseInt(getElement(CURRENT_FLEETS_COUNT).getText());
+        if(isElementExists(CURRENT_FLEETS_COUNT)) {
+            return Integer.parseInt(getElement(CURRENT_FLEETS_COUNT).getText());
+        }
+        return 0;
     }
 }

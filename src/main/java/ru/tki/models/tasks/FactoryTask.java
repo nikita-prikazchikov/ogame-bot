@@ -3,6 +3,7 @@ package ru.tki.models.tasks;
 import ru.tki.models.*;
 import ru.tki.models.actions.FactoryAction;
 import ru.tki.models.types.FactoryType;
+import ru.tki.models.types.UpdateTaskType;
 import ru.tki.po.BasePage;
 import ru.tki.po.FactoriesPage;
 import ru.tki.po.components.BuildDetailComponent;
@@ -19,6 +20,24 @@ public class FactoryTask extends Task {
         setPlanet(planet);
         if(planet.isPlanet()) {
             setResources(OGameLibrary.getFactoryPrice(type, ((Planet)planet).getFactories().get(type)));
+        }
+        getPlanet().setBuildInProgress(true);
+        if (type == FactoryType.SHIPYARD) {
+            getPlanet().setShipyardBusy(true);
+        }
+        if (type == FactoryType.RESEARCH_LAB) {
+            empire.setResearchInProgress(true);
+        }
+    }
+
+    @Override
+    public void removeFromQueue() {
+        super.removeFromQueue();
+        if (type == FactoryType.RESEARCH_LAB) {
+            empire.setResearchInProgress(false);
+        }
+        if (type == FactoryType.SHIPYARD) {
+            getPlanet().setShipyardBusy(false);
         }
     }
 
@@ -48,18 +67,7 @@ public class FactoryTask extends Task {
         buildDetailComponent.build();
 
         getPlanet().setResources(basePage.resources.getResources());
-        getPlanet().setBuildInProgress(true);
-        if (type == FactoryType.SHIPYARD) {
-            getPlanet().setShipyardBusy(true);
-        }
-        if (type == FactoryType.RESEARCH_LAB) {
-            empire.setResearchInProgress(true);
-        }
-        if (getPlanet().isPlanet()) {
-            factories.set(type, factories.get(type) + 1);
-            ((Planet) getPlanet()).setFactories(factories);
-        }
-        empire.savePlanet(getPlanet());
+        action.setSubtask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.FACTORIES));
 
         return action;
     }

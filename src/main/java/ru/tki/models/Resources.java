@@ -84,6 +84,9 @@ public class Resources {
     }
 
     public Resources add (Resources resources){
+        if (resources == null){
+            return this;
+        }
         return new Resources(
                 metal + resources.getMetal(),
                 crystal + resources.getCrystal(),

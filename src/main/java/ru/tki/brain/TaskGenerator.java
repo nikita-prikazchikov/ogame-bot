@@ -3,6 +3,8 @@ package ru.tki.brain;
 import ru.tki.BotConfigMain;
 import ru.tki.ContextHolder;
 import ru.tki.models.*;
+import ru.tki.models.actions.FleetAction;
+import ru.tki.models.actions.ShipyardAction;
 import ru.tki.models.tasks.*;
 import ru.tki.models.types.*;
 
@@ -50,7 +52,7 @@ public class TaskGenerator {
                 if (OGameLibrary.canBuild(empire, planet, ShipType.SOLAR_SATELLITE)
                         && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.SOLAR_SATELLITE, 1))) {
                     Task task = new ShipyardTask(empire, planet, ShipType.SOLAR_SATELLITE, 1);
-                    task.setSubtask(new UpdatePlanetInfoTask(empire, planet));
+                    task.setSubtask(new UpdateInfoTask(empire, planet, UpdateTaskType.RESOURCES));
                     return task;
                 }
             }
@@ -64,12 +66,12 @@ public class TaskGenerator {
 
         task = getRequiredCargoTask(planet);
         if (task != null) {
-            task.setSubtask(new UpdatePlanetInfoTask(empire, planet));
+            task.setSubtask(new UpdateInfoTask(empire, planet, UpdateTaskType.FLEET));
             return task;
         }
         task = getDefenceTask(planet);
         if (task != null) {
-            task.setSubtask(new UpdatePlanetInfoTask(empire, planet));
+            task.setSubtask(new UpdateInfoTask(empire, planet, UpdateTaskType.DEFENCE));
             return task;
         }
 
@@ -113,39 +115,38 @@ public class TaskGenerator {
             }
             if (planet.isPlanet()) {
                 //Initial planet build
-                if (planet.getLevel() < 10) {
+                if (planet.getLevel() < 10 && empire.getPlanetTotalResources(planet).getCapacity() < 2000) {
                     // resources to build to 10 8 5 10 robots factory 4
                     return findResourcesOnMain(planet, new Resources(28000, 9600, 3000),
-                            new UpdatePlanetInfoTask(empire, planet));
+                            new UpdateInfoTask(empire, planet, UpdateTaskType.RESOURCES));
                 }
 
                 //Second level planet build
-                if (planet.getLevel() < 13) {
+                if (planet.getLevel() < 13 && empire.getPlanetTotalResources(planet).getCapacity() < 5000) {
                     // resources to build from 10 8 5 10 to 13 11 8 7 13
                     return findResourcesOnMain(planet, new Resources(37500, 13500, 1600),
-                            new UpdatePlanetInfoTask(empire, planet));
+                            new UpdateInfoTask(empire, planet, UpdateTaskType.RESOURCES));
                 }
                 //planets infrastructure is higher than 13
 
                 for (AbstractPlanet main : empire.getMainPlanets()) {
-                    if (!planet.equals(main) && !main.hasTask() && empire.canSendFleet()){
+                    if (!planet.equals(main) && !main.hasTask() && empire.canSendFleet()) {
                         //Find build task with extra resources from main planet
                         task = getTaskBuilding((Planet) planet, main.getResources());
-                        if (null == task){
+                        if (null == task) {
                             //Find research task
                             task = getTaskResearches((Planet) planet, empire.getResearches(), main.getResources());
                         }
-                        if( null != task ) {
+                        if (null != task) {
                             //If we find possible task then create fleet task for resources transport with subtask for execution
                             Resources requiredResources = task.getResources().deduct(planet.getResources());
                             Fleet fleet = main.getFleet().getRequiredFleet(requiredResources);
-                            if(main.getFleet().has(fleet)) {
-                                FleetTask task1 = new FleetTask(empire, main, planet, fleet, MissionType.TRANSPORT, requiredResources);
-                                task1.setSubtask(task);
-                                return task1;
-                            }
-                            else{
-                                task.remove();
+                            if (main.getFleet().has(fleet)) {
+                                FleetTask fleetTask = new FleetTask(empire, main, planet, fleet, MissionType.TRANSPORT, requiredResources);
+                                fleetTask.setSubtask(task);
+                                return fleetTask;
+                            } else {
+                                task.removeFromQueue();
                             }
                         }
                     }
@@ -158,13 +159,64 @@ public class TaskGenerator {
         return null;
     }
 
-    public Task sendExpedition(){
-        if(empire.getMaxExpeditions() > empire.getActiveExpeditions()
-                && empire.canSendFleet()){
-            for(AbstractPlanet planet: empire.getMainPlanets()){
-                if(!planet.hasTask()){
+    public Task getColonyTask() {
+        Integer currentPlanets = empire.getCurrentPlanetsCount();
+        Integer maxPlanets = empire.getMaxPlanetsCount();
+        if(!botConfig.getBuildColonies()){
+            return null;
+        }
+        if (currentPlanets >= maxPlanets) {
+            return null;
+        }
+        if (currentPlanets + empire.getActions().stream().filter(a ->
+                a instanceof FleetAction && ((FleetAction) a).getMissionType() == MissionType.COLONIZATION).count()
+                >= maxPlanets) {
+            //Colony ship flight in progress do nothing
+            return null;
+        } else {
+            //send colony ship if it exists
+            Fleet fleet = new Fleet(ShipType.COLONY_SHIP, 1);
+            for (AbstractPlanet planet : empire.getPlanets()) {
+                if (planet.getFleet().has(fleet)) {
+                    if (!empire.canSendFleet()) {
+                        return null;
+                    } else {
+                        AbstractPlanet colony = empire.findNewColony(planet);
+                        FleetTask t = new FleetTask(empire, planet, colony, fleet, MissionType.COLONIZATION);
+                        t.setSubtask(new CheckColonyTask(empire, colony, botConfig.getColonyMinSize()));
+                        return t;
+                    }
+                }
+            }
+        }
+
+        if (currentPlanets + empire.getActions().stream().filter(a ->
+                a instanceof ShipyardAction && ((ShipyardAction) a).getType() == ShipType.COLONY_SHIP).count()
+                >= maxPlanets) {
+            //Colony ship building in progress wait for now
+            return null;
+        } else {
+            //Build colony ship
+            for (AbstractPlanet planet : empire.getPlanets()) {
+                if (planet.isPlanet()
+                        && OGameLibrary.canBuild(empire, (Planet) planet, ShipType.COLONY_SHIP)
+                        && planet.getResources().isEnoughFor(OGameLibrary.getShipPrice(ShipType.COLONY_SHIP))
+                        && !planet.getShipyardBusy()
+                        && !planet.hasTask()) {
+                    return new ShipyardTask(empire, planet, ShipType.COLONY_SHIP, 1);
+                }
+            }
+        }
+        return null;
+    }
+
+    public Task sendExpedition() {
+        if (empire.getMaxExpeditions() > empire.getActiveExpeditions()
+                && empire.canSendFleet()) {
+            for (AbstractPlanet planet : empire.getMainPlanets()) {
+                if (!planet.hasTask()) {
                     Fleet fleet = empire.getFleetForExpedition(planet);
-                    if(!fleet.isEmpty()) {
+                    if (!fleet.isEmpty()) {
                         return new FleetTask(empire, planet, empire.getPlanetForExpedition(planet), fleet, MissionType.EXPEDITION);
                     }
                 }
@@ -173,11 +225,11 @@ public class TaskGenerator {
         return null;
     }
 
-    private Task findResourcesOnMain(AbstractPlanet planet, Resources resources, Task subtask){
+    private Task findResourcesOnMain(AbstractPlanet planet, Resources resources, Task subtask) {
         for (AbstractPlanet main : empire.getMainPlanets()) {
-            if (!planet.equals(main) && !main.hasTask() && main.hasResources(resources) && empire.canSendFleet()){
+            if (!planet.equals(main) && !main.hasTask() && main.hasResources(resources) && empire.canSendFleet()) {
                 System.out.println(String.format("Move resources %s from main %s to colony planet %s for initial builds",
-                        resources, main, planet));
+                        resources, main.getCoordinates().getFormattedCoordinates(), planet.getCoordinates().getFormattedCoordinates()));
                 FleetTask task = new FleetTask(empire, main, planet,
                         main.getFleet().getRequiredFleet(resources),
                         MissionType.TRANSPORT,
@@ -202,7 +254,7 @@ public class TaskGenerator {
                     && resources.isEnoughFor(OGameLibrary.getShipPrice(ShipType.SMALL_CARGO).multiply(buildAmount))) {
 
                 System.out.println(String.format("Details: need to build %d %s on %s planet to meet production capacity %s by small cargo" +
-                                " Current fleet: %s" ,
+                                " Current fleet: %s",
                         buildAmount, ShipType.SMALL_CARGO, planet.getCoordinates(), planetProduction, planet.getFleet().getDetails()));
                 return new ShipyardTask(empire, planet, ShipType.SMALL_CARGO, buildAmount);
             }

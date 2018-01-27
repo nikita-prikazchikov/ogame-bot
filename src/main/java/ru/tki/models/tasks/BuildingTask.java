@@ -3,6 +3,7 @@ package ru.tki.models.tasks;
 import ru.tki.models.*;
 import ru.tki.models.actions.BuildingAction;
 import ru.tki.models.types.BuildingType;
+import ru.tki.models.types.UpdateTaskType;
 import ru.tki.po.BasePage;
 import ru.tki.po.BuildingsPage;
 import ru.tki.po.components.BuildDetailComponent;
@@ -21,6 +22,13 @@ public class BuildingTask extends Task {
         if(planet.isPlanet()) {
             setResources(OGameLibrary.getBuildingPrice(type, ((Planet)planet).getBuildings().get(type)));
         }
+        planet.setBuildInProgress(true);
+    }
+
+    @Override
+    public void removeFromQueue() {
+        super.removeFromQueue();
+        getPlanet().setBuildInProgress(false);
     }
 
     public BuildingType getType() {
@@ -42,7 +50,6 @@ public class BuildingTask extends Task {
         basePage.leftMenu.openResources();
 
         BuildingsPage buildingsPage = new BuildingsPage();
-        Buildings buildings = buildingsPage.getBuildings();
         buildingsPage.select(type);
 
         BuildDetailComponent buildDetailComponent = new BuildDetailComponent();
@@ -50,12 +57,7 @@ public class BuildingTask extends Task {
         buildDetailComponent.build();
 
         getPlanet().setResources(basePage.resources.getResources());
-        getPlanet().setBuildInProgress(true);
-        if(getPlanet().isPlanet()){
-            buildings.set(type, buildings.get(type) + 1);
-            ((Planet) getPlanet()).setBuildings(buildings);
-        }
-        empire.savePlanet(getPlanet());
+        action.setSubtask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.BUILDINGS));
 
         return action;
     }

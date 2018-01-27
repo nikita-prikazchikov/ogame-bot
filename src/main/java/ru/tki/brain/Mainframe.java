@@ -9,6 +9,7 @@ import ru.tki.models.actions.Action;
 import ru.tki.models.actions.FleetAction;
 import ru.tki.models.tasks.*;
 import ru.tki.models.types.PlanetType;
+import ru.tki.models.types.UpdateTaskType;
 import ru.tki.po.LoginPage;
 
 import java.time.Duration;
@@ -139,7 +140,7 @@ public class Mainframe {
         empire.getActions().stream().filter(action1 -> action1 instanceof FleetAction).map(a -> (FleetAction)a).forEach(action -> {
             if (action.isFinished()) {
                 action.complete(empire);
-                empire.addTask(new UpdatePlanetInfoTask(empire, action.getPlanet()));
+                empire.addTask(new UpdateInfoTask(empire, action.getPlanet(), UpdateTaskType.FLEET));
                 actions.add(action);
             } else if (action.isTargetAchieved()) {
                 action.setTargetAchieved();
@@ -148,7 +149,7 @@ public class Mainframe {
                     action.setSubtask(null);
                 }
                 if(empire.isMyPlanet(action.getTargetPlanet())) {
-                    empire.addTask(new UpdatePlanetInfoTask(empire, action.getTargetPlanet()));
+                    empire.addTask(new UpdateInfoTask(empire, action.getTargetPlanet(), UpdateTaskType.FLEET));
                 }
             }
         });
@@ -159,6 +160,7 @@ public class Mainframe {
     private void think() {
         //minimize main planets count first
         empire.addTask(taskGenerator.checkMainPlanetsCount());
+        empire.addTask(taskGenerator.getColonyTask());
 
         //Find appropriate task on planets thyself
         for (AbstractPlanet planet : empire.getPlanets()) {
@@ -179,6 +181,7 @@ public class Mainframe {
 
         //Find possible task with adding resources by transport them
         empire.addTask(taskGenerator.checkTransportForBuild());
+        //empire.addTask(taskGenerator.getColonyTask());
         empire.addTask(taskGenerator.sendExpedition());
     }
 

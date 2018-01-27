@@ -3,9 +3,9 @@ package ru.tki.models.tasks;
 import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
 import ru.tki.models.OGameLibrary;
-import ru.tki.models.Researches;
 import ru.tki.models.actions.ResearchAction;
 import ru.tki.models.types.ResearchType;
+import ru.tki.models.types.UpdateTaskType;
 import ru.tki.po.BasePage;
 import ru.tki.po.ResearchesPage;
 import ru.tki.po.components.BuildDetailComponent;
@@ -26,8 +26,8 @@ public class ResearchTask extends Task {
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void removeFromQueue() {
+        super.removeFromQueue();
         empire.setResearchInProgress(false);
     }
 
@@ -49,7 +49,6 @@ public class ResearchTask extends Task {
         basePage.leftMenu.openResearch();
 
         ResearchesPage researchesPage = new ResearchesPage();
-        Researches researches = researchesPage.getResearches();
         researchesPage.select(type);
 
         BuildDetailComponent buildDetailComponent = new BuildDetailComponent();
@@ -57,8 +56,7 @@ public class ResearchTask extends Task {
         buildDetailComponent.build();
 
         getPlanet().setResources(basePage.resources.getResources());
-        empire.setResearchInProgress(true);
-        action.setSubtask(new UpdateCurrentResearchesTask(empire));
+        action.setSubtask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.RESEARCHES));
 
         return action;
     }

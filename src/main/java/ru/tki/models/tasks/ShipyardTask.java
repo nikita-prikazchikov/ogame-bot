@@ -2,9 +2,9 @@ package ru.tki.models.tasks;
 
 import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
-import ru.tki.models.Fleet;
 import ru.tki.models.actions.ShipyardAction;
 import ru.tki.models.types.ShipType;
+import ru.tki.models.types.UpdateTaskType;
 import ru.tki.po.BasePage;
 import ru.tki.po.ShipyardPage;
 import ru.tki.po.components.BuildDetailComponent;
@@ -24,6 +24,7 @@ public class ShipyardTask extends Task {
         this.amount = amount;
         setPlanet(planet);
         this.type = type;
+        getPlanet().setShipyardBusy(true);
     }
 
     public ShipType getType() {
@@ -41,14 +42,13 @@ public class ShipyardTask extends Task {
     @Override
     public ShipyardAction execute() {
         super.execute();
-        ShipyardAction action = new ShipyardAction(getPlanet());
+        ShipyardAction action = new ShipyardAction(getPlanet(), type);
 
         BasePage basePage = new BasePage();
         basePage.myWorlds.selectPlanet(getPlanet());
         basePage.leftMenu.openShipyard();
 
         ShipyardPage shipyardPage = new ShipyardPage();
-        Fleet fleet = shipyardPage.getFleet();
         shipyardPage.select(type);
 
         BuildDetailComponent buildDetailComponent = new BuildDetailComponent();
@@ -58,10 +58,7 @@ public class ShipyardTask extends Task {
         buildDetailComponent.build();
 
         getPlanet().setResources(basePage.resources.getResources());
-        getPlanet().setShipyardBusy(true);
-        fleet.set(type, fleet.get(type) + 1);
-        getPlanet().setFleet(fleet);
-        empire.savePlanet(getPlanet());
+        action.setSubtask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.FLEET));
 
         return action;
     }

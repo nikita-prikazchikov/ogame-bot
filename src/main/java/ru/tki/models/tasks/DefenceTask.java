@@ -20,6 +20,7 @@ public class DefenceTask extends Task {
         this.amount = amount;
         setPlanet(planet);
         this.type = type;
+        getPlanet().setShipyardBusy(true);
     }
 
     public DefenceType getType() {
@@ -51,7 +52,6 @@ public class DefenceTask extends Task {
         buildDetailComponent.build();
 
         getPlanet().setResources(basePage.resources.getResources());
-        getPlanet().setShipyardBusy(true);
 
         return action;
     }

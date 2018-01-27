@@ -5,6 +5,7 @@ import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
 import ru.tki.models.actions.Action;
 import ru.tki.models.actions.FleetAction;
+import ru.tki.models.types.UpdateTaskType;
 import ru.tki.po.BasePage;
 import ru.tki.po.FleetDetailsPage;
 import ru.tki.po.OverviewPage;
@@ -14,7 +15,7 @@ import java.util.List;
 //Identify existing actions like buildings, researches and shipyard action
 public class CheckExistingActionsTask extends Task {
 
-    transient  Empire empire;
+    transient Empire empire;
 
     public CheckExistingActionsTask(Empire empire) {
         this.empire = empire;
@@ -29,7 +30,7 @@ public class CheckExistingActionsTask extends Task {
         OverviewPage overviewPage = new OverviewPage();
 
         Action action = overviewPage.getResearchAction(empire, empire.getPlanets().get(0));
-        addActionWithUpdateSubtask(action, new UpdateCurrentResearchesTask(empire));
+        addActionWithUpdateSubtask(action, new UpdateInfoTask(empire, empire.selectMain(), UpdateTaskType.RESEARCHES));
 
         navigation.openFleetMove();
         FleetDetailsPage fleetDetailsPage = new FleetDetailsPage();
@@ -47,10 +48,10 @@ public class CheckExistingActionsTask extends Task {
             planet.logResources();
 
             action = overviewPage.getBuildAction(planet);
-            addActionWithUpdateSubtask(action, new UpdatePlanetInfoTask(empire, planet));
+            addActionWithUpdateSubtask(action, new UpdateInfoTask(empire, planet, UpdateTaskType.All));
 
             action = overviewPage.getShipyardAction(planet);
-            addActionWithUpdateSubtask(action, new UpdatePlanetInfoTask(empire, planet));
+            addActionWithUpdateSubtask(action, new UpdateInfoTask(empire, planet, UpdateTaskType.All));
         }
         return null;
     }

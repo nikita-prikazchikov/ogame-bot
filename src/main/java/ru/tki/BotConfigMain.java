@@ -22,6 +22,16 @@ public class BotConfigMain {
     Integer executionHours = 0;
     Integer executionMinutes = 0;
 
+    public Integer getColonyMinSize() {
+        return colonyMinSize;
+    }
+
+    public void setColonyMinSize(Integer colonyMinSize) {
+        this.colonyMinSize = colonyMinSize;
+    }
+
+    Integer colonyMinSize;
+
     Boolean logState = true;
 
     Properties properties;

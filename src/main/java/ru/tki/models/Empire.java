@@ -33,9 +33,10 @@ public class Empire {
     private List<Task>   tasks   = new ArrayList<>();
     private List<Action> actions = new ArrayList<>();
 
-    private           File storageDirectory;
-    private           File stateDirectory;
-    private transient Gson gson;
+    private           File   storageDirectory;
+    private           File   stateDirectory;
+    private transient Gson   gson;
+    private transient Galaxy galaxy;
 
     private boolean isUnderAttack;
     private boolean researchInProgress = false;
@@ -57,6 +58,7 @@ public class Empire {
         createDirectory(stateDirectory);
 
         gson = new GsonBuilder().setPrettyPrinting().create();
+        galaxy = new Galaxy();
 
         // Timeframe for transport resources from colony to main planet
         productionTimeHours = 4;
@@ -144,7 +146,7 @@ public class Empire {
         return activeFleets;
     }
 
-    public void setActiveFleets(Integer count){
+    public void setActiveFleets(Integer count) {
         this.activeFleets = count;
     }
 
@@ -202,6 +204,14 @@ public class Empire {
         return null;
     }
 
+    public Integer getCurrentPlanetsCount() {
+        return ((Long) planets.stream().filter(AbstractPlanet::isPlanet).count()).intValue();
+    }
+
+    public Integer getMaxPlanetsCount() {
+        return (researches.getAstrophysics() + 1) / 2 + 1;
+    }
+
     public boolean isMyPlanet(AbstractPlanet planet) {
         return null != findPlanet(planet.getCoordinates());
     }
@@ -238,9 +248,13 @@ public class Empire {
         }
     }
 
+    public AbstractPlanet findNewColony(AbstractPlanet planet) {
+        return galaxy.findNewColony(planet);
+    }
+
     public AbstractPlanet getPlanetForExpedition(AbstractPlanet planet) {
         Coordinates coordinates = planet.getCoordinates();
-        if(getMaxExpeditions() == 1 || getActiveExpeditions() == 0 || Math.random() > 0.4) {
+        if (getMaxExpeditions() == 1 || getActiveExpeditions() == 0 || Math.random() > 0.4) {
             return new Planet(new Coordinates(
                     Integer.parseInt(coordinates.getGalaxy()),
                     Integer.parseInt(coordinates.getSystem()),
@@ -272,6 +286,18 @@ public class Empire {
                 .map(FleetAction::getFleet)
                 .reduce(fleet, Fleet::add);
         return fleet;
+    }
+
+    public Resources getPlanetTotalResources(AbstractPlanet planet) {
+        Resources resources = planet.getResources();
+        Supplier<Stream<FleetAction>> fleetActions = () -> actions.stream().filter(action -> action instanceof FleetAction).map(action -> (FleetAction) action);
+        fleetActions.get().filter(fleetAction -> fleetAction.getTargetPlanet() != null
+                && fleetAction.getTargetPlanet().equals(planet)
+                && (fleetAction.getMissionType() == MissionType.KEEP
+                || fleetAction.getMissionType() == MissionType.TRANSPORT))
+                .map(FleetAction::getResources)
+                .reduce(resources, Resources::add);
+        return resources;
     }
 
     public Integer getProductionOnPlanet(AbstractPlanet planet) {

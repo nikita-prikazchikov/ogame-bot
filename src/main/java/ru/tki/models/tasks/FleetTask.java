@@ -4,6 +4,7 @@ import ru.tki.models.*;
 import ru.tki.models.actions.FleetAction;
 import ru.tki.models.types.FleetSpeed;
 import ru.tki.models.types.MissionType;
+import ru.tki.models.types.UpdateTaskType;
 import ru.tki.po.BasePage;
 import ru.tki.po.FleetPage;
 
@@ -132,9 +133,8 @@ public class FleetTask extends Task {
         fleetPage.clickStart();
         fleetPage.waitPage1();
 
-        getPlanet().setFleet(fleetPage.getFleet());
         getPlanet().setResources(basePage.resources.getResources());
-        empire.savePlanet(getPlanet());
+        empire.addTask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.FLEET));
         //Add expedition only after it was actually sent
         if (missionType == MissionType.EXPEDITION) {
             empire.addActiveExpedition();

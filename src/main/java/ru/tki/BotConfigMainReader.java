@@ -37,6 +37,8 @@ public class BotConfigMainReader {
             config.setExecutionHours(Integer.parseInt(prop.getProperty("empire.execution.hours", "0")));
             config.setExecutionMinutes(Integer.parseInt(prop.getProperty("empire.execution.minutes", "0")));
 
+            config.setColonyMinSize(Integer.parseInt(prop.getProperty("empire.colony.min.size", "180")));
+
             config.setHeadless(Boolean.parseBoolean(prop.getProperty("chrome.headless", "false")));
 
             config.setBuildResources(Boolean.parseBoolean(prop.getProperty("empire.build.resources", "true")));

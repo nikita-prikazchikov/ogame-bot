@@ -24,7 +24,7 @@ public abstract class Task {
     }
 
     //Delete task and all it blocking requirements
-    public void remove(){
+    public void removeFromQueue(){
         if (null != getPlanet()) {
             getPlanet().setHasTask(false);
         }
@@ -35,7 +35,9 @@ public abstract class Task {
     }
 
     public void setPlanet(AbstractPlanet planet, Boolean planetWillBeChanged) {
-        planet.setHasTask(planetWillBeChanged);
+        if(planetWillBeChanged) {
+            planet.setHasTask(true);
+        }
         this.planet = planet;
     }
 
