@@ -14,6 +14,10 @@ public class FactoryAction extends Action {
         name = "Factory";
     }
 
+    public FactoryType getFactoryType() {
+        return factoryType;
+    }
+
     @Override
     public void complete(Empire empire) {
         planet.setBuildInProgress(false);

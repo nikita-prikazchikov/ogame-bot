@@ -1,9 +1,11 @@
 package ru.tki.models.tasks;
 
+import com.github.javafaker.Faker;
 import ru.tki.executor.Navigation;
 import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
 import ru.tki.models.actions.Action;
+import ru.tki.models.actions.BuildingAction;
 import ru.tki.models.types.UpdateTaskType;
 import ru.tki.po.OverviewPage;
 
@@ -26,18 +28,26 @@ public class CheckColonyTask extends Task {
         navigation.openOverview();
         navigation.selectPlanet(getPlanet());
 
+        AbstractPlanet planet = getPlanet();
         OverviewPage overviewPage = new OverviewPage();
-        //TODO write code for colony remove. Keep all planets now
-//        if(overviewPage.getPlanetSize() < size){
-        if(overviewPage.getPlanetSize() < 0){
-            //remove planet
+        if(overviewPage.getPlanetSize() < size){
+            System.out.println(String.format("New planet %s was found and it is too small. We have to delete it and find new one.", getPlanet().getCoordinates().getFormattedCoordinates()));
+            overviewPage.leavePlanet();
             return null;
         }
-        // TODO: 28.01.2018 Write code for colony rename
+
+        Faker faker = new Faker();
+        String name = faker.lordOfTheRings().location();
+        overviewPage.renamePlanet(name);
+
+        planet.setName(overviewPage.getPlanetName());
+        planet.setSize(overviewPage.getPlanetSize());
+
         System.out.println(String.format("New planet was found and added to the empire: %s", getPlanet().getCoordinates().getFormattedCoordinates()));
         empire.addPlanet(getPlanet());
-        empire.addTask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.All));
-        return null;
+        Action action = new BuildingAction(planet);
+        action.addTask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.All));
+        return action;
     }
 
     @Override

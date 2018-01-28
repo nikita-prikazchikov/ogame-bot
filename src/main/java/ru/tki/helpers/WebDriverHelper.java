@@ -244,4 +244,29 @@ public class WebDriverHelper {
     protected Boolean waitForWebElementNotDisplayed(final By bySelector){
         return this.waitForWebElementNotDisplayed(ContextHolder.getDriver(), bySelector, DriverManager.getImplicitlyWait());
     }
+
+    protected Boolean waitForWebElementStopMoving(final WebElement element){
+        Boolean result;
+        try{
+            final WebDriverHelper that = this;
+            result = (new WebDriverWait(ContextHolder.getDriver(), DriverManager.getImplicitlyWait()))
+                    .until(d -> {
+                        Point p = element.getLocation();
+                        that.pause(200); // wait for one second
+                        Point c = element.getLocation();
+                        return (p.getX() == c.getX()) && (p.getY() == c.getY());
+                    });
+        } catch (TimeoutException ex){
+            result = false;
+        }
+        return result;
+    }
+
+    protected Boolean waitForWebElementStopMoving(By bySelector) {
+        return waitForWebElementStopMoving(getElement(bySelector));
+    }
+
+    protected Boolean waitForWebElementStopMoving(final SearchContext parent, final By bySelector) {
+        return waitForWebElementStopMoving(getElement(parent, bySelector));
+    }
 }

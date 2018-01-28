@@ -240,7 +240,7 @@ public class Empire {
     }
 
     public boolean isPlanetMain(AbstractPlanet planet) {
-        return getPlanetTotalFleet(planet).getCapacity() * .95 > getProductionOnPlanetInTimeframe(planet);
+        return getPlanetTotalFleet(planet).getCapacity() * .9 > getProductionOnPlanetInTimeframe(planet);
     }
 
     public Fleet getFleetForExpedition(AbstractPlanet planet) {
@@ -301,7 +301,8 @@ public class Empire {
         fleetActions.get().filter(fleetAction -> fleetAction.getPlanet().equals(planet)
                 && (fleetAction.getMissionType() == MissionType.TRANSPORT
                 || fleetAction.getMissionType() == MissionType.ATTACK
-                || fleetAction.getMissionType() == MissionType.EXPEDITION))
+                || fleetAction.getMissionType() == MissionType.JOINT_ATTACK
+                || fleetAction.getMissionType() == MissionType.RECYCLING))
                 .map(FleetAction::getFleet)
                 .reduce(fleet, Fleet::add);
         return fleet;

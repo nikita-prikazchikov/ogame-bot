@@ -1,6 +1,7 @@
 package ru.tki.po;
 
 import org.openqa.selenium.By;
+import ru.tki.ContextHolder;
 import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
 import ru.tki.models.actions.Action;
@@ -23,6 +24,13 @@ public class OverviewPage extends PageObject {
     private static final By RESEARCH_DURATION = By.cssSelector("#researchCountdown");
     private static final By SHIPYARD_DURATION = By.cssSelector(".shipAllCountdown");
 
+    private static final By PLANET_MOVE_RENAME_LINK = By.cssSelector(".planetMoveOverviewGivUpLink");
+    private static final By PLANET_NAME_INPUT       = By.cssSelector("#planetName");
+    private static final By PLANET_RENAME_BUTTON    = By.cssSelector("#planetMaintenance .btn_blue");
+    private static final By LEAVE_COLONY_BUTTON    = By.cssSelector("#block");
+    private static final By LEAVE_PASSWORD_FIELD    = By.cssSelector(".pw_field");
+    private static final By CONFIRM_LEAVE_BUTTON    = By.cssSelector("#validate .btn_blue");
+
 
     public String getPlanetName() {
         waitForWebElement(PLANET_NAME);
@@ -30,6 +38,7 @@ public class OverviewPage extends PageObject {
     }
 
     public Integer getPlanetSize() {
+        waitForWebElementStopMoving(PLANET_SIZE);
         Matcher m = Pattern.compile("\\d+/(\\d+)").matcher(getElement(PLANET_SIZE).getText());
         if (m.find()) {
             return Integer.parseInt(m.group(1));
@@ -68,5 +77,21 @@ public class OverviewPage extends PageObject {
         }
         planet.setShipyardBusy(false);
         return null;
+    }
+
+    public void renamePlanet(String name) {
+        getElement(PLANET_MOVE_RENAME_LINK).click();
+        waitForWebElementIsDisplayed(PLANET_NAME_INPUT);
+        setValue(getElement(PLANET_NAME_INPUT), name);
+        getElement(PLANET_RENAME_BUTTON).click();
+    }
+
+    public void leavePlanet(){
+        getElement(PLANET_MOVE_RENAME_LINK).click();
+        waitForWebElementIsDisplayed(LEAVE_COLONY_BUTTON);
+        getElement(LEAVE_COLONY_BUTTON).click();
+        waitForWebElementIsDisplayed(LEAVE_PASSWORD_FIELD);
+        setValue(getElement(LEAVE_PASSWORD_FIELD), ContextHolder.getBotConfigMain().getPassword());
+        getElement(CONFIRM_LEAVE_BUTTON).click();
     }
 }

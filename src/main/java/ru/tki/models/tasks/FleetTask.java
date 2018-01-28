@@ -1,10 +1,12 @@
 package ru.tki.models.tasks;
 
-import ru.tki.models.*;
+import ru.tki.models.AbstractPlanet;
+import ru.tki.models.Empire;
+import ru.tki.models.Fleet;
+import ru.tki.models.Resources;
 import ru.tki.models.actions.FleetAction;
 import ru.tki.models.types.FleetSpeed;
 import ru.tki.models.types.MissionType;
-import ru.tki.models.types.UpdateTaskType;
 import ru.tki.po.BasePage;
 import ru.tki.po.FleetPage;
 
@@ -134,7 +136,8 @@ public class FleetTask extends Task {
         fleetPage.waitPage1();
 
         getPlanet().setResources(basePage.resources.getResources());
-        addTask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.FLEET));
+        //Update fleet on planet right after start
+        getPlanet().setFleet(fleetPage.getFleet());
         //Add expedition only after it was actually sent
         if (missionType == MissionType.EXPEDITION) {
             empire.addActiveExpedition();

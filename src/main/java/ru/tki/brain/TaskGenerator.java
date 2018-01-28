@@ -83,7 +83,6 @@ public class TaskGenerator {
         return null;
     }
 
-
     //Minimize main planets count in the empire
     // Keep them 2 for now
     public Task checkMainPlanetsCount() {
@@ -92,12 +91,12 @@ public class TaskGenerator {
         if (mainPlanets.get().count() > 2 && empire.canSendFleet()) {
             AbstractPlanet smallest = mainPlanets.get().min(Comparator.comparingInt(AbstractPlanet::getLevel)).get();
             AbstractPlanet biggest = mainPlanets.get().max(Comparator.comparingInt(AbstractPlanet::getLevel)).get();
-            System.out.println(String.format("There are more than 2 main planets. Move resources from planet %s to %s",
-                    smallest.getCoordinates(), biggest.getCoordinates()));
-            return new FleetTask(empire, smallest, biggest,
-                    smallest.getFleet().deduct(smallest.getFleet().getRequiredFleet(empire.getProductionOnPlanetInTimeframe(smallest))),
-                    MissionType.KEEP,
-                    smallest.getResources());
+            Fleet fleet = smallest.getFleet().deduct(smallest.getFleet().getRequiredFleet(empire.getProductionOnPlanetInTimeframe(smallest)));
+            if (!fleet.isEmpty()) {
+                System.out.println(String.format("There are more than 2 main planets. Move resources from planet %s to %s",
+                        smallest.getCoordinates(), biggest.getCoordinates()));
+                return new FleetTask(empire, smallest, biggest, fleet, MissionType.KEEP, smallest.getResources());
+            }
         }
         return null;
     }
