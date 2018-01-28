@@ -134,7 +134,7 @@ public class FleetTask extends Task {
         fleetPage.waitPage1();
 
         getPlanet().setResources(basePage.resources.getResources());
-        empire.addTask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.FLEET));
+        addTask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.FLEET));
         //Add expedition only after it was actually sent
         if (missionType == MissionType.EXPEDITION) {
             empire.addActiveExpedition();

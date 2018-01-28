@@ -8,6 +8,8 @@ import ru.tki.po.BasePage;
 import ru.tki.po.BuildingsPage;
 import ru.tki.po.components.BuildDetailComponent;
 
+import java.time.Duration;
+
 //Build new resource building in the empire
 public class BuildingTask extends Task {
 
@@ -50,6 +52,14 @@ public class BuildingTask extends Task {
         basePage.leftMenu.openResources();
 
         BuildingsPage buildingsPage = new BuildingsPage();
+        getPlanet().setResources(basePage.resources.getResources());
+        if(!getPlanet().getResources().isEnoughFor(OGameLibrary.getBuildingPrice(type, buildingsPage.getBuildingLevel(type)))){
+            //There is no resources for build. Refresh planet info and start thinking again
+            System.out.println(String.format("Can't start %s on planet %s because there is not enough resources", type, getPlanet().getCoordinates().getFormattedCoordinates()));
+            action.addDuration(Duration.ZERO);
+            action.addTask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.BUILDINGS));
+            return action;
+        }
         buildingsPage.select(type);
 
         BuildDetailComponent buildDetailComponent = new BuildDetailComponent();
@@ -57,7 +67,7 @@ public class BuildingTask extends Task {
         buildDetailComponent.build();
 
         getPlanet().setResources(basePage.resources.getResources());
-        action.setSubtask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.BUILDINGS));
+        action.addTask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.BUILDINGS));
 
         return action;
     }

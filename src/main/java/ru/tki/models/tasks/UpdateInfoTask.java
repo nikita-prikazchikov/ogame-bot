@@ -58,6 +58,7 @@ public class UpdateInfoTask extends Task {
                 updateFactories(p);
                 break;
             case RESEARCHES:
+                updateResearches();
                 break;
             case FLEET:
                 updateFleet();

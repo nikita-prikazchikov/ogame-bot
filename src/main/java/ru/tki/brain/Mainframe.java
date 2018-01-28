@@ -16,23 +16,21 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class Mainframe {
     private static final Duration checkAttackDuration          = Duration.ofSeconds(120);
     private static final Duration checkUpdateResourcesDuration = Duration.ofMinutes(15);
+    private static final Duration checkFlagsDuration           = Duration.ofMinutes(30);
 
-    private static Logger logger = Logger.getLogger(String.valueOf(Mainframe.class));
+    private Instant lastAttackCheck     = Instant.now();
+    private Instant lastUpdateResources = Instant.now();
+    private Instant lastFlagsCheck      = Instant.now();
+    private Instant executionStopTime;
 
-    private Empire empire;
-    private Instant lastAttackCheck = Instant.now();
-    private Instant lastUpdateResources = Instant.now();//.minus(Duration.ofMinutes(15));
-    private Instant executionStopTime;//.minus(Duration.ofMinutes(15));
-
-    TaskGenerator taskGenerator;
-
-    Navigation navigation;
-    LoginPage  loginPage;
+    private TaskGenerator taskGenerator;
+    private Empire        empire;
+    private Navigation    navigation;
+    private LoginPage     loginPage;
 
     public Mainframe() {
         this.empire = new Empire();
@@ -47,10 +45,9 @@ public class Mainframe {
         Duration duration = Duration.ZERO;
         duration = duration.plusHours(ContextHolder.getBotConfigMain().getExecutionHours());
         duration = duration.plusMinutes(ContextHolder.getBotConfigMain().getExecutionMinutes());
-        if(duration.isZero()){
+        if (duration.isZero()) {
             executionStopTime = null;
-        }
-        else{
+        } else {
             executionStopTime = Instant.now().plus(duration);
             System.out.println("Bot will be executed for the: " + duration.getSeconds() + " seconds");
         }
@@ -58,8 +55,7 @@ public class Mainframe {
         if (!empire.load()) {
             empire.addTask(new EmpireTask(empire));
             lastUpdateResources = Instant.now();
-        }
-        else {
+        } else {
             for (AbstractPlanet planet : empire.getPlanets()) {
                 //Loaded empire can't has tasks
                 planet.setHasTask(false);
@@ -86,9 +82,9 @@ public class Mainframe {
                     System.out.println("Bot execution time is over. Buy! Till the next time!");
                     return;
                 }
+                verifyActions();
                 execute();
                 verifySchedules();
-                verifyActions();
                 think();
             } catch (Exception ex) {
                 exceptionCount++;
@@ -104,7 +100,7 @@ public class Mainframe {
         while (true);
     }
 
-    private void restartEmpire(){
+    private void restartEmpire() {
         System.out.println("");
         System.out.println("=========================================================================================");
         System.out.println("                          Restart current empire details                                 ");
@@ -117,14 +113,19 @@ public class Mainframe {
     // Add tasks that are periodic in the system
     // Like: check attack or update existing resources
     private void verifySchedules() {
-        if(lastAttackCheck.plus(checkAttackDuration).compareTo(Instant.now())<0){
+        if (lastAttackCheck.plus(checkAttackDuration).compareTo(Instant.now()) < 0) {
             empire.addTask(new CheckAttackTask(empire));
             lastAttackCheck = Instant.now();
         }
 
-        if(lastUpdateResources.plus(checkUpdateResourcesDuration).compareTo(Instant.now())<0){
+        if (lastUpdateResources.plus(checkUpdateResourcesDuration).compareTo(Instant.now()) < 0) {
             empire.addTask(new UpdateResourcesTask(empire));
             lastUpdateResources = Instant.now();
+        }
+
+        if (lastFlagsCheck.plus(checkFlagsDuration).compareTo(Instant.now()) < 0) {
+            empire.addTask(new CheckExistingFlagsTask(empire));
+            lastFlagsCheck = Instant.now();
         }
     }
 
@@ -132,23 +133,22 @@ public class Mainframe {
         List<Action> actions = new ArrayList<>();
         empire.getActions().stream().filter(action1 -> !(action1 instanceof FleetAction)).filter(Action::isFinished).forEach(action -> {
             action.complete(empire);
-            if (action.hasSubtask()) {
-                empire.addTask(action.getSubtask());
-            }
+            empire.addTasks(action.getTasks());
             actions.add(action);
         });
-        empire.getActions().stream().filter(action1 -> action1 instanceof FleetAction).map(a -> (FleetAction)a).forEach(action -> {
+        empire.getActions().stream().filter(action1 -> action1 instanceof FleetAction).map(a -> (FleetAction) a).forEach(action -> {
             if (action.isFinished()) {
                 action.complete(empire);
                 empire.addTask(new UpdateInfoTask(empire, action.getPlanet(), UpdateTaskType.FLEET));
                 actions.add(action);
             } else if (action.isTargetAchieved()) {
+                System.out.println("Fleet come to the target planet: " + action.getTargetPlanet().getCoordinates().getFormattedCoordinates());
                 action.setTargetAchieved();
-                if (action.hasSubtask()) {
-                    empire.addTask(action.getSubtask());
-                    action.setSubtask(null);
+                if (action.hasTask()) {
+                    empire.addTasks(action.getTasks());
+                    action.setTasks(null);
                 }
-                if(empire.isMyPlanet(action.getTargetPlanet())) {
+                if (empire.isMyPlanet(action.getTargetPlanet())) {
                     empire.addTask(new UpdateInfoTask(empire, action.getTargetPlanet(), UpdateTaskType.FLEET));
                 }
             }
@@ -194,13 +194,11 @@ public class Mainframe {
 
         List<Task> tasksForRemove = new ArrayList<>();
         empire.getTasks().stream().filter(Task::canExecute).forEach(task -> {
-            if(!task.isExecuted()) {
-                System.out.println("Execute task: " + task.toString());
+            if (!task.isExecuted()) {
+                System.out.printf("%s: Execute task: %s%n", Instant.now(), task.toString());
                 Action action = task.execute();
                 if (null != action) {
-                    if (task.hasSubtask()) {
-                        action.setSubtask(task.getSubtask());
-                    }
+                    action.addTasks(task.getTasks());
                     empire.addAction(action);
                 }
                 task.setExecuted(true);

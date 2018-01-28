@@ -1,6 +1,7 @@
 package ru.tki.helpers;
 
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import ru.tki.ContextHolder;
 import ru.tki.DriverManager;
@@ -127,6 +128,19 @@ public class WebDriverHelper {
 
     protected boolean isElementDisplayed(By bySelector){
         return isElementDisplayed(ContextHolder.getDriver(), bySelector);
+    }
+
+    protected void hoverElement(WebElement element) {
+        Actions actions = new Actions(ContextHolder.getDriver());
+        actions.moveToElement(element).perform();
+    }
+
+    protected void hoverElement(SearchContext parent, By by){
+        hoverElement(getElement(parent, by));
+    }
+
+    protected void hoverElement(By by) {
+        hoverElement(ContextHolder.getDriver(), by);
     }
 
     //=====================    Wait elements section   ==================================

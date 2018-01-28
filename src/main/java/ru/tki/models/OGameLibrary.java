@@ -115,7 +115,7 @@ public class OGameLibrary {
 
     public static Resources getResearchPrice(ResearchType type, Integer currentLevel) {
         switch (type) {
-                case ASTROPHYSICS:
+            case ASTROPHYSICS:
                 return researches.get(type).multiply(Math.pow(1.75, currentLevel));
             case MIS:
             case GRAVITY:
@@ -225,7 +225,8 @@ public class OGameLibrary {
             case ENERGY:
                 return planet.getFactories().getResearchLab() >= 1;
             case LASER:
-                return empire.getResearches().getEnergy() >= 2;
+                return planet.getFactories().getResearchLab() >= 1
+                        && empire.getResearches().getEnergy() >= 2;
             case ION:
                 return planet.getFactories().getResearchLab() >= 4
                         && empire.getResearches().getLaser() >= 5
@@ -235,7 +236,8 @@ public class OGameLibrary {
                         && empire.getResearches().getShields() >= 5
                         && empire.getResearches().getEnergy() >= 5;
             case PLASMA:
-                return empire.getResearches().getLaser() >= 10
+                return planet.getFactories().getResearchLab() >= 1
+                        && empire.getResearches().getLaser() >= 10
                         && empire.getResearches().getIon() >= 5
                         && empire.getResearches().getEnergy() >= 8;
             case REACTIVE_ENGINE:
@@ -246,13 +248,15 @@ public class OGameLibrary {
                 return planet.getFactories().getResearchLab() >= 2
                         && empire.getResearches().getEnergy() >= 1;
             case HYPER_ENGINE:
-                return empire.getResearches().getHyper() >= 3;
+                return planet.getFactories().getResearchLab() >= 1
+                        && empire.getResearches().getHyper() >= 3;
             case ESPIONAGE:
                 return planet.getFactories().getResearchLab() >= 3;
             case COMPUTER:
                 return planet.getFactories().getResearchLab() >= 1;
             case ASTROPHYSICS:
-                return empire.getResearches().getEspionage() >= 4
+                return planet.getFactories().getResearchLab() >= 1
+                        && empire.getResearches().getEspionage() >= 4
                         && empire.getResearches().getImpulseEngine() >= 3;
             case MIS:
                 return planet.getFactories().getResearchLab() >= 10
@@ -307,17 +311,17 @@ public class OGameLibrary {
         return false;
     }
 
-    public static Integer getMetalProduction(Integer level){
+    public static Integer getMetalProduction(Integer level) {
         Double value = 30 * level * Math.pow(1.1, level) * ContextHolder.getBotConfigMain().getUniverseSpeed();
         return value.intValue();
     }
 
-    public static Integer getCrystalProduction(Integer level){
+    public static Integer getCrystalProduction(Integer level) {
         Double value = 20 * level * Math.pow(1.1, level) * ContextHolder.getBotConfigMain().getUniverseSpeed();
         return value.intValue();
     }
 
-    public static Integer getDeuteriumProduction(Integer level){
+    public static Integer getDeuteriumProduction(Integer level) {
         Double value = 10 * level * Math.pow(1.1, level) * (-0.004 * 0 + 1.36) * ContextHolder.getBotConfigMain().getUniverseSpeed();
         return value.intValue();
     }

@@ -27,6 +27,12 @@ public class ShipyardTask extends Task {
         getPlanet().setShipyardBusy(true);
     }
 
+    @Override
+    public void removeFromQueue() {
+        super.removeFromQueue();
+        getPlanet().setShipyardBusy(false);
+    }
+
     public ShipType getType() {
         return type;
     }
@@ -58,7 +64,7 @@ public class ShipyardTask extends Task {
         buildDetailComponent.build();
 
         getPlanet().setResources(basePage.resources.getResources());
-        action.setSubtask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.FLEET));
+        action.addTask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.FLEET));
 
         return action;
     }

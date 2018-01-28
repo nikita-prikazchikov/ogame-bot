@@ -95,12 +95,26 @@ public class Empire {
         return tasks;
     }
 
+    public void setTasks(List<Task> tasks) {
+        if (null != tasks) {
+            this.tasks = tasks;
+        } else {
+            this.tasks = new ArrayList<>();
+        }
+    }
+
+    public void addTasks(List<Task> tasks) {
+        tasks.forEach(this::addTask);
+    }
+
     public void addTask(Task task) {
         if (null != task) {
             System.out.println("Add task: " + task);
             tasks.add(task);
-            if (null != task.getSubtask()) {
-                System.out.println("With subtask: " + task.getSubtask());
+            if (task.hasSubtask()) {
+                task.getTasks().forEach(task1 -> {
+                    System.out.println("With subtask: " + task1);
+                });
             }
             if (doLogState) {
                 System.out.println("Save empire state to : " + saveState());
@@ -206,6 +220,11 @@ public class Empire {
 
     public Integer getCurrentPlanetsCount() {
         return ((Long) planets.stream().filter(AbstractPlanet::isPlanet).count()).intValue();
+    }
+
+    public Integer getCurrentPlanetsWithResearchLabCount() {
+        return ((Long) planets.stream().filter((planet) ->
+                planet.isPlanet() && ((Planet) planet).getFactories().getResearchLab() > 0).count()).intValue();
     }
 
     public Integer getMaxPlanetsCount() {

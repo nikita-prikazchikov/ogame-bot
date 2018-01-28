@@ -7,14 +7,17 @@ import ru.tki.models.tasks.Task;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Action {
 
     protected AbstractPlanet planet;
     protected Duration       duration;
     protected Instant        finishTime;
-    protected Task           subtask;
     protected String         name;
+
+    protected List<Task> tasks = new ArrayList<>();
 
     public Action() {
         finishTime = Instant.now();
@@ -43,16 +46,31 @@ public abstract class Action {
         this.finishTime = finishTime.plus(duration).plus(Duration.ofSeconds(5));
     }
 
-    public Task getSubtask() {
-        return subtask;
+    public List<Task> getTasks() {
+        return tasks;
     }
 
-    public void setSubtask(Task subtask) {
-        this.subtask = subtask;
+    public void setTasks(List<Task> tasks) {
+        if (null != tasks) {
+            this.tasks = tasks;
+        } else {
+            this.tasks = new ArrayList<>();
+        }
     }
 
-    public boolean hasSubtask() {
-        return null != subtask;
+    public void addTask(Task tasks) {
+        if (tasks == null) {
+            return;
+        }
+        this.tasks.add(tasks);
+    }
+
+    public void addTasks(List<Task> tasks) {
+        tasks.forEach(this::addTask);
+    }
+
+    public boolean hasTask() {
+        return tasks.size() > 0;
     }
 
     @Override

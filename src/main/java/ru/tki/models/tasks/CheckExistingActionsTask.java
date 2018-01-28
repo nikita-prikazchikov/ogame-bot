@@ -58,7 +58,7 @@ public class CheckExistingActionsTask extends Task {
 
     private void addActionWithUpdateSubtask(Action action, Task task) {
         if (null != action) {
-            action.setSubtask(task);
+            action.addTask(task);
             empire.addAction(action);
         }
     }

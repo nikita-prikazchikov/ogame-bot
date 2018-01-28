@@ -7,6 +7,10 @@ import java.util.regex.Pattern;
 public class DataParser {
 
     public static int parseResource(String value){
+        if(value == null || value.isEmpty()){
+            return 0;
+        }
+        value = value.trim();
         if (value.contains("М")) {
             Double d = Double.parseDouble(value.replace("М", "")) * 1000 * 1000;
             return d.intValue();

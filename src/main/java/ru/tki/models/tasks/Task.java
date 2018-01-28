@@ -5,6 +5,8 @@ import ru.tki.models.Resources;
 import ru.tki.models.actions.Action;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Task {
 
@@ -12,9 +14,9 @@ public abstract class Task {
     private   AbstractPlanet planet;
     protected String         name;
 
-    protected Resources resources  = new Resources();
-    protected Task      subtask    = null;
-    protected Boolean   isExecuted = false;
+    protected Resources  resources  = new Resources();
+    protected List<Task> tasks      = new ArrayList<>();
+    protected Boolean    isExecuted = false;
 
     public Action execute() {
         if (null != getPlanet()) {
@@ -57,16 +59,16 @@ public abstract class Task {
         this.executionDate = executionDate;
     }
 
-    public Task getSubtask() {
-        return subtask;
+    public List<Task> getTasks() {
+        return tasks;
     }
 
     public boolean hasSubtask() {
-        return null != subtask;
+        return tasks.size() > 0;
     }
 
-    public void setSubtask(Task subtask) {
-        this.subtask = subtask;
+    public void addTask(Task tasks) {
+        this.tasks.add(tasks);
     }
 
     public Resources getResources() {

@@ -10,6 +10,8 @@ import ru.tki.po.BasePage;
 import ru.tki.po.ResearchesPage;
 import ru.tki.po.components.BuildDetailComponent;
 
+import java.time.Duration;
+
 //Start new research task
 public class ResearchTask extends Task {
 
@@ -49,6 +51,14 @@ public class ResearchTask extends Task {
         basePage.leftMenu.openResearch();
 
         ResearchesPage researchesPage = new ResearchesPage();
+        getPlanet().setResources(basePage.resources.getResources());
+        if(!getPlanet().getResources().isEnoughFor(OGameLibrary.getResearchPrice(type, researchesPage.getResearchLevel(type)))){
+            //There is no resources for build. Refresh planet info and start thinking again
+            System.out.println(String.format("Can't start %s on planet %s because there is not enough resources", type, getPlanet().getCoordinates().getFormattedCoordinates()));
+            action.addDuration(Duration.ZERO);
+            action.addTask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.RESEARCHES));
+            return action;
+        }
         researchesPage.select(type);
 
         BuildDetailComponent buildDetailComponent = new BuildDetailComponent();
@@ -56,7 +66,7 @@ public class ResearchTask extends Task {
         buildDetailComponent.build();
 
         getPlanet().setResources(basePage.resources.getResources());
-        action.setSubtask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.RESEARCHES));
+        action.addTask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.RESEARCHES));
 
         return action;
     }

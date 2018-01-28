@@ -8,6 +8,8 @@ import ru.tki.po.BasePage;
 import ru.tki.po.FactoriesPage;
 import ru.tki.po.components.BuildDetailComponent;
 
+import java.time.Duration;
+
 public class FactoryTask extends Task {
 
     FactoryType type;
@@ -59,7 +61,14 @@ public class FactoryTask extends Task {
         basePage.leftMenu.openFactory();
 
         FactoriesPage factoriesPage = new FactoriesPage();
-        Factories factories = factoriesPage.getFactories();
+        getPlanet().setResources(basePage.resources.getResources());
+        if(!getPlanet().getResources().isEnoughFor(OGameLibrary.getFactoryPrice(type, factoriesPage.getBuildingLevel(type)))){
+            //There is no resources for build. Refresh planet info and start thinking again
+            System.out.println(String.format("Can't start %s on planet %s because there is not enough resources", type, getPlanet().getCoordinates().getFormattedCoordinates()));
+            action.addDuration(Duration.ZERO);
+            action.addTask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.FACTORIES));
+            return action;
+        }
         factoriesPage.select(type);
 
         BuildDetailComponent buildDetailComponent = new BuildDetailComponent();
@@ -67,7 +76,7 @@ public class FactoryTask extends Task {
         buildDetailComponent.build();
 
         getPlanet().setResources(basePage.resources.getResources());
-        action.setSubtask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.FACTORIES));
+        action.addTask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.FACTORIES));
 
         return action;
     }

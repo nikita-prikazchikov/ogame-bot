@@ -33,6 +33,7 @@ public class CheckColonyTask extends Task {
             //remove planet
             return null;
         }
+        // TODO: 28.01.2018 Write code for colony rename
         System.out.println(String.format("New planet was found and added to the empire: %s", getPlanet().getCoordinates().getFormattedCoordinates()));
         empire.addPlanet(getPlanet());
         empire.addTask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.All));
