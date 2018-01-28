@@ -476,13 +476,13 @@ public class TaskGenerator {
         }
         if (!planet.getBuildInProgress() && botConfig.getBuildResources()) {
 
-            if (buildings.getMetalMine() < currentMax
-                    && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.METAL_MINE, buildings.getMetalMine()))) {
-                return new BuildingTask(empire, planet, BuildingType.METAL_MINE);
-            }
             if (buildings.getCrystalMine() < currentMax - 2
                     && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.CRYSTAL_MINE, buildings.getCrystalMine()))) {
                 return new BuildingTask(empire, planet, BuildingType.CRYSTAL_MINE);
+            }
+            if (buildings.getMetalMine() < currentMax
+                    && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.METAL_MINE, buildings.getMetalMine()))) {
+                return new BuildingTask(empire, planet, BuildingType.METAL_MINE);
             }
             if (currentMax > 8
                     && buildings.getDeuteriumMine() < currentMax / 2
