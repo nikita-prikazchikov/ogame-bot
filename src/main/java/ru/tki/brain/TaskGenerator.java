@@ -283,7 +283,8 @@ public class TaskGenerator {
                 && empire.canSendFleet()) {
 
             System.out.println(String.format("Move resources %s from colony %s to main planet %s",
-                    planet.getResources(), planet, target));
+                    planet.getResources(), planet.getCoordinates().getFormattedCoordinates(),
+                    target.getCoordinates().getFormattedCoordinates()));
             return new FleetTask(empire, planet, target,
                     planet.getFleet().getRequiredFleet(planet.getResources()),
                     MissionType.TRANSPORT,

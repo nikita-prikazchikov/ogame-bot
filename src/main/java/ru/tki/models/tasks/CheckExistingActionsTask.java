@@ -65,6 +65,6 @@ public class CheckExistingActionsTask extends Task {
 
     @Override
     public String toString() {
-        return "Check existing buildings and researches";
+        return "Check existing buildings, researches and fleets";
     }
 }

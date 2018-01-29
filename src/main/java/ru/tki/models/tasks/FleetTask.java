@@ -88,6 +88,7 @@ public class FleetTask extends Task {
 
         FleetPage fleetPage = new FleetPage();
         fleetPage.selectFleet(fleet);
+        fleetPage.pause(200);
         fleetPage.clickContinue();
 
         basePage.pause(300);
@@ -96,6 +97,7 @@ public class FleetTask extends Task {
         fleetPage.setTarget(targetPlanet.getType());
         fleetPage.setCoordinates(targetPlanet.getCoordinates());
         fleetPage.setSpeed(fleetSpeed);
+        fleetPage.pause(200);
         fleetPage.clickContinue();
 
         basePage.pause(300);
