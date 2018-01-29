@@ -6,6 +6,8 @@ import ru.tki.ContextHolder;
 import ru.tki.models.*;
 import ru.tki.models.actions.FleetAction;
 import ru.tki.models.tasks.CheckColonyTask;
+import ru.tki.models.tasks.FleetTask;
+import ru.tki.models.tasks.RevertFleetTask;
 import ru.tki.models.types.MissionType;
 import ru.tki.models.types.ShipType;
 import ru.tki.utils.DataParser;
@@ -51,6 +53,21 @@ public class FleetDetailsPage extends PageObject {
         put(ShipType.RECYCLER, "Переработчик");
         put(ShipType.ESPIONAGE_PROBE, "Шпионский зонд");
     }};
+
+    private static final Map<MissionType, String> missionIds = new HashMap<MissionType, String>() {{
+        put(MissionType.ATTACK, "1");
+        put(MissionType.JOINT_ATTACK, "2");
+        put(MissionType.TRANSPORT, "3");
+        put(MissionType.KEEP, "4");
+        put(MissionType.HOLD_ON, "5");
+        put(MissionType.ESPIONAGE, "6");
+        put(MissionType.COLONIZATION, "7");
+        put(MissionType.RECYCLING, "8");
+        put(MissionType.DESTROY, "9");
+        put(MissionType.EXPEDITION, "15");
+    }};
+
+
 
     public List<FleetAction> getFleetActions(Empire empire) {
         List<FleetAction> fleetActions = new ArrayList<>();
@@ -162,6 +179,10 @@ public class FleetDetailsPage extends PageObject {
         }
     }
 
+    private String getMissionTypeId(MissionType type){
+        return missionIds.get(type);
+    }
+
     private boolean isReturnFlight(WebElement element) {
         return element.getAttribute("data-return-flight").equals("true");
     }
@@ -188,7 +209,7 @@ public class FleetDetailsPage extends PageObject {
         return null;
     }
 
-    public void revertFleet(FleetAction action) {
+    public void revertFleet(FleetTask task) {
         //TODO: add revert fleet actions
         return;
     }
@@ -205,5 +226,9 @@ public class FleetDetailsPage extends PageObject {
             return Integer.parseInt(getElement(CURRENT_FLEETS_COUNT).getText());
         }
         return 0;
+    }
+
+    public void getRevertDuration(RevertFleetTask revertFleetTask) {
+
     }
 }

@@ -22,6 +22,9 @@ public class FleetTask extends Task {
     protected MissionType missionType = MissionType.KEEP;
     protected FleetSpeed  fleetSpeed  = FleetSpeed.S100;
 
+    public FleetTask() {
+    }
+
     public FleetTask(Empire empire, AbstractPlanet planet) {
         this.empire = empire;
         name = "Fleet task";

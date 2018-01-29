@@ -247,9 +247,9 @@ public class Empire {
         Fleet fleet = new Fleet();
         Fleet existingFleet = planet.getFleet();
         if (existingFleet.getLargeCargo() > 0) {
-            fleet.setLargeCargo(Math.max(1, existingFleet.getLargeCargo() / 5));
+            fleet.setLargeCargo(Math.min(Math.max(1, existingFleet.getLargeCargo() / 5), 100));
         } else if (existingFleet.getSmallCargo() > 0) {
-            fleet.setSmallCargo(Math.max(1, existingFleet.getSmallCargo() / 5));
+            fleet.setSmallCargo(Math.min(Math.max(1, existingFleet.getSmallCargo() / 5), 100));
         }
         return fleet;
     }
@@ -294,10 +294,22 @@ public class Empire {
     public Fleet getPlanetTotalFleet(AbstractPlanet planet) {
         Supplier<Stream<FleetAction>> fleetActions = () -> actions.stream().filter(action -> action instanceof FleetAction).map(action -> (FleetAction) action);
         Fleet fleet = planet.getFleet();
-        fleetActions.get().filter(fleetAction -> fleetAction.getTargetPlanet() != null && fleetAction.getTargetPlanet().equals(planet)
-                && fleetAction.getMissionType() == MissionType.KEEP)
+        //Move fleet from one planet to another (non save moves)
+        fleetActions.get().filter(fleetAction ->
+                fleetAction.getTargetPlanet() != null
+                        && !fleetAction.isSaveFlight()
+                        && fleetAction.getTargetPlanet().equals(planet)
+                        && fleetAction.getMissionType() == MissionType.KEEP)
                 .map(FleetAction::getFleet)
                 .reduce(fleet, Fleet::add);
+
+        //Save fleet actions
+        fleetActions.get().filter(fleetAction ->
+                fleetAction.isSaveFlight()
+                        && fleetAction.getPlanet().equals(planet))
+                .map(FleetAction::getFleet)
+                .reduce(fleet, Fleet::add);
+
         fleetActions.get().filter(fleetAction -> fleetAction.getPlanet().equals(planet)
                 && (fleetAction.getMissionType() == MissionType.TRANSPORT
                 || fleetAction.getMissionType() == MissionType.ATTACK
