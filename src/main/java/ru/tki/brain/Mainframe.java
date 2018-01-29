@@ -18,13 +18,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Mainframe {
-    private static final Duration checkAttackDuration          = Duration.ofSeconds(120);
+    private static final Duration checkAttackDuration          = Duration.ofMinutes(2);
     private static final Duration checkUpdateResourcesDuration = Duration.ofMinutes(15);
     private static final Duration checkFlagsDuration           = Duration.ofMinutes(30);
+    private static final Duration checkFleetDuration           = Duration.ofMinutes(60);
 
     private Instant lastAttackCheck     = Instant.now();
     private Instant lastUpdateResources = Instant.now();
     private Instant lastFlagsCheck      = Instant.now();
+    private Instant lastFleetCheck      = Instant.now();
     private Instant executionStopTime;
 
     private TaskGenerator taskGenerator;
@@ -126,6 +128,11 @@ public class Mainframe {
         if (lastFlagsCheck.plus(checkFlagsDuration).compareTo(Instant.now()) < 0) {
             empire.addTask(new CheckExistingFlagsTask(empire));
             lastFlagsCheck = Instant.now();
+        }
+
+        if (lastFleetCheck.plus(checkFleetDuration).compareTo(Instant.now()) < 0) {
+            empire.addTask(new CheckFleetsCountTask(empire));
+            lastFleetCheck = Instant.now();
         }
     }
 
