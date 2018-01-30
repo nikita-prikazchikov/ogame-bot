@@ -266,6 +266,10 @@ public class Empire {
         return getPlanetTotalFleet(planet).getCapacity() * .8 > getProductionOnPlanetInTimeframe(planet);
     }
 
+    public boolean isPlanetUnderAttack(AbstractPlanet planet){
+        return getEnemyFleets().stream().filter(action -> action.getTargetPlanet().equals(planet)).count() > 0;
+    }
+
     public Fleet getFleetForExpedition(AbstractPlanet planet) {
         Fleet fleet = new Fleet();
         Fleet existingFleet = planet.getFleet();

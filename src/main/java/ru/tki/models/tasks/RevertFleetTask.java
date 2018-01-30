@@ -32,7 +32,6 @@ public class RevertFleetTask extends FleetTask {
         FleetDetailsPage fleetDetailsPage = new FleetDetailsPage();
 
         Duration duration = fleetDetailsPage.getRevertDuration(this);
-        System.out.println("Fleet reverse flight will take " + duration);
         action.addDuration(duration);
         fleetDetailsPage.revertFleet(this);
         action.setReturnFlight(true);

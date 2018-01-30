@@ -8,6 +8,7 @@ import org.junit.Test;
 import ru.tki.executor.Navigation;
 import ru.tki.models.*;
 import ru.tki.models.actions.Action;
+import ru.tki.models.actions.FleetAction;
 import ru.tki.models.tasks.*;
 import ru.tki.models.types.*;
 import ru.tki.po.*;
@@ -24,17 +25,19 @@ public class BasicTest {
 
     DriverManager driverManager;
     BotConfigMain config;
+    Empire empire;
 
     Navigation navigation;
     LoginPage  loginPage;
     BasePage   basePage;
 
-    OverviewPage   overviewPage;
-    BuildingsPage  buildingsPage;
-    FactoriesPage  factoriesPage;
-    ResearchesPage researchesPage;
-    DefencePage    defencePage;
-    FleetPage      fleetPage;
+    OverviewPage     overviewPage;
+    BuildingsPage    buildingsPage;
+    FactoriesPage    factoriesPage;
+    ResearchesPage   researchesPage;
+    DefencePage      defencePage;
+    FleetPage        fleetPage;
+    FleetDetailsPage fleetDetailsPage;
 
     @Before
     public void setUp() throws Exception {
@@ -55,6 +58,9 @@ public class BasicTest {
         researchesPage = new ResearchesPage();
         defencePage = new DefencePage();
         fleetPage = new FleetPage();
+        fleetDetailsPage = new FleetDetailsPage();
+
+        empire = new Empire();
     }
 
     @After
@@ -235,5 +241,17 @@ public class BasicTest {
         Action action = task.execute();
 
         logger.info(action.toString());
+    }
+
+    @Test
+    public void testRevertFleet() {
+        navigation.openHomePage();
+        loginPage.checkLogin();
+
+        navigation.openFleetMove();
+        List<FleetAction> fleetActions = fleetDetailsPage.getFleetActions(empire);
+
+        fleetDetailsPage.getRevertDuration(fleetActions.get(0));
+
     }
 }

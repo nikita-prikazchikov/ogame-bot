@@ -27,6 +27,8 @@ public class FleetDetailsPage extends AbstractFleetDetails {
     private static final By FLEET_DETAILS      = By.cssSelector(".fleetDetails");
     private static final By CLOSED_FLEET       = By.cssSelector(".fleetDetails.detailsClosed");
     private static final By OPEN_CLOSE_DETAILS = By.cssSelector(".openCloseDetails");
+    private static final By FLEET_RETURN_TIMER = By.cssSelector(".nextTimer");
+    private static final By FLEET_TIMER        = By.cssSelector(".timer");
 
     private static final String FLEET_DETAILS_VALUE = ".//tr[./td[contains(.,'%s')]]/td[@class='value']";
     private static final String FLEET_ELEMENT       = "//div[contains(@class, 'fleetDetails') and @data-return-flight='false' and contains(@data-mission-type, '%s') " +
@@ -52,6 +54,11 @@ public class FleetDetailsPage extends AbstractFleetDetails {
         WebElement element = getElement(getFleetElement(task), By.cssSelector(".reversal"));
         scrollToElement(element);
         element.click();
+    }
+
+    public Duration getRevertDuration(FleetAction action) {
+        WebElement element = getFleetElement(action);
+        return getDurationReturn(element).minus(getDuration(element).multipliedBy(2));
     }
 
     public Duration getRevertDuration(FleetTask fleetTask) {
@@ -80,9 +87,13 @@ public class FleetDetailsPage extends AbstractFleetDetails {
         if (fleetAction.getMissionType() == MissionType.EXPEDITION) {
             empire.addActiveExpedition();
         }
-        AbstractPlanet planet = empire.findPlanet(getFrom(element));
+
+        Coordinates fromCoordinates = getFrom(element);
+        AbstractPlanet planet = empire.findPlanet(fromCoordinates);
         if (null != planet) {
             fleetAction.setPlanet(planet);
+        } else {
+            fleetAction.setPlanet(new Planet(fromCoordinates));
         }
 
         Coordinates targetCoordinates = getTarget(element);
@@ -90,7 +101,7 @@ public class FleetDetailsPage extends AbstractFleetDetails {
         if (null != planet) {
             fleetAction.setTargetPlanet(planet);
         } else {
-            fleetAction.setTargetPlanet(new Planet(targetCoordinates, ""));
+            fleetAction.setTargetPlanet(new Planet(targetCoordinates));
         }
         if (isReturnFlight(element)) {
             fleetAction.setReturnFlight(true);
@@ -147,15 +158,17 @@ public class FleetDetailsPage extends AbstractFleetDetails {
     }
 
     private Duration getDuration(WebElement element) {
-        if (isElementExists(element, By.cssSelector(".timer"))) {
-            return DataParser.parseDuration(getElement(element, By.cssSelector(".timer")).getText());
+        if (isElementExists(element, FLEET_TIMER)) {
+            scrollToElement(getElement(element, FLEET_TIMER));
+            return DataParser.parseDuration(getElement(element, FLEET_TIMER).getText());
         }
         return Duration.ZERO;
     }
 
     private Duration getDurationReturn(WebElement element) {
-        if (isElementExists(element, By.cssSelector(".nextTimer"))) {
-            return DataParser.parseDuration(getElement(element, By.cssSelector(".nextTimer")).getText());
+        if (isElementExists(element, FLEET_RETURN_TIMER)) {
+            scrollToElement(getElement(element, FLEET_RETURN_TIMER));
+            return DataParser.parseDuration(getElement(element, FLEET_RETURN_TIMER).getText());
         }
         return Duration.ZERO;
     }
@@ -165,5 +178,12 @@ public class FleetDetailsPage extends AbstractFleetDetails {
                 getMissionTypeId(fleetTask.getMissionType()),
                 fleetTask.getPlanet().getCoordinates().getFormattedCoordinates(),
                 fleetTask.getTargetPlanet().getCoordinates().getFormattedCoordinates())));
+    }
+
+    private WebElement getFleetElement(FleetAction fleetAction) {
+        return getElement(By.xpath(String.format(FLEET_ELEMENT,
+                getMissionTypeId(fleetAction.getMissionType()),
+                fleetAction.getPlanet().getCoordinates().getFormattedCoordinates(),
+                fleetAction.getTargetPlanet().getCoordinates().getFormattedCoordinates())));
     }
 }

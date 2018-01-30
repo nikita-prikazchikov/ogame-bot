@@ -23,7 +23,7 @@ public class Mainframe {
     private static final Duration checkUpdateResourcesDuration = Duration.ofMinutes(15);
     private static final Duration checkFlagsDuration           = Duration.ofMinutes(30);
     private static final Duration checkFleetDuration           = Duration.ofMinutes(60);
-    private static final Duration saveFleetDuration            = Duration.ofMinutes(51);
+    private static final Duration saveFleetDuration            = Duration.ofMinutes(3);
 
     private Instant lastAttackCheck     = Instant.now();
     private Instant lastUpdateResources = Instant.now();
@@ -173,7 +173,7 @@ public class Mainframe {
                 empire.addTask(new UpdateInfoTask(empire, action.getPlanet(), UpdateTaskType.FLEET));
                 actions.add(action);
             } else if (action.isTargetAchieved()) {
-                System.out.printf("Fleet come to the target planet: %s : %s", action.getTargetPlanet().getCoordinates(), action.getFleet().getDetails());
+                System.out.println(String.format("Fleet come to the target planet: %s : %s ", action.getTargetPlanet().getCoordinates(), action.getFleet().getDetails()));
                 action.setTargetAchieved();
                 if (action.hasTask()) {
                     empire.addTasks(action.getTasks());
@@ -183,8 +183,7 @@ public class Mainframe {
                     empire.addTask(new UpdateInfoTask(empire, action.getTargetPlanet(), UpdateTaskType.FLEET));
                 }
             }
-            if (!empire.isUnderAttack() && action.isSaveFlight()) {
-                // TODO: 29.01.2018 Think about revert in case of multiple attacks
+            if (action.isSaveFlight() && !empire.isPlanetUnderAttack(action.getPlanet())) {
                 empire.addTask(new RevertFleetTask(empire, action));
                 actions.add(action);
             }

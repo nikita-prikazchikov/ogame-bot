@@ -92,7 +92,7 @@ public class TaskGenerator {
             AbstractPlanet smallest = mainPlanets.get().min(Comparator.comparingInt(AbstractPlanet::getLevel)).get();
             AbstractPlanet biggest = mainPlanets.get().max(Comparator.comparingInt(AbstractPlanet::getLevel)).get();
             Fleet fleet = smallest.getFleet().deduct(smallest.getFleet().getRequiredFleet(empire.getProductionOnPlanetInTimeframe(smallest)));
-            if (!fleet.isEmpty()) {
+            if (!fleet.isEmpty() && !empire.isPlanetUnderAttack(biggest)) {
                 System.out.println(String.format("There are more than 2 main planets. Move resources from planet %s to %s",
                         smallest.getCoordinates(), biggest.getCoordinates()));
                 return new FleetTask(empire, smallest, biggest, fleet, MissionType.KEEP, smallest.getResources());
@@ -107,7 +107,7 @@ public class TaskGenerator {
         Task task;
         for (AbstractPlanet planet : empire.getPlanets()) {
             //avoid 2 tasks on 1 planet
-            if (planet.hasTask()) {
+            if (planet.hasTask() || empire.isPlanetUnderAttack(planet)) {
                 continue;
             }
             if (planet.isPlanet()) {
@@ -488,7 +488,7 @@ public class TaskGenerator {
                 return new BuildingTask(empire, planet, BuildingType.METAL_MINE);
             }
             if (currentMax > 8
-                    && buildings.getDeuteriumMine() < currentMax / 2
+                    && buildings.getDeuteriumMine() < currentMax / 2 + currentMax / 9
                     && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.DEUTERIUM_MINE, buildings.getDeuteriumMine()))) {
                 return new BuildingTask(empire, planet, BuildingType.DEUTERIUM_MINE);
             }
