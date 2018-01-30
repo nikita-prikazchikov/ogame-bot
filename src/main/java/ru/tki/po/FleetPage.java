@@ -6,6 +6,7 @@ import ru.tki.models.types.FleetSpeed;
 import ru.tki.models.types.MissionType;
 import ru.tki.models.types.PlanetType;
 import ru.tki.models.types.ShipType;
+import ru.tki.utils.DataParser;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -176,7 +177,7 @@ public class FleetPage extends PageObject {
     }
 
     public int getShipCount(ShipType type) {
-        return Integer.parseInt(
+        return DataParser.parseResource(
                 getElement(getElement(ships.get(type)), By.cssSelector(".level")).getText().trim());
     }
 

@@ -3,6 +3,7 @@ package ru.tki.po;
 import org.openqa.selenium.By;
 import ru.tki.models.Defence;
 import ru.tki.models.types.DefenceType;
+import ru.tki.utils.DataParser;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class DefencePage extends PageObject {
     }
 
     public int getDefenceCount(DefenceType type) {
-        return Integer.parseInt(
+        return DataParser.parseResource(
                 getElement(getElement(elements.get(type)), By.cssSelector(".level")).getText().trim());
     }
 
