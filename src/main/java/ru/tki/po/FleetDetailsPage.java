@@ -7,7 +7,6 @@ import ru.tki.models.*;
 import ru.tki.models.actions.FleetAction;
 import ru.tki.models.tasks.CheckColonyTask;
 import ru.tki.models.tasks.FleetTask;
-import ru.tki.models.tasks.RevertFleetTask;
 import ru.tki.models.types.MissionType;
 import ru.tki.models.types.ShipType;
 import ru.tki.utils.DataParser;
@@ -32,6 +31,8 @@ public class FleetDetailsPage extends PageObject {
     private static final By OPEN_CLOSE_DETAILS = By.cssSelector(".openCloseDetails");
 
     private static final String FLEET_DETAILS_VALUE = ".//tr[./td[contains(.,'%s')]]/td[@class='value']";
+    private static final String FLEET_ELEMENT = "//div[contains(@class, 'fleetDetails') and contains(@data-mission-type, '%s') " +
+            "and .//span[@class='originData' and contains(., '%s')] and .//span[@class='destinationData' and contains(., '%s')]]";
 
     private static final String RESOURCE_METAL = "Металл";
     private static final String RESOURCE_CRYSTAL = "Кристалл";
@@ -67,8 +68,6 @@ public class FleetDetailsPage extends PageObject {
         put(MissionType.EXPEDITION, "15");
     }};
 
-
-
     public List<FleetAction> getFleetActions(Empire empire) {
         List<FleetAction> fleetActions = new ArrayList<>();
         openClosedFleetDetails();
@@ -77,6 +76,35 @@ public class FleetDetailsPage extends PageObject {
                     getFleetAction(empire, fleetElement)).collect(Collectors.toList()));
         }
         return fleetActions;
+    }
+
+    public void openClosedFleetDetails() {
+        if (isElementExists(FLEET_DETAILS) && isElementExists(CLOSED_FLEET)){
+            findElements(CLOSED_FLEET).forEach(webElement -> getElement(webElement, OPEN_CLOSE_DETAILS).click());
+        }
+    }
+
+    public void revertFleet(FleetTask task) {
+        getElement(getFleetElement(task), By.cssSelector(".reversal")).click();
+    }
+
+    public Duration getRevertDuration(FleetTask fleetTask) {
+        WebElement element = getFleetElement(fleetTask);
+        return getDurationReturn(element).minus(getDuration(element).multipliedBy(2));
+    }
+
+    public Integer getActiveExpeditions() {
+        if (isElementExists(EXPEDITION_FLEETS_COUNT)) {
+            return Integer.parseInt(getElement(EXPEDITION_FLEETS_COUNT).getText());
+        }
+        return 0;
+    }
+
+    public Integer getActiveFleets() {
+        if (isElementExists(CURRENT_FLEETS_COUNT)) {
+            return Integer.parseInt(getElement(CURRENT_FLEETS_COUNT).getText());
+        }
+        return 0;
     }
 
     private FleetAction getFleetAction(Empire empire, WebElement element) {
@@ -98,6 +126,7 @@ public class FleetDetailsPage extends PageObject {
             fleetAction.setTargetPlanet(new Planet(targetCoordinates, ""));
         }
         if (isReturnFlight(element)) {
+            fleetAction.setReturnFlight(true);
             Duration duration = getDuration(element);
             if (null != duration) {
                 fleetAction.addDuration(duration);
@@ -144,12 +173,6 @@ public class FleetDetailsPage extends PageObject {
             }
         }
         action.setFleet(fleet);
-    }
-
-    public void openClosedFleetDetails() {
-        if (isElementExists(FLEET_DETAILS) && isElementExists(CLOSED_FLEET)){
-            findElements(CLOSED_FLEET).forEach(webElement -> getElement(webElement, OPEN_CLOSE_DETAILS).click());
-        }
     }
 
     private MissionType getMissionType(WebElement element) {
@@ -199,36 +222,20 @@ public class FleetDetailsPage extends PageObject {
         if (isElementExists(element, By.cssSelector(".timer"))) {
             return DataParser.parseDuration(getElement(element, By.cssSelector(".timer")).getText());
         }
-        return null;
+        return Duration.ZERO;
     }
 
     private Duration getDurationReturn(WebElement element) {
         if (isElementExists(element, By.cssSelector(".nextTimer"))) {
             return DataParser.parseDuration(getElement(element, By.cssSelector(".nextTimer")).getText());
         }
-        return null;
+        return Duration.ZERO;
     }
 
-    public void revertFleet(FleetTask task) {
-        //TODO: add revert fleet actions
-        return;
-    }
-
-    public Integer getActiveExpeditions() {
-        if (isElementExists(EXPEDITION_FLEETS_COUNT)) {
-            return Integer.parseInt(getElement(EXPEDITION_FLEETS_COUNT).getText());
-        }
-        return 0;
-    }
-
-    public Integer getActiveFleets() {
-        if (isElementExists(CURRENT_FLEETS_COUNT)) {
-            return Integer.parseInt(getElement(CURRENT_FLEETS_COUNT).getText());
-        }
-        return 0;
-    }
-
-    public void getRevertDuration(RevertFleetTask revertFleetTask) {
-
+    private WebElement getFleetElement(FleetTask fleetTask){
+        return getElement(By.xpath(String.format(FLEET_ELEMENT,
+                getMissionTypeId(fleetTask.getMissionType()),
+                fleetTask.getPlanet().getCoordinates().getFormattedCoordinates(),
+                fleetTask.getTargetPlanet().getCoordinates().getFormattedCoordinates())));
     }
 }

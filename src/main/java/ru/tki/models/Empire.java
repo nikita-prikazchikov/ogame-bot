@@ -297,7 +297,7 @@ public class Empire {
         //Move fleet from one planet to another (non save moves)
         fleetActions.get().filter(fleetAction ->
                 fleetAction.getTargetPlanet() != null
-                        && !fleetAction.isSaveFlight()
+                        && !(fleetAction.isSaveFlight() || fleetAction.isReturnFlight())
                         && fleetAction.getTargetPlanet().equals(planet)
                         && fleetAction.getMissionType() == MissionType.KEEP)
                 .map(FleetAction::getFleet)
@@ -305,8 +305,8 @@ public class Empire {
 
         //Save fleet actions
         fleetActions.get().filter(fleetAction ->
-                fleetAction.isSaveFlight()
-                        && fleetAction.getPlanet().equals(planet))
+                fleetAction.getPlanet().equals(planet)
+                        && (fleetAction.isSaveFlight() || fleetAction.isReturnFlight()))
                 .map(FleetAction::getFleet)
                 .reduce(fleet, Fleet::add);
 

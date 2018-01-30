@@ -63,8 +63,7 @@ public class Mainframe {
                 planet.setHasTask(false);
             }
         }
-//        empire.addTask(new CheckExistingActionsTask(empire));
-        empire.addTask(new SaveFleetTask(empire, empire.getPlanets().get(0)));
+        empire.addTask(new CheckExistingActionsTask(empire));
         runExecution();
     }
 

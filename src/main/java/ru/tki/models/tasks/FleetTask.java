@@ -85,6 +85,10 @@ public class FleetTask extends Task {
         super.execute();
         FleetAction action = new FleetAction(this);
 
+        if(fleet.isEmpty()){
+            return action;
+        }
+
         BasePage basePage = new BasePage();
         basePage.myWorlds.selectPlanet(getPlanet());
         basePage.leftMenu.openFleet();

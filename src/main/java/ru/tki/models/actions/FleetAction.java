@@ -19,6 +19,7 @@ public class FleetAction extends Action {
 
     protected Instant    oneSideFleetTime = null;
     protected Boolean    isSaveFlight     = false;
+    protected Boolean    isReturnFlight   = false;
     protected FleetSpeed fleetSpeed       = FleetSpeed.S100;
 
     public FleetAction() {
@@ -35,7 +36,7 @@ public class FleetAction extends Action {
         this.missionType = task.getMissionType();
     }
 
-    public FleetAction(SaveFleetTask task){
+    public FleetAction(SaveFleetTask task) {
         this();
         this.planet = task.getPlanet();
         this.targetPlanet = task.getTargetPlanet();
@@ -99,6 +100,14 @@ public class FleetAction extends Action {
 
     public void setSaveFlight(Boolean saveFlight) {
         isSaveFlight = saveFlight;
+    }
+
+    public Boolean isReturnFlight() {
+        return isReturnFlight;
+    }
+
+    public void setReturnFlight(Boolean returnFlight) {
+        isReturnFlight = returnFlight;
     }
 
     @Override

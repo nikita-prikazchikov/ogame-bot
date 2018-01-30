@@ -209,7 +209,8 @@ public class TaskGenerator {
 
     public Task sendExpedition() {
         if (empire.getMaxExpeditions() > empire.getActiveExpeditions()
-                && empire.canSendFleet()) {
+                && empire.canSendFleet()
+                && botConfig.getSendExpeditions()) {
             for (AbstractPlanet planet : empire.getMainPlanets()) {
                 if (!planet.hasTask()) {
                     Fleet fleet = empire.getFleetForExpedition(planet);
@@ -280,7 +281,8 @@ public class TaskGenerator {
         AbstractPlanet target = empire.getClosestMainPlanet(planet);
         if (!target.equals(planet)
                 && planet.getResources().getCapacity() > empire.getProductionOnPlanetInTimeframe(planet)
-                && empire.canSendFleet()) {
+                && empire.canSendFleet()
+                && !planet.getFleet().isEmpty()) {
 
             System.out.println(String.format("Move resources %s from colony %s to main planet %s",
                     planet.getResources(), planet.getCoordinates().getFormattedCoordinates(),
