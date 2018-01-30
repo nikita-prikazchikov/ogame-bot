@@ -75,7 +75,7 @@ public class BuildingTask extends Task {
     @Override
     public String toString() {
         if(getPlanet().isPlanet()) {
-            return String.format("Build new %s level %d on planet %s", type, ((Planet) getPlanet()).getBuildings().get(type) + 1, getPlanet().getCoordinates().getFormattedCoordinates());
+            return String.format("Build new %s level %d on planet %s", type, ((Planet) getPlanet()).getBuildings().get(type) + 1, getPlanet().getCoordinates());
         }
         else{
             return "Build some building";

@@ -9,7 +9,7 @@ public class SaveFleetTask extends FleetTask {
 
     public SaveFleetTask(Empire empire, AbstractPlanet planet) {
         super(empire, planet);
-        name = "Save fleet on planet: " + planet.getCoordinates().getFormattedCoordinates();
+        name = "Save fleet on planet: " + planet.getCoordinates();
         setTargetPlanet(empire.getPlanets().stream().filter(p -> !p.equals(planet)).reduce(planet::closer).get());
         setFleetSpeed(FleetSpeed.S10);
         setFleet(planet.getFleet());
@@ -26,7 +26,7 @@ public class SaveFleetTask extends FleetTask {
     @Override
     public String toString() {
         return String.format("Save fleet %s from planet %s to %s with %s",
-                fleet.getDetails(), getPlanet().getCoordinates().getFormattedCoordinates(), targetPlanet.getCoordinates().getFormattedCoordinates(),
+                fleet.getDetails(), getPlanet().getCoordinates(), targetPlanet.getCoordinates(),
                 resources == null ? "empty" : resources);
     }
 }

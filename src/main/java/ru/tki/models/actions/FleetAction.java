@@ -23,7 +23,10 @@ public class FleetAction extends Action {
     protected FleetSpeed fleetSpeed       = FleetSpeed.S100;
 
     public FleetAction() {
+        super();
         name = "Fleet";
+        fleet = new Fleet();
+        resources = new Resources();
     }
 
     public FleetAction(FleetTask task) {
@@ -87,7 +90,7 @@ public class FleetAction extends Action {
     }
 
     public void setDurationOfFlight(Duration duration) {
-        this.oneSideFleetTime = Instant.now().plus(duration).plus(Duration.ofSeconds(10));
+        this.oneSideFleetTime = Instant.now().plus(duration).plus(Duration.ofSeconds(5));
     }
 
     public void setTargetAchieved() {
@@ -117,5 +120,12 @@ public class FleetAction extends Action {
             empire.removeActiveExpedition();
             empire.addTask(new CheckFleetsCountTask(empire));
         }
+    }
+
+    @Override
+    public String toLog() {
+        return String.format("Flight from planet %s to %s with %s mission: fleet detail: %s",
+                getPlanet().getCoordinates(), targetPlanet.getCoordinates(),
+                missionType, fleet.getDetails());
     }
 }

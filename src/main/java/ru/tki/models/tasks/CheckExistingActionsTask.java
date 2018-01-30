@@ -47,10 +47,10 @@ public class CheckExistingActionsTask extends Task {
             planet.setResources(basePage.resources.getResources());
             planet.logResources();
 
-            action = overviewPage.getBuildAction(planet);
+            action = overviewPage.getShipyardAction(planet);
             addActionWithUpdateSubtask(action, new UpdateInfoTask(empire, planet, UpdateTaskType.All));
 
-            action = overviewPage.getShipyardAction(planet);
+            action = overviewPage.getBuildAction(empire, planet);
             addActionWithUpdateSubtask(action, new UpdateInfoTask(empire, planet, UpdateTaskType.All));
         }
         return null;

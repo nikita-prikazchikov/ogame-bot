@@ -72,7 +72,7 @@ public class ShipyardTask extends Task {
     @Override
     public String toString() {
         if (getPlanet().isPlanet()) {
-            return String.format("Build %d %s on planet %s", amount, type, getPlanet().getCoordinates().getFormattedCoordinates());
+            return String.format("Build %d %s on planet %s", amount, type, getPlanet().getCoordinates());
         } else {
             return "Build some ships";
         }

@@ -64,7 +64,7 @@ public class FactoryTask extends Task {
         getPlanet().setResources(basePage.resources.getResources());
         if(!getPlanet().getResources().isEnoughFor(OGameLibrary.getFactoryPrice(type, factoriesPage.getBuildingLevel(type)))){
             //There is no resources for build. Refresh planet info and start thinking again
-            System.out.println(String.format("Can't start %s on planet %s because there is not enough resources", type, getPlanet().getCoordinates().getFormattedCoordinates()));
+            System.out.println(String.format("Can't start %s on planet %s because there is not enough resources", type, getPlanet().getCoordinates()));
             action.addDuration(Duration.ZERO);
             action.addTask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.FACTORIES));
             return action;
@@ -84,7 +84,7 @@ public class FactoryTask extends Task {
     @Override
     public String toString() {
         if(getPlanet().isPlanet()) {
-            return String.format("Build new %s level %d on planet %s", type, ((Planet) getPlanet()).getFactories().get(type) + 1, getPlanet().getCoordinates().getFormattedCoordinates());
+            return String.format("Build new %s level %d on planet %s", type, ((Planet) getPlanet()).getFactories().get(type) + 1, getPlanet().getCoordinates());
         }
         else{
             return "Build some factory";

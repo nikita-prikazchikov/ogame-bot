@@ -157,7 +157,7 @@ public class FleetTask extends Task {
     @Override
     public String toString() {
         return String.format("Sent fleet %s from planet %s to %s with %s mission and %s",
-                fleet.getDetails(), getPlanet().getCoordinates().getFormattedCoordinates(), targetPlanet.getCoordinates().getFormattedCoordinates(),
+                fleet.getDetails(), getPlanet().getCoordinates(), targetPlanet.getCoordinates(),
                 missionType, resources == null ? "empty" : resources);
     }
 }

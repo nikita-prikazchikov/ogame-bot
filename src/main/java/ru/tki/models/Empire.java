@@ -33,6 +33,8 @@ public class Empire {
     private List<Task>   tasks   = new ArrayList<>();
     private List<Action> actions = new ArrayList<>();
 
+    private List<FleetAction> enemyFleets = new ArrayList<>();
+
     private           File   storageDirectory;
     private           File   stateDirectory;
     private transient Gson   gson;
@@ -140,6 +142,27 @@ public class Empire {
         actions.remove(action);
     }
 
+    public List<FleetAction> getEnemyFleets() {
+        return enemyFleets;
+    }
+
+    public void addEnemyFleet(FleetAction fleet) {
+        System.out.println("Enemy fleet is coming: " + fleet.toLog());
+        enemyFleets.add(fleet);
+    }
+
+    public void addEnemyFleets(List<FleetAction> enemyFleets){
+        enemyFleets.forEach(this::addEnemyFleet);
+    }
+
+    public void setEnemyFleets(List<FleetAction> enemyFleets) {
+        if(enemyFleets == null){
+            this.enemyFleets = new ArrayList<>();
+            return;
+        }
+        this.enemyFleets = enemyFleets;
+    }
+
     public boolean isUnderAttack() {
         return isUnderAttack;
     }
@@ -240,7 +263,7 @@ public class Empire {
     }
 
     public boolean isPlanetMain(AbstractPlanet planet) {
-        return getPlanetTotalFleet(planet).getCapacity() * .9 > getProductionOnPlanetInTimeframe(planet);
+        return getPlanetTotalFleet(planet).getCapacity() * .8 > getProductionOnPlanetInTimeframe(planet);
     }
 
     public Fleet getFleetForExpedition(AbstractPlanet planet) {

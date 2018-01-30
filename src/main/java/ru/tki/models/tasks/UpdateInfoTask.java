@@ -15,7 +15,7 @@ public class UpdateInfoTask extends Task {
     transient Empire         empire;
     private   UpdateTaskType type;
 
-    private Navigation navigation;
+    private transient Navigation navigation;
 
     public UpdateInfoTask(Empire empire, AbstractPlanet planet, UpdateTaskType type) {
         name = "Update information about planet: " + type;
@@ -110,6 +110,6 @@ public class UpdateInfoTask extends Task {
 
     @Override
     public String toString() {
-        return String.format("Update planet %s information: %s", getPlanet().getCoordinates().getFormattedCoordinates(), type);
+        return String.format("Update planet %s information: %s", getPlanet().getCoordinates(), type);
     }
 }

@@ -5,6 +5,8 @@ import ru.tki.models.Empire;
 import ru.tki.models.actions.FleetAction;
 import ru.tki.po.FleetDetailsPage;
 
+import java.time.Duration;
+
 public class RevertFleetTask extends FleetTask {
 
     public RevertFleetTask(Empire empire, FleetAction action) {
@@ -29,7 +31,9 @@ public class RevertFleetTask extends FleetTask {
 
         FleetDetailsPage fleetDetailsPage = new FleetDetailsPage();
 
-        action.addDuration(fleetDetailsPage.getRevertDuration(this));
+        Duration duration = fleetDetailsPage.getRevertDuration(this);
+        System.out.println("Fleet reverse flight will take " + duration);
+        action.addDuration(duration);
         fleetDetailsPage.revertFleet(this);
         action.setReturnFlight(true);
 
@@ -39,7 +43,7 @@ public class RevertFleetTask extends FleetTask {
     @Override
     public String toString() {
         return String.format("Revert fleet %s from planet %s to %s with %s mission and %s",
-                fleet.getDetails(), getPlanet().getCoordinates().getFormattedCoordinates(), targetPlanet.getCoordinates().getFormattedCoordinates(),
+                fleet.getDetails(), getPlanet().getCoordinates().getFormattedCoordinates(), targetPlanet.getCoordinates(),
                 missionType, resources == null ? "empty" : resources);
     }
 }

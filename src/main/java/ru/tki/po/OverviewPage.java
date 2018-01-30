@@ -1,13 +1,12 @@
 package ru.tki.po;
 
+import org.apache.xml.dtm.ref.sax2dtm.SAX2RTFDTM;
 import org.openqa.selenium.By;
 import ru.tki.ContextHolder;
 import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
-import ru.tki.models.actions.Action;
-import ru.tki.models.actions.BuildingAction;
-import ru.tki.models.actions.ResearchAction;
-import ru.tki.models.actions.ShipyardAction;
+import ru.tki.models.actions.*;
+import ru.tki.models.types.FactoryType;
 import ru.tki.utils.DataParser;
 
 import java.util.regex.Matcher;
@@ -27,10 +26,11 @@ public class OverviewPage extends PageObject {
     private static final By PLANET_MOVE_RENAME_LINK = By.cssSelector(".planetMoveOverviewGivUpLink");
     private static final By PLANET_NAME_INPUT       = By.cssSelector("#planetName");
     private static final By PLANET_RENAME_BUTTON    = By.cssSelector("#planetMaintenance .btn_blue");
-    private static final By LEAVE_COLONY_BUTTON    = By.cssSelector("#block");
+    private static final By LEAVE_COLONY_BUTTON     = By.cssSelector("#block");
     private static final By LEAVE_PASSWORD_FIELD    = By.cssSelector(".pw_field");
     private static final By CONFIRM_LEAVE_BUTTON    = By.cssSelector("#validate .btn_blue");
 
+    private static final By BUILDING_TITLE = By.xpath("//div[@id='overviewBottom']//div[@class='content' and .//span[@id='Countdown']]//th");
 
     public String getPlanetName() {
         waitForWebElement(PLANET_NAME);
@@ -46,12 +46,30 @@ public class OverviewPage extends PageObject {
         return 0;
     }
 
-    public Action getBuildAction(AbstractPlanet planet) {
-        BuildingAction buildingAction = new BuildingAction(planet);
-        if (isElementExists(BUILDING_DURATION)) {
-            buildingAction.addDuration(DataParser.parseDuration(getElement(BUILDING_DURATION).getText()));
-            planet.setBuildInProgress(true);
-            return buildingAction;
+    public Action getBuildAction(Empire empire, AbstractPlanet planet) {
+        Action action;
+        if (isElementExists(BUILDING_TITLE)) {
+            String title = getElement(BUILDING_TITLE).getText().trim().toLowerCase();
+            if (title.contains("верфь")) {
+                action = new FactoryAction(planet, FactoryType.SHIPYARD);
+                planet.setShipyardBusy(true);
+            } else if (title.contains("нанитов")) {
+                action = new FactoryAction(planet, FactoryType.NANITE_FACTORY);
+                planet.setShipyardBusy(true);
+
+            } else if (title.contains("лаборатория")) {
+                action = new FactoryAction(planet, FactoryType.RESEARCH_LAB);
+                planet.setShipyardBusy(true);
+                empire.setResearchInProgress(true);
+
+            } else {
+                action = new BuildingAction(planet);
+            }
+            if (isElementExists(BUILDING_DURATION)) {
+                action.addDuration(DataParser.parseDuration(getElement(BUILDING_DURATION).getText()));
+                planet.setBuildInProgress(true);
+                return action;
+            }
         }
         planet.setBuildInProgress(false);
         return null;
@@ -86,7 +104,7 @@ public class OverviewPage extends PageObject {
         getElement(PLANET_RENAME_BUTTON).click();
     }
 
-    public void leavePlanet(){
+    public void leavePlanet() {
         getElement(PLANET_MOVE_RENAME_LINK).click();
         waitForWebElementIsDisplayed(LEAVE_COLONY_BUTTON);
         getElement(LEAVE_COLONY_BUTTON).click();

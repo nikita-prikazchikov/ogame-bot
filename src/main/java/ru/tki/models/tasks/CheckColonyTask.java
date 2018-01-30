@@ -31,7 +31,7 @@ public class CheckColonyTask extends Task {
         AbstractPlanet planet = getPlanet();
         OverviewPage overviewPage = new OverviewPage();
         if(overviewPage.getPlanetSize() < size){
-            System.out.println(String.format("New planet %s was found and it is too small. We have to delete it and find new one.", getPlanet().getCoordinates().getFormattedCoordinates()));
+            System.out.println(String.format("New planet %s was found and it is too small. We have to delete it and find new one.", getPlanet().getCoordinates()));
             overviewPage.leavePlanet();
             return null;
         }
@@ -43,7 +43,7 @@ public class CheckColonyTask extends Task {
         planet.setName(overviewPage.getPlanetName());
         planet.setSize(overviewPage.getPlanetSize());
 
-        System.out.println(String.format("New planet was found and added to the empire: %s", getPlanet().getCoordinates().getFormattedCoordinates()));
+        System.out.println(String.format("New planet was found and added to the empire: %s", getPlanet().getCoordinates()));
         empire.addPlanet(getPlanet());
         Action action = new BuildingAction(planet);
         action.addTask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.All));
@@ -52,6 +52,6 @@ public class CheckColonyTask extends Task {
 
     @Override
     public String toString() {
-            return String.format("Verify new colony %s has correct size %s", getPlanet().getCoordinates().getFormattedCoordinates(), size);
+            return String.format("Verify new colony %s has correct size %s", getPlanet().getCoordinates(), size);
     }
 }

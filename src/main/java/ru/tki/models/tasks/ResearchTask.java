@@ -15,8 +15,8 @@ import java.time.Duration;
 //Start new research task
 public class ResearchTask extends Task {
 
-    ResearchType type;
-    transient Empire empire;
+    private   ResearchType type;
+    transient Empire       empire;
 
     public ResearchTask(Empire empire, AbstractPlanet planet, ResearchType type) {
         name = "Research task";
@@ -54,7 +54,7 @@ public class ResearchTask extends Task {
         getPlanet().setResources(basePage.resources.getResources());
         if(!getPlanet().getResources().isEnoughFor(OGameLibrary.getResearchPrice(type, researchesPage.getResearchLevel(type)))){
             //There is no resources for build. Refresh planet info and start thinking again
-            System.out.println(String.format("Can't start %s on planet %s because there is not enough resources", type, getPlanet().getCoordinates().getFormattedCoordinates()));
+            System.out.println(String.format("Can't start %s on planet %s because there is not enough resources", type, getPlanet().getCoordinates()));
             action.addDuration(Duration.ZERO);
             action.addTask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.RESEARCHES));
             return action;
@@ -73,6 +73,6 @@ public class ResearchTask extends Task {
 
     @Override
     public String toString() {
-        return String.format("Research %s technology level %d on planet %s", type, empire.getResearches().get(type) + 1, getPlanet().getCoordinates().getFormattedCoordinates());
+        return String.format("Research %s technology level %d on planet %s", type, empire.getResearches().get(type) + 1, getPlanet().getCoordinates());
     }
 }

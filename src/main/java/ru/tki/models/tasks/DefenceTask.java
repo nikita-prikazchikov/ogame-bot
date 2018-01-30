@@ -58,6 +58,6 @@ public class DefenceTask extends Task {
 
     @Override
     public String toString() {
-        return String.format("Build %d %s on planet %s", amount, type, getPlanet().getCoordinates().getFormattedCoordinates());
+        return String.format("Build %d %s on planet %s", amount, type, getPlanet().getCoordinates());
     }
 }

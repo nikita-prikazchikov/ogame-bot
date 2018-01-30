@@ -46,6 +46,10 @@ public abstract class Action {
         this.finishTime = finishTime.plus(duration).plus(Duration.ofSeconds(5));
     }
 
+    public Instant getFinishTime() {
+        return finishTime;
+    }
+
     public List<Task> getTasks() {
         return tasks;
     }

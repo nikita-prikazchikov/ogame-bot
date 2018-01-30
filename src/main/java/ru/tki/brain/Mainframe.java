@@ -8,6 +8,7 @@ import ru.tki.models.Planet;
 import ru.tki.models.actions.Action;
 import ru.tki.models.actions.FleetAction;
 import ru.tki.models.tasks.*;
+import ru.tki.models.types.MissionType;
 import ru.tki.models.types.PlanetType;
 import ru.tki.models.types.UpdateTaskType;
 import ru.tki.po.LoginPage;
@@ -22,6 +23,7 @@ public class Mainframe {
     private static final Duration checkUpdateResourcesDuration = Duration.ofMinutes(15);
     private static final Duration checkFlagsDuration           = Duration.ofMinutes(30);
     private static final Duration checkFleetDuration           = Duration.ofMinutes(60);
+    private static final Duration saveFleetDuration            = Duration.ofMinutes(51);
 
     private Instant lastAttackCheck     = Instant.now();
     private Instant lastUpdateResources = Instant.now();
@@ -63,6 +65,7 @@ public class Mainframe {
                 planet.setHasTask(false);
             }
         }
+        empire.addTask(new CheckAttackTask(empire));
         empire.addTask(new CheckExistingActionsTask(empire));
         runExecution();
     }
@@ -76,7 +79,7 @@ public class Mainframe {
                     navigation.openHomePage();
                     loginPage.login();
                 }
-                if (exceptionCount >= 20) {
+                if (exceptionCount >= 5) {
                     restartEmpire();
                     exceptionCount = 0;
                 }
@@ -86,8 +89,11 @@ public class Mainframe {
                 }
                 verifyActions();
                 execute();
+                verifySaveEmpireFromAttack();
                 verifySchedules();
                 think();
+                //reset fails count in case everything was executed
+                exceptionCount = 0;
             } catch (Exception ex) {
                 exceptionCount++;
                 System.out.println("Exception count: " + exceptionCount);
@@ -136,6 +142,24 @@ public class Mainframe {
         }
     }
 
+    private void verifySaveEmpireFromAttack() {
+        if (!empire.isUnderAttack()) {
+            return;
+        }
+        if (empire.getEnemyFleets().stream().filter(fleetAction ->
+                fleetAction.getMissionType() == MissionType.ATTACK
+                        || fleetAction.getMissionType() == MissionType.JOINT_ATTACK
+        ).count() > 0) {
+            empire.getPlanets().forEach(planet ->
+                    empire.getEnemyFleets().stream().filter(fleetAction ->
+                            planet.equals(fleetAction.getTargetPlanet())).forEach(fleetAction -> {
+                        if (!planet.getFleet().isEmpty() && fleetAction.getFinishTime().minus(saveFleetDuration).compareTo(Instant.now()) < 0) {
+                            empire.addTask(new SaveFleetTask(empire, planet));
+                        }
+                    }));
+        }
+    }
+
     private void verifyActions() throws InterruptedException {
         List<Action> actions = new ArrayList<>();
         empire.getActions().stream().filter(action1 -> !(action1 instanceof FleetAction)).filter(Action::isFinished).forEach(action -> {
@@ -149,7 +173,7 @@ public class Mainframe {
                 empire.addTask(new UpdateInfoTask(empire, action.getPlanet(), UpdateTaskType.FLEET));
                 actions.add(action);
             } else if (action.isTargetAchieved()) {
-                System.out.println("Fleet come to the target planet: " + action.getTargetPlanet().getCoordinates().getFormattedCoordinates());
+                System.out.printf("Fleet come to the target planet: %s : %s", action.getTargetPlanet().getCoordinates(), action.getFleet().getDetails());
                 action.setTargetAchieved();
                 if (action.hasTask()) {
                     empire.addTasks(action.getTasks());
@@ -159,7 +183,7 @@ public class Mainframe {
                     empire.addTask(new UpdateInfoTask(empire, action.getTargetPlanet(), UpdateTaskType.FLEET));
                 }
             }
-            if(!empire.isUnderAttack() && action.isSaveFlight()){
+            if (!empire.isUnderAttack() && action.isSaveFlight()) {
                 // TODO: 29.01.2018 Think about revert in case of multiple attacks
                 empire.addTask(new RevertFleetTask(empire, action));
                 actions.add(action);
@@ -191,7 +215,7 @@ public class Mainframe {
         //Find possible task with adding resources by transport them
         empire.addTask(taskGenerator.checkTransportForBuild());
 
-        empire.getPlanets().stream().filter(planet -> !planet.hasTask() && planet.isPlanet() && !empire.isPlanetMain(planet)).forEach(p ->{
+        empire.getPlanets().stream().filter(planet -> !planet.hasTask() && planet.isPlanet() && !empire.isPlanetMain(planet)).forEach(p -> {
             //Move resources to main planet if possible
             empire.addTask(taskGenerator.getFleetTask((Planet) p));
         });

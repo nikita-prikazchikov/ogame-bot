@@ -154,6 +154,7 @@ public class FleetPage extends PageObject {
     }
 
     public void clickContinue(){
+        scrollToElement(getElement(CONTINUE));
         getElement(CONTINUE).click();
     }
 

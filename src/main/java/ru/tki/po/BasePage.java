@@ -1,10 +1,13 @@
 package ru.tki.po;
 
+import org.openqa.selenium.By;
 import ru.tki.po.components.LeftMenuComponent;
 import ru.tki.po.components.MyWorldsComponent;
 import ru.tki.po.components.ResourcesComponent;
 
 public class BasePage extends PageObject {
+
+    private static final By ATTACK_ALERT = By.cssSelector("#attack_alert");
 
     public LeftMenuComponent leftMenu;
     public ResourcesComponent resources;
@@ -18,6 +21,6 @@ public class BasePage extends PageObject {
     }
 
     public boolean isUnderAttack() {
-        return false;
+        return isElementDisplayed(ATTACK_ALERT);
     }
 }

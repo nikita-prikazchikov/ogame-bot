@@ -245,8 +245,8 @@ public class TaskGenerator {
         Resources resources = planet.getResources();
         if (!planet.getShipyardBusy() && currentMax > 12 && botConfig.getBuildFleet()) {
             Integer planetProduction = empire.getProductionOnPlanetInTimeframe(planet);
-            //task to build 1/5 of transports required to cover full planet production
-            Integer buildAmount = Math.max(planetProduction / (5000 * 5), 2);
+            //task to build 1/8 of transports required to cover full planet production
+            Integer buildAmount = Math.max(planetProduction / (5000 * 8), 2);
             if (empire.getPlanetTotalFleet(planet).getSmallCargoCapacity() < planetProduction
                     && OGameLibrary.canBuild(empire, planet, ShipType.SMALL_CARGO)
                     && resources.isEnoughFor(OGameLibrary.getShipPrice(ShipType.SMALL_CARGO).multiply(buildAmount))) {
