@@ -15,6 +15,7 @@ public class BotConfigMain {
     Boolean buildFleet = true;
     Boolean buildColonies = true;
     Boolean doResearches = true;
+    Boolean sendExpeditions = true;
 
     Integer universeSpeed = 1;
     Integer universeFleetSpeed = 1;
@@ -130,6 +131,14 @@ public class BotConfigMain {
 
     public void setDoResearches(Boolean doResearches) {
         this.doResearches = doResearches;
+    }
+
+    public Boolean getSendExpeditions() {
+        return sendExpeditions;
+    }
+
+    public void setSendExpeditions(Boolean sendExpeditions) {
+        this.sendExpeditions = sendExpeditions;
     }
 
     public Integer getUniverseSpeed() {

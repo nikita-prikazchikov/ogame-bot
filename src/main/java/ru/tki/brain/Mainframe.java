@@ -159,6 +159,11 @@ public class Mainframe {
                     empire.addTask(new UpdateInfoTask(empire, action.getTargetPlanet(), UpdateTaskType.FLEET));
                 }
             }
+            if(!empire.isUnderAttack() && action.isSaveFlight()){
+                // TODO: 29.01.2018 Think about revert in case of multiple attacks
+                empire.addTask(new RevertFleetTask(empire, action));
+                actions.add(action);
+            }
         });
         actions.forEach(action -> empire.removeAction(action));
     }
@@ -178,9 +183,6 @@ public class Mainframe {
             if (planet.isPlanet()) {
                 //build or research something first
                 empire.addTask(taskGenerator.getTask((Planet) planet));
-                if (planet.hasTask()) continue;
-                //Move resources to main planet if possible
-                empire.addTask(taskGenerator.getFleetTask((Planet) planet));
             } else if (planet.getType() == PlanetType.MOON) {
                 //Do nothing now
             }
@@ -188,6 +190,12 @@ public class Mainframe {
 
         //Find possible task with adding resources by transport them
         empire.addTask(taskGenerator.checkTransportForBuild());
+
+        empire.getPlanets().stream().filter(planet -> !planet.hasTask() && planet.isPlanet() && !empire.isPlanetMain(planet)).forEach(p ->{
+            //Move resources to main planet if possible
+            empire.addTask(taskGenerator.getFleetTask((Planet) p));
+        });
+
         //empire.addTask(taskGenerator.getColonyTask());
         empire.addTask(taskGenerator.sendExpedition());
     }

@@ -3,6 +3,7 @@ package ru.tki.models.actions;
 import ru.tki.models.*;
 import ru.tki.models.tasks.CheckFleetsCountTask;
 import ru.tki.models.tasks.FleetTask;
+import ru.tki.models.tasks.SaveFleetTask;
 import ru.tki.models.types.FleetSpeed;
 import ru.tki.models.types.MissionType;
 
@@ -15,9 +16,11 @@ public class FleetAction extends Action {
     protected Fleet          fleet;
     protected Resources      resources;
     protected MissionType    missionType;
-    protected Instant        oneSideFleetTime = null;
 
-    protected FleetSpeed fleetSpeed = FleetSpeed.S100;
+    protected Instant    oneSideFleetTime = null;
+    protected Boolean    isSaveFlight     = false;
+    protected Boolean    isReturnFlight   = false;
+    protected FleetSpeed fleetSpeed       = FleetSpeed.S100;
 
     public FleetAction() {
         name = "Fleet";
@@ -31,6 +34,12 @@ public class FleetAction extends Action {
         this.resources = task.getResources();
         this.fleetSpeed = task.getFleetSpeed();
         this.missionType = task.getMissionType();
+    }
+
+    public FleetAction(SaveFleetTask task) {
+        this();
+        this.planet = task.getPlanet();
+        this.targetPlanet = task.getTargetPlanet();
     }
 
     public Boolean isTargetAchieved() {
@@ -77,18 +86,34 @@ public class FleetAction extends Action {
         this.resources = resources;
     }
 
-    public void setDurationOfFlight(Duration duration){
+    public void setDurationOfFlight(Duration duration) {
         this.oneSideFleetTime = Instant.now().plus(duration).plus(Duration.ofSeconds(10));
     }
 
-    public void setTargetAchieved(){
+    public void setTargetAchieved() {
         this.oneSideFleetTime = null;
+    }
+
+    public Boolean isSaveFlight() {
+        return isSaveFlight;
+    }
+
+    public void setSaveFlight(Boolean saveFlight) {
+        isSaveFlight = saveFlight;
+    }
+
+    public Boolean isReturnFlight() {
+        return isReturnFlight;
+    }
+
+    public void setReturnFlight(Boolean returnFlight) {
+        isReturnFlight = returnFlight;
     }
 
     @Override
     public void complete(Empire empire) {
         empire.removeActiveFleet();
-        if(missionType == MissionType.EXPEDITION){
+        if (missionType == MissionType.EXPEDITION) {
             empire.removeActiveExpedition();
             empire.addTask(new CheckFleetsCountTask(empire));
         }

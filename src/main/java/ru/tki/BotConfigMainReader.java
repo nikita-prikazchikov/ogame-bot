@@ -47,6 +47,7 @@ public class BotConfigMainReader {
             config.setBuildFleet(Boolean.parseBoolean(prop.getProperty("empire.build.fleet", "true")));
             config.setBuildColonies(Boolean.parseBoolean(prop.getProperty("empire.build.colonies", "true")));
             config.setDoResearches(Boolean.parseBoolean(prop.getProperty("empire.do.researches", "true")));
+            config.setSendExpeditions(Boolean.parseBoolean(prop.getProperty("empire.send.expeditions", "true")));
 
             config.setLogState(Boolean.parseBoolean(prop.getProperty("empire.log.state", "false")));
 
