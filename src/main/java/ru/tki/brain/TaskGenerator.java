@@ -212,7 +212,7 @@ public class TaskGenerator {
         if (empire.getMaxExpeditions() > empire.getActiveExpeditions()
                 && empire.canSendFleet()
                 && config.SEND_EXPEDITIONS) {
-            AbstractPlanet planet = empire.getPlanets().stream().filter(AbstractPlanet::hasTask).max((a, b) -> {
+            AbstractPlanet planet = empire.getPlanets().stream().filter(planet1 -> empire.isPlanetMain(planet1) && !planet1.hasTask()).max((a, b) -> {
                 if (a.getFleet().getLargeCargo() > 0 || b.getFleet().getLargeCargo() > 0) {
                     return a.getFleet().getLargeCargo() - b.getFleet().getLargeCargo();
                 }
