@@ -156,12 +156,12 @@ public class Empire {
         enemyFleets.add(fleet);
     }
 
-    public void addEnemyFleets(List<FleetAction> enemyFleets){
+    public void addEnemyFleets(List<FleetAction> enemyFleets) {
         enemyFleets.forEach(this::addEnemyFleet);
     }
 
     public void setEnemyFleets(List<FleetAction> enemyFleets) {
-        if(enemyFleets == null){
+        if (enemyFleets == null) {
             this.enemyFleets = new ArrayList<>();
             return;
         }
@@ -270,7 +270,7 @@ public class Empire {
         return getPlanetTotalFleet(planet).getCapacity() * .8 > getProductionOnPlanetInTimeframe(planet);
     }
 
-    public boolean isPlanetUnderAttack(AbstractPlanet planet){
+    public boolean isPlanetUnderAttack(AbstractPlanet planet) {
         return getEnemyFleets().stream().filter(action -> action.getTargetPlanet().equals(planet)).count() > 0;
     }
 
@@ -305,20 +305,16 @@ public class Empire {
     public AbstractPlanet getPlanetForExpedition(AbstractPlanet planet) {
         Coordinates coordinates = planet.getCoordinates();
         if (getMaxExpeditions() == 1 || getActiveExpeditions() == 0 || Math.random() > 0.4) {
-            return new Planet(new Coordinates(
-                    Integer.parseInt(coordinates.getGalaxy()),
-                    Integer.parseInt(coordinates.getSystem()),
-                    16
-            ));
+            return new Planet(new Coordinates(coordinates.getGalaxy(), coordinates.getSystem(), 16));
         }
-        Long system = Long.parseLong(coordinates.getSystem());
+        Integer system = coordinates.getSystem();
         Long newSystem;
         do {
             newSystem = system + Math.round(Math.random() * 30 - 15);
         }
         while (newSystem < 1 || newSystem > 499);
         Planet planet1 = new Planet();
-        planet1.setCoordinates(new Coordinates(Integer.parseInt(coordinates.getGalaxy()), newSystem.intValue(), 16));
+        planet1.setCoordinates(new Coordinates(coordinates.getGalaxy(), newSystem.intValue(), 16));
         return planet1;
     }
 

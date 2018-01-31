@@ -32,7 +32,7 @@ public class GalaxyPage extends PageObject {
 
     public void findPlanet(Coordinates coordinates) {
         setValue(getElement(GALAXY_NUMBER), coordinates.getGalaxy());
-        setValue(getElement(SYSTEM_NUMBER), coordinates.getSystem() + Keys.ENTER);
+        setValue(getElement(SYSTEM_NUMBER), coordinates.getSystem().toString() + Keys.ENTER);
         waitLoading();
     }
 

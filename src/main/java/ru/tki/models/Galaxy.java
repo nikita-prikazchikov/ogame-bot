@@ -24,8 +24,8 @@ public class Galaxy {
         navigation.selectPlanet(planet);
         navigation.openGalaxy();
 
-        Integer galaxy = Integer.parseInt(planet.getCoordinates().getGalaxy());
-        Integer system = Integer.parseInt(planet.getCoordinates().getSystem());
+        Integer galaxy = planet.getCoordinates().getGalaxy();
+        Integer system = planet.getCoordinates().getSystem();
 
         while (galaxy < 8) {
 
@@ -84,7 +84,7 @@ public class Galaxy {
 
     private Planet getGoodPlanet(List<Planet> planets) {
         for (Planet planet : planets) {
-            int position = Integer.parseInt(planet.getCoordinates().getPlanet());
+            int position = planet.getCoordinates().getPlanet();
             if (position > 5 && position < 11) {
                 return planet;
             }

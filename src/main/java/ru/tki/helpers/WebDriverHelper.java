@@ -38,6 +38,10 @@ public abstract class WebDriverHelper {
         element.sendKeys(value);
     }
 
+    protected void setValue(WebElement element, Integer value) {
+        setValue(element, value.toString());
+    }
+
     protected WebElement getElement(SearchContext parent, By bySelector) {
         WebElement element = findElement(parent, bySelector);
         if (element == null) {

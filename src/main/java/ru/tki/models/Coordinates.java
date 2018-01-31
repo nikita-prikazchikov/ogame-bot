@@ -6,53 +6,53 @@ import java.util.regex.Pattern;
 
 public class Coordinates {
 
-    private String galaxy;
-    private String system;
-    private String planet;
+    private Integer galaxy;
+    private Integer system;
+    private Integer planet;
 
     public Coordinates(Integer galaxy, Integer system, Integer planet) {
-        this.galaxy = galaxy.toString();
-        this.system = system.toString();
-        this.planet = planet.toString();
+        this.galaxy = galaxy;
+        this.system = system;
+        this.planet = planet;
     }
 
     public Coordinates(String input) {
         Pattern p = Pattern.compile("(\\d):(\\d{1,3}):(\\d{1,2})");
         Matcher m = p.matcher(input);
         if (m.find()) {
-            galaxy = m.group(1);
-            system = m.group(2);
-            planet = m.group(3);
+            galaxy = Integer.parseInt(m.group(1));
+            system = Integer.parseInt(m.group(2));
+            planet = Integer.parseInt(m.group(3));
         }
     }
 
     public Coordinates closer(Coordinates a, Coordinates b) {
-        if (Math.abs(Integer.parseInt(this.galaxy) - Integer.parseInt(a.galaxy))
-                > Math.abs(Integer.parseInt(this.galaxy) - Integer.parseInt(b.galaxy))) {
+        if (Math.abs(this.galaxy - a.galaxy)
+                > Math.abs(this.galaxy - b.galaxy)) {
             return b;
-        } else if (Math.abs(Integer.parseInt(this.system) - Integer.parseInt(a.system))
-                > Math.abs(Integer.parseInt(this.system) - Integer.parseInt(b.system))) {
+        } else if (Math.abs(this.system - a.system)
+                > Math.abs(this.system - b.system)) {
             return b;
-        } else if (Math.abs(Integer.parseInt(this.planet) - Integer.parseInt(a.planet))
-                > Math.abs(Integer.parseInt(this.planet) - Integer.parseInt(b.planet))) {
+        } else if (Math.abs(this.planet - a.planet)
+                > Math.abs(this.planet - b.planet)) {
             return b;
         }
         return a;
     }
 
-    public String getFormattedCoordinates(){
+    public String getFormattedCoordinates() {
         return String.format("%s:%s:%s", galaxy, system, planet);
     }
 
-    public String getGalaxy() {
+    public Integer getGalaxy() {
         return galaxy;
     }
 
-    public String getSystem() {
+    public Integer getSystem() {
         return system;
     }
 
-    public String getPlanet() {
+    public Integer getPlanet() {
         return planet;
     }
 
@@ -61,12 +61,12 @@ public class Coordinates {
         return String.format("[%s:%s:%s]", galaxy, system, planet);
     }
 
-    public String getFileSafeString(){
+    public String getFileSafeString() {
         return String.format("%s_%s_%s", galaxy, system, planet);
     }
 
     public boolean equals(Coordinates obj) {
-        return  this.galaxy.equals(obj.galaxy)
+        return this.galaxy.equals(obj.galaxy)
                 && this.system.equals(obj.system)
                 && this.planet.equals(obj.planet);
     }

@@ -154,13 +154,13 @@ public class Mainframe {
         System.out.println("=========================================================================================");
         this.empire = new Empire();
         empire.addTask(new EmpireTask(empire));
-        empire.addTask(new CheckExistingActionsTask(empire));
+        setEmpireInitialTasks();
     }
 
     // Add tasks that are periodic in the system
     // Like: check attack or update existing resources
     private void verifySchedules() {
-        if (lastAttackCheck.plus(checkAttackDuration).compareTo(Instant.now()) < 0) {
+        if (config.DO_CHECK_ATTACK && lastAttackCheck.plus(checkAttackDuration).compareTo(Instant.now()) < 0) {
             empire.addTask(new CheckAttackTask(empire));
             lastAttackCheck = Instant.now();
         }

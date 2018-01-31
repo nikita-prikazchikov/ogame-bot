@@ -47,6 +47,15 @@ public class BotConfigMainReader {
             config.DO_RESEARCHES = Boolean.parseBoolean(prop.getProperty("empire.do.researches", "true"));
             config.SEND_EXPEDITIONS = Boolean.parseBoolean(prop.getProperty("empire.send.expeditions", "true"));
 
+
+            config.SLEEP_TIMEOUT = Integer.parseInt(prop.getProperty("sleep.timeout", "10000"));
+            //In seconds
+            config.ATTACK_CHECK_TIMEOUT = Integer.parseInt(prop.getProperty("empire.check.attack.timeout", "120"));
+            config.UPDATE_RESOURCES_TIMEOUT = Integer.parseInt(prop.getProperty("update.resources.timeout", "900"));
+            config.FLEET_SAVE_TIMEOUT = Integer.parseInt(prop.getProperty("fleet.save.timeout", "180"));
+
+            config.DO_CHECK_ATTACK = Boolean.parseBoolean(prop.getProperty("empire.check.attack", "true"));
+
             config.LOG_STATE = Boolean.parseBoolean(prop.getProperty("empire.log.state", "false"));
 
             //Setup required local property for chrome driver
