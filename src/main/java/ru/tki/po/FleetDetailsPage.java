@@ -111,7 +111,7 @@ public class FleetDetailsPage extends AbstractFleetDetails {
             fleetAction.addDuration(getDurationReturn(element));
         }
         if (fleetAction.getMissionType() == MissionType.COLONIZATION) {
-            fleetAction.addTask(new CheckColonyTask(empire, fleetAction.getTargetPlanet(), ContextHolder.getBotConfigMain().getColonyMinSize()));
+            fleetAction.addTask(new CheckColonyTask(empire, fleetAction.getTargetPlanet(), ContextHolder.getBotConfigMain().COLONY_MIN_SIZE));
         }
         collectFleetDetails(element, fleetAction);
         return fleetAction;

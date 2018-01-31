@@ -25,35 +25,41 @@ public class BotConfigMainReader {
                 throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
             }
 
-            config.setProperties(prop);
+            config.URL = prop.getProperty("url");
+            config.LOGIN = prop.getProperty("login");
+            config.PASSWORD = prop.getProperty("password");
+            config.UNIVERSE = prop.getProperty("universe");
 
-            config.setUrl(prop.getProperty("url"));
-            config.setLogin(prop.getProperty("login"));
-            config.setPassword(prop.getProperty("password"));
-            config.setUniverse(prop.getProperty("universe"));
+            config.UNIVERSE_SPEED = Integer.parseInt(prop.getProperty("universe.speed", "1"));
+            config.UNIVERSE_FLEET_SPEED = Integer.parseInt(prop.getProperty("universe.fleet.speed", "1"));
+            config.EXECUTION_HOURS = Integer.parseInt(prop.getProperty("empire.execution.hours", "0"));
+            config.EXECUTION_MINUTES = Integer.parseInt(prop.getProperty("empire.execution.minutes", "0"));
 
-            config.setUniverseSpeed(Integer.parseInt(prop.getProperty("universe.speed", "1")));
-            config.setUniverseFleetSpeed(Integer.parseInt(prop.getProperty("universe.fleet.speed", "1")));
-            config.setExecutionHours(Integer.parseInt(prop.getProperty("empire.execution.hours", "0")));
-            config.setExecutionMinutes(Integer.parseInt(prop.getProperty("empire.execution.minutes", "0")));
+            config.COLONY_MIN_SIZE = Integer.parseInt(prop.getProperty("empire.colony.min.size", "180"));
 
-            config.setColonyMinSize(Integer.parseInt(prop.getProperty("empire.colony.min.size", "180")));
+            config.HEADLESS = Boolean.parseBoolean(prop.getProperty("chrome.headless", "false"));
 
-            config.setHeadless(Boolean.parseBoolean(prop.getProperty("chrome.headless", "false")));
+            config.BUILD_RESOURCES = Boolean.parseBoolean(prop.getProperty("empire.build.resources", "true"));
+            config.BUILD_FACTORIES = Boolean.parseBoolean(prop.getProperty("empire.build.factories", "true"));
+            config.BUILD_DEFENCE = Boolean.parseBoolean(prop.getProperty("empire.build.defence", "true"));
+            config.BUILD_FLEET = Boolean.parseBoolean(prop.getProperty("empire.build.fleet", "true"));
+            config.BUILD_COLONIES = Boolean.parseBoolean(prop.getProperty("empire.build.colonies", "true"));
+            config.DO_RESEARCHES = Boolean.parseBoolean(prop.getProperty("empire.do.researches", "true"));
+            config.SEND_EXPEDITIONS = Boolean.parseBoolean(prop.getProperty("empire.send.expeditions", "true"));
 
-            config.setBuildResources(Boolean.parseBoolean(prop.getProperty("empire.build.resources", "true")));
-            config.setBuildFactories(Boolean.parseBoolean(prop.getProperty("empire.build.factories", "true")));
-            config.setBuildDefence(Boolean.parseBoolean(prop.getProperty("empire.build.defence", "true")));
-            config.setBuildFleet(Boolean.parseBoolean(prop.getProperty("empire.build.fleet", "true")));
-            config.setBuildColonies(Boolean.parseBoolean(prop.getProperty("empire.build.colonies", "true")));
-            config.setDoResearches(Boolean.parseBoolean(prop.getProperty("empire.do.researches", "true")));
-            config.setSendExpeditions(Boolean.parseBoolean(prop.getProperty("empire.send.expeditions", "true")));
 
-            config.setLogState(Boolean.parseBoolean(prop.getProperty("empire.log.state", "false")));
+            config.SLEEP_TIMEOUT = Integer.parseInt(prop.getProperty("sleep.timeout", "10000"));
+            //In seconds
+            config.ATTACK_CHECK_TIMEOUT = Integer.parseInt(prop.getProperty("empire.check.attack.timeout", "120"));
+            config.UPDATE_RESOURCES_TIMEOUT = Integer.parseInt(prop.getProperty("update.resources.timeout", "900"));
+            config.FLEET_SAVE_TIMEOUT = Integer.parseInt(prop.getProperty("fleet.save.timeout", "180"));
+
+            config.DO_CHECK_ATTACK = Boolean.parseBoolean(prop.getProperty("empire.check.attack", "true"));
+
+            config.LOG_STATE = Boolean.parseBoolean(prop.getProperty("empire.log.state", "false"));
 
             //Setup required local property for chrome driver
             System.setProperty("webdriver.chrome.driver", prop.getProperty("webdriver.chrome.driver"));
-
 
         } catch (Exception e) {
             System.out.println("Exception: " + e);

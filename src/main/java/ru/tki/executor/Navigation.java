@@ -19,7 +19,7 @@ public class Navigation {
 
     public void openHomePage(){
         WebDriver webDriver = ContextHolder.getDriver();
-        webDriver.get(ContextHolder.getBotConfigMain().getUrl());
+        webDriver.get(ContextHolder.getBotConfigMain().URL);
     }
 
     public void openOverview() {

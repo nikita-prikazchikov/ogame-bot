@@ -3,6 +3,7 @@ package ru.tki.models;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.openqa.selenium.InvalidArgumentException;
+import ru.tki.BotConfigMain;
 import ru.tki.ContextHolder;
 import ru.tki.models.actions.Action;
 import ru.tki.models.actions.FleetAction;
@@ -35,10 +36,11 @@ public class Empire {
 
     private List<FleetAction> enemyFleets = new ArrayList<>();
 
-    private           File   storageDirectory;
-    private           File   stateDirectory;
-    private transient Gson   gson;
-    private transient Galaxy galaxy;
+    private           File          storageDirectory;
+    private           File          stateDirectory;
+    private           BotConfigMain config;
+    private transient Gson          gson;
+    private transient Galaxy        galaxy;
 
     private boolean isUnderAttack;
     private boolean researchInProgress = false;
@@ -48,12 +50,16 @@ public class Empire {
     // value of hours to take resources off the planet
     private Integer productionTimeHours;
 
-    private Boolean doLogState = false;
-
     public Empire() {
+        this(ContextHolder.getBotConfigMain());
+    }
+
+    public Empire(BotConfigMain config) {
+        this.config = config;
+
         storageDirectory = new File(STORAGE + File.separator +
-                ContextHolder.getBotConfigMain().getUniverse().toLowerCase() + File.separator +
-                ContextHolder.getBotConfigMain().getLogin().toLowerCase());
+                config.UNIVERSE.toLowerCase() + File.separator +
+                config.LOGIN.toLowerCase());
 
         stateDirectory = new File(storageDirectory, "stateLogs");
         createDirectory(storageDirectory);
@@ -64,7 +70,6 @@ public class Empire {
 
         // Timeframe for transport resources from colony to main planet
         productionTimeHours = 4;
-        doLogState = ContextHolder.getBotConfigMain().getLogState();
     }
 
     public List<AbstractPlanet> getPlanets() {
@@ -118,7 +123,7 @@ public class Empire {
                     System.out.println("With subtask: " + task1);
                 });
             }
-            if (doLogState) {
+            if (config.LOG_STATE) {
                 System.out.println("Save empire state to : " + saveState());
             }
         }
@@ -151,12 +156,12 @@ public class Empire {
         enemyFleets.add(fleet);
     }
 
-    public void addEnemyFleets(List<FleetAction> enemyFleets){
+    public void addEnemyFleets(List<FleetAction> enemyFleets) {
         enemyFleets.forEach(this::addEnemyFleet);
     }
 
     public void setEnemyFleets(List<FleetAction> enemyFleets) {
-        if(enemyFleets == null){
+        if (enemyFleets == null) {
             this.enemyFleets = new ArrayList<>();
             return;
         }
@@ -198,8 +203,7 @@ public class Empire {
     }
 
     public Integer getMaxFleets() {
-        //Actually +1 has to be here but need to keep at least one slot for save fleet in future
-        return researches.getComputer();
+        return researches.getComputer() + 1;
     }
 
     public Integer getMaxExpeditions() {
@@ -266,7 +270,7 @@ public class Empire {
         return getPlanetTotalFleet(planet).getCapacity() * .8 > getProductionOnPlanetInTimeframe(planet);
     }
 
-    public boolean isPlanetUnderAttack(AbstractPlanet planet){
+    public boolean isPlanetUnderAttack(AbstractPlanet planet) {
         return getEnemyFleets().stream().filter(action -> action.getTargetPlanet().equals(planet)).count() > 0;
     }
 
@@ -301,20 +305,16 @@ public class Empire {
     public AbstractPlanet getPlanetForExpedition(AbstractPlanet planet) {
         Coordinates coordinates = planet.getCoordinates();
         if (getMaxExpeditions() == 1 || getActiveExpeditions() == 0 || Math.random() > 0.4) {
-            return new Planet(new Coordinates(
-                    Integer.parseInt(coordinates.getGalaxy()),
-                    Integer.parseInt(coordinates.getSystem()),
-                    16
-            ));
+            return new Planet(new Coordinates(coordinates.getGalaxy(), coordinates.getSystem(), 16));
         }
-        Long system = Long.parseLong(coordinates.getSystem());
+        Integer system = coordinates.getSystem();
         Long newSystem;
         do {
             newSystem = system + Math.round(Math.random() * 30 - 15);
         }
         while (newSystem < 1 || newSystem > 499);
         Planet planet1 = new Planet();
-        planet1.setCoordinates(new Coordinates(Integer.parseInt(coordinates.getGalaxy()), newSystem.intValue(), 16));
+        planet1.setCoordinates(new Coordinates(coordinates.getGalaxy(), newSystem.intValue(), 16));
         return planet1;
     }
 

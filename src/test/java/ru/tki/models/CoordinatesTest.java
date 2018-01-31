@@ -12,42 +12,42 @@ public class CoordinatesTest {
     @Test
     public void testSimpleString(){
         Coordinates c = new Coordinates("2:45:7");
-        assertEquals(c.getGalaxy(), "2");
-        assertEquals(c.getSystem(), "45");
-        assertEquals(c.getPlanet(), "7");
-        logger.info(c.getGalaxy());
-        logger.info(c.getSystem());
-        logger.info(c.getPlanet());
+        assertEquals(c.getGalaxy().toString(), "2");
+        assertEquals(c.getSystem().toString(), "45");
+        assertEquals(c.getPlanet().toString(), "7");
+        logger.info(c.getGalaxy().toString());
+        logger.info(c.getSystem().toString());
+        logger.info(c.getPlanet().toString());
     }
 
     @Test
     public void testStringBrackets(){
         Coordinates c = new Coordinates("[3:498:15]");
-        assertEquals(c.getGalaxy(), "3");
-        assertEquals(c.getSystem(), "498");
-        assertEquals(c.getPlanet(), "15");
-        logger.info(c.getGalaxy());
-        logger.info(c.getSystem());
-        logger.info(c.getPlanet());
+        assertEquals(c.getGalaxy().toString(), "3");
+        assertEquals(c.getSystem().toString(), "498");
+        assertEquals(c.getPlanet().toString(), "15");
+        logger.info(c.getGalaxy().toString());
+        logger.info(c.getSystem().toString());
+        logger.info(c.getPlanet().toString());
     }
 
     @Test
     public void testStringEmpty(){
         Coordinates c = new Coordinates("  [1:2:3]  ");
-        assertEquals(c.getGalaxy(), "1");
-        assertEquals(c.getSystem(), "2");
-        assertEquals(c.getPlanet(), "3");
-        logger.info(c.getGalaxy());
-        logger.info(c.getSystem());
-        logger.info(c.getPlanet());
+        assertEquals(c.getGalaxy().toString(), "1");
+        assertEquals(c.getSystem().toString(), "2");
+        assertEquals(c.getPlanet().toString(), "3");
+        logger.info(c.getGalaxy().toString());
+        logger.info(c.getSystem().toString());
+        logger.info(c.getPlanet().toString());
     }
 
     @Test
     public void testFormat(){
         Coordinates c = new Coordinates("  [1:2:3]  ");
-        assertEquals(c.getGalaxy(), "1");
-        assertEquals(c.getSystem(), "2");
-        assertEquals(c.getPlanet(), "3");
+        assertEquals(c.getGalaxy().toString(), "1");
+        assertEquals(c.getSystem().toString(), "2");
+        assertEquals(c.getPlanet().toString(), "3");
         assertEquals(c.getFormattedCoordinates(), "1:2:3");
     }
 
