@@ -1,6 +1,5 @@
 package ru.tki.po;
 
-import org.apache.xml.dtm.ref.sax2dtm.SAX2RTFDTM;
 import org.openqa.selenium.By;
 import ru.tki.ContextHolder;
 import ru.tki.models.AbstractPlanet;
@@ -109,7 +108,7 @@ public class OverviewPage extends PageObject {
         waitForWebElementIsDisplayed(LEAVE_COLONY_BUTTON);
         getElement(LEAVE_COLONY_BUTTON).click();
         waitForWebElementIsDisplayed(LEAVE_PASSWORD_FIELD);
-        setValue(getElement(LEAVE_PASSWORD_FIELD), ContextHolder.getBotConfigMain().getPassword());
+        setValue(getElement(LEAVE_PASSWORD_FIELD), ContextHolder.getBotConfigMain().PASSWORD);
         getElement(CONFIRM_LEAVE_BUTTON).click();
     }
 }

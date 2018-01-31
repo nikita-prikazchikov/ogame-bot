@@ -23,8 +23,8 @@ public class EmpireTest {
     public void setUp() throws Exception {
         BotConfigMainReader reader = new BotConfigMainReader();
         config = reader.getPropValues();
-        config.setLogin("test");
-        config.setPassword("test");
+        config.LOGIN = "test";
+        config.PASSWORD = "test";
         ContextHolder.setBotConfigMain(config);
 
         driverManager = new DriverManager();

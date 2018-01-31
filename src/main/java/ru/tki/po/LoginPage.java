@@ -42,7 +42,7 @@ public class LoginPage extends PageObject {
         }
 
         openLoginForm();
-        login(conf.getLogin(), conf.getPassword(), conf.getUniverse());
+        login(conf.LOGIN, conf.PASSWORD, conf.UNIVERSE);
     }
 
     public void checkLogin(){

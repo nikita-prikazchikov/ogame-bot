@@ -36,11 +36,11 @@ public class TaskGenerator {
     }};
 
     private Empire        empire;
-    private BotConfigMain botConfig;
+    private BotConfigMain config;
 
-    public TaskGenerator(Empire empire) {
+    public TaskGenerator(Empire empire, BotConfigMain config) {
         this.empire = empire;
-        this.botConfig = ContextHolder.getBotConfigMain();
+        this.config = config;
     }
 
     public Task getTask(Planet planet) {
@@ -49,9 +49,11 @@ public class TaskGenerator {
 
         if (!planet.getShipyardBusy() && planet.getLevel() > 12) {
             if (planet.getResources().getEnergy() < 0) {
+                //Build 1/4 of required solar satellites
+                Integer count = Math.max(1, planet.getResources().getEnergy() * -1 / 30 / 4);
                 if (OGameLibrary.canBuild(empire, planet, ShipType.SOLAR_SATELLITE)
-                        && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.SOLAR_SATELLITE, 1))) {
-                    return new ShipyardTask(empire, planet, ShipType.SOLAR_SATELLITE, 1);
+                        && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.SOLAR_SATELLITE, 1).multiply(count))) {
+                    return new ShipyardTask(empire, planet, ShipType.SOLAR_SATELLITE, count);
                 }
             }
         }
@@ -159,7 +161,7 @@ public class TaskGenerator {
     public Task getColonyTask() {
         Integer currentPlanets = empire.getCurrentPlanetsCount();
         Integer maxPlanets = empire.getMaxPlanetsCount();
-        if(!botConfig.getBuildColonies()){
+        if(!config.BUILD_COLONIES){
             return null;
         }
         if (currentPlanets >= maxPlanets) {
@@ -180,7 +182,7 @@ public class TaskGenerator {
                     } else {
                         AbstractPlanet colony = empire.findNewColony(planet);
                         FleetTask t = new FleetTask(empire, planet, colony, fleet, MissionType.COLONIZATION);
-                        t.addTask(new CheckColonyTask(empire, colony, botConfig.getColonyMinSize()));
+                        t.addTask(new CheckColonyTask(empire, colony, config.COLONY_MIN_SIZE));
                         return t;
                     }
                 }
@@ -210,7 +212,8 @@ public class TaskGenerator {
     public Task sendExpedition() {
         if (empire.getMaxExpeditions() > empire.getActiveExpeditions()
                 && empire.canSendFleet()
-                && botConfig.getSendExpeditions()) {
+                && config.SEND_EXPEDITIONS) {
+            empire.getPlanets().stream().filter()
             for (AbstractPlanet planet : empire.getMainPlanets()) {
                 if (!planet.hasTask()) {
                     Fleet fleet = empire.getFleetForExpedition(planet);
@@ -243,7 +246,7 @@ public class TaskGenerator {
     private Task getRequiredCargoTask(Planet planet) {
         Integer currentMax = planet.getLevel();
         Resources resources = planet.getResources();
-        if (!planet.getShipyardBusy() && currentMax > 12 && botConfig.getBuildFleet()) {
+        if (!planet.getShipyardBusy() && currentMax > 12 && config.BUILD_FLEET) {
             Integer planetProduction = empire.getProductionOnPlanetInTimeframe(planet);
             //task to build 1/8 of transports required to cover full planet production
             Integer buildAmount = Math.max(planetProduction / (5000 * 8), 2);
@@ -299,7 +302,7 @@ public class TaskGenerator {
         Integer currentMax = planet.getLevel();
         Resources resources = planet.getResources();
         Defence defence = planet.getDefence();
-        if (!planet.getShipyardBusy() && currentMax > 15 && botConfig.getBuildDefence()) {
+        if (!planet.getShipyardBusy() && currentMax > 15 && config.BUILD_DEFENCE) {
             Integer multiplier = currentMax * currentMax / 120 - 1;
             if (defence.getRocket() < optimalDefence.get(DefenceType.ROCKET) * multiplier
                     && OGameLibrary.canBuild(empire, planet, DefenceType.ROCKET)
@@ -353,7 +356,7 @@ public class TaskGenerator {
     private Task getTaskResearches(Planet planet, Researches researches, Resources additionalResources) {
         Integer currentMax = planet.getLevel();
         Resources resources = planet.getResources().add(additionalResources);
-        if (!empire.isResearchInProgress() && currentMax > 12 && botConfig.getDoResearches()) {
+        if (!empire.isResearchInProgress() && currentMax > 12 && config.DO_RESEARCHES) {
             if (researches.getAstrophysics() <= 20
                     && OGameLibrary.canBuild(empire, planet, ResearchType.ASTROPHYSICS)
                     && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.ASTROPHYSICS, researches.getAstrophysics()))) {
@@ -445,7 +448,7 @@ public class TaskGenerator {
         Resources resources = planet.getResources().add(additionalResources);
         Buildings buildings = planet.getBuildings();
         Factories factories = planet.getFactories();
-        if (!planet.getBuildInProgress() && botConfig.getBuildFactories()) {
+        if (!planet.getBuildInProgress() && config.BUILD_FACTORIES) {
             if (factories.getRobotsFactory() < 10
                     && currentMax > 8
                     && factories.getRobotsFactory() < currentMax / 2.5
@@ -477,7 +480,7 @@ public class TaskGenerator {
                 return new FactoryTask(empire, planet, FactoryType.MISSILE_SILOS);
             }
         }
-        if (!planet.getBuildInProgress() && botConfig.getBuildResources()) {
+        if (!planet.getBuildInProgress() && config.BUILD_RESOURCES) {
 
             if (buildings.getCrystalMine() < currentMax - 2
                     && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.CRYSTAL_MINE, buildings.getCrystalMine()))) {

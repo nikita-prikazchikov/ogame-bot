@@ -17,7 +17,7 @@ public class DriverManager {
 
     private void startDriver(){
         ChromeOptions options = new ChromeOptions();
-        if(ContextHolder.getBotConfigMain().getHeadless()) {
+        if(ContextHolder.getBotConfigMain().HEADLESS) {
             options.addArguments("--headless");
             options.addArguments("--window-size=1920,1080");
         }

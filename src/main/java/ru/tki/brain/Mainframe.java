@@ -1,6 +1,6 @@
 package ru.tki.brain;
 
-import ru.tki.ContextHolder;
+import ru.tki.BotConfigMain;
 import ru.tki.executor.Navigation;
 import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
@@ -19,11 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Mainframe {
-    private static final Duration checkAttackDuration          = Duration.ofMinutes(2);
-    private static final Duration checkUpdateResourcesDuration = Duration.ofMinutes(15);
-    private static final Duration checkFlagsDuration           = Duration.ofMinutes(30);
-    private static final Duration checkFleetDuration           = Duration.ofMinutes(60);
-    private static final Duration saveFleetDuration            = Duration.ofMinutes(3);
+    private static Duration checkAttackDuration;
+    private static Duration checkUpdateResourcesDuration;
+    private static Duration saveFleetDuration;
+    private static Duration checkFlagsDuration;
+    private static Duration checkFleetDuration;
 
     private Instant lastAttackCheck     = Instant.now();
     private Instant lastUpdateResources = Instant.now();
@@ -33,29 +33,44 @@ public class Mainframe {
 
     private TaskGenerator taskGenerator;
     private Empire        empire;
-    private Navigation    navigation;
-    private LoginPage     loginPage;
 
-    public Mainframe() {
+    private Navigation navigation;
+    private LoginPage  loginPage;
+
+    private BotConfigMain config;
+
+    public Mainframe(BotConfigMain config) {
+        this.config = config;
+
         this.empire = new Empire();
         navigation = new Navigation();
         loginPage = new LoginPage();
-        taskGenerator = new TaskGenerator(empire);
+        taskGenerator = new TaskGenerator(empire, config);
     }
 
     public void start() {
         System.out.println("Let's the magic start!");
 
-        Duration duration = Duration.ZERO;
-        duration = duration.plusHours(ContextHolder.getBotConfigMain().getExecutionHours());
-        duration = duration.plusMinutes(ContextHolder.getBotConfigMain().getExecutionMinutes());
-        if (duration.isZero()) {
-            executionStopTime = null;
-        } else {
-            executionStopTime = Instant.now().plus(duration);
-            System.out.println("Bot will be executed for the: " + duration.getSeconds() + " seconds");
-        }
+        setTimeouts();
 
+        checkBotExecutionDuration();
+        loadEmpire();
+        setEmpireInitialTasks();
+
+        runExecution();
+    }
+
+    private void setTimeouts() {
+        checkAttackDuration = Duration.ofSeconds(config.ATTACK_CHECK_TIMEOUT);
+        checkUpdateResourcesDuration = Duration.ofSeconds(config.UPDATE_RESOURCES_TIMEOUT);
+        saveFleetDuration = Duration.ofSeconds(config.FLEET_SAVE_TIMEOUT);
+
+        //Following flags are for internal use and should not be configurable
+        checkFlagsDuration = Duration.ofMinutes(30);
+        checkFleetDuration = Duration.ofMinutes(60);
+    }
+
+    private void loadEmpire() {
         if (!empire.load()) {
             empire.addTask(new EmpireTask(empire));
             lastUpdateResources = Instant.now();
@@ -65,9 +80,25 @@ public class Mainframe {
                 planet.setHasTask(false);
             }
         }
+    }
+
+    //Setup initial tasks in the Empire
+    private void setEmpireInitialTasks() {
         empire.addTask(new CheckAttackTask(empire));
         empire.addTask(new CheckExistingActionsTask(empire));
-        runExecution();
+    }
+
+    //Verify if bot should work only limited time
+    private void checkBotExecutionDuration() {
+        Duration duration = Duration.ZERO;
+        duration = duration.plusHours(config.EXECUTION_HOURS);
+        duration = duration.plusMinutes(config.EXECUTION_MINUTES);
+        if (duration.isZero()) {
+            executionStopTime = null;
+        } else {
+            executionStopTime = Instant.now().plus(duration);
+            System.out.println("Bot will be executed for the: " + duration);
+        }
     }
 
     // Main bot executor. Infinite loop for operations in the system
@@ -75,10 +106,7 @@ public class Mainframe {
         int exceptionCount = 0;
         do {
             try {
-                if (!loginPage.isLoggedIn()) {
-                    navigation.openHomePage();
-                    loginPage.login();
-                }
+                checkLogin();
                 if (exceptionCount >= 5) {
                     restartEmpire();
                     exceptionCount = 0;
@@ -87,11 +115,7 @@ public class Mainframe {
                     System.out.println("Bot execution time is over. Buy! Till the next time!");
                     return;
                 }
-                verifyActions();
-                execute();
-                verifySaveEmpireFromAttack();
-                verifySchedules();
-                think();
+                execution();
                 //reset fails count in case everything was executed
                 exceptionCount = 0;
             } catch (Exception ex) {
@@ -99,13 +123,28 @@ public class Mainframe {
                 System.out.println("Exception count: " + exceptionCount);
                 ex.printStackTrace();
                 try {
-                    Thread.sleep(10000);
+                    Thread.sleep(config.SLEEP_TIMEOUT);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }
         while (true);
+    }
+
+    private void execution() throws InterruptedException {
+        verifyActions();
+        execute();
+        verifySaveEmpireFromAttack();
+        verifySchedules();
+        think();
+    }
+
+    private void checkLogin() {
+        if (!loginPage.isLoggedIn()) {
+            navigation.openHomePage();
+            loginPage.login();
+        }
     }
 
     private void restartEmpire() {
@@ -227,7 +266,7 @@ public class Mainframe {
     private void execute() throws InterruptedException {
         if (empire.getTasks().isEmpty()) {
             System.out.print('.');
-            Thread.sleep(10000);
+            Thread.sleep(config.SLEEP_TIMEOUT);
         }
 
         List<Task> tasksForRemove = new ArrayList<>();

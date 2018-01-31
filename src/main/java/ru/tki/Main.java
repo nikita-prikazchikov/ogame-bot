@@ -14,7 +14,7 @@ public class Main {
         DriverManager driverManager = new DriverManager();
         ContextHolder.setDriverManager(driverManager);
 
-        Mainframe mainframe = new Mainframe();
+        Mainframe mainframe = new Mainframe(config);
         mainframe.start();
         driverManager.closeDriver();
     }

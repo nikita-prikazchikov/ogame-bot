@@ -3,6 +3,7 @@ package ru.tki.models;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.openqa.selenium.InvalidArgumentException;
+import ru.tki.BotConfigMain;
 import ru.tki.ContextHolder;
 import ru.tki.models.actions.Action;
 import ru.tki.models.actions.FleetAction;
@@ -35,10 +36,11 @@ public class Empire {
 
     private List<FleetAction> enemyFleets = new ArrayList<>();
 
-    private           File   storageDirectory;
-    private           File   stateDirectory;
-    private transient Gson   gson;
-    private transient Galaxy galaxy;
+    private           File          storageDirectory;
+    private           File          stateDirectory;
+    private           BotConfigMain config;
+    private transient Gson          gson;
+    private transient Galaxy        galaxy;
 
     private boolean isUnderAttack;
     private boolean researchInProgress = false;
@@ -48,12 +50,16 @@ public class Empire {
     // value of hours to take resources off the planet
     private Integer productionTimeHours;
 
-    private Boolean doLogState = false;
-
     public Empire() {
+        this(ContextHolder.getBotConfigMain());
+    }
+
+    public Empire(BotConfigMain config) {
+        this.config = config;
+
         storageDirectory = new File(STORAGE + File.separator +
-                ContextHolder.getBotConfigMain().getUniverse().toLowerCase() + File.separator +
-                ContextHolder.getBotConfigMain().getLogin().toLowerCase());
+                config.UNIVERSE.toLowerCase() + File.separator +
+                config.LOGIN.toLowerCase());
 
         stateDirectory = new File(storageDirectory, "stateLogs");
         createDirectory(storageDirectory);
@@ -64,7 +70,6 @@ public class Empire {
 
         // Timeframe for transport resources from colony to main planet
         productionTimeHours = 4;
-        doLogState = ContextHolder.getBotConfigMain().getLogState();
     }
 
     public List<AbstractPlanet> getPlanets() {
@@ -118,7 +123,7 @@ public class Empire {
                     System.out.println("With subtask: " + task1);
                 });
             }
-            if (doLogState) {
+            if (config.LOG_STATE) {
                 System.out.println("Save empire state to : " + saveState());
             }
         }
@@ -198,8 +203,7 @@ public class Empire {
     }
 
     public Integer getMaxFleets() {
-        //Actually +1 has to be here but need to keep at least one slot for save fleet in future
-        return researches.getComputer();
+        return researches.getComputer() + 1;
     }
 
     public Integer getMaxExpeditions() {

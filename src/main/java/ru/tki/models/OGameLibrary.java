@@ -94,7 +94,7 @@ public class OGameLibrary {
             case DEUTERIUM_STORAGE:
                 return buildings.get(type).multiply(Math.pow(2, currentLevel));
         }
-        return null;
+        return new Resources(10000000, 10000000, 10000000);
     }
 
     public static Resources getFactoryPrice(FactoryType type, Integer currentLevel) {
@@ -312,17 +312,17 @@ public class OGameLibrary {
     }
 
     public static Integer getMetalProduction(Integer level) {
-        Double value = 30 * level * Math.pow(1.1, level) * ContextHolder.getBotConfigMain().getUniverseSpeed();
+        Double value = 30 * level * Math.pow(1.1, level) * ContextHolder.getBotConfigMain().UNIVERSE_SPEED;
         return value.intValue();
     }
 
     public static Integer getCrystalProduction(Integer level) {
-        Double value = 20 * level * Math.pow(1.1, level) * ContextHolder.getBotConfigMain().getUniverseSpeed();
+        Double value = 20 * level * Math.pow(1.1, level) * ContextHolder.getBotConfigMain().UNIVERSE_SPEED;
         return value.intValue();
     }
 
     public static Integer getDeuteriumProduction(Integer level) {
-        Double value = 10 * level * Math.pow(1.1, level) * (-0.004 * 0 + 1.36) * ContextHolder.getBotConfigMain().getUniverseSpeed();
+        Double value = 10 * level * Math.pow(1.1, level) * (-0.004 * 0 + 1.36) * ContextHolder.getBotConfigMain().UNIVERSE_SPEED;
         return value.intValue();
     }
 }
