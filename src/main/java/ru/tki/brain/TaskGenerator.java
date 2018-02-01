@@ -512,6 +512,7 @@ public class TaskGenerator {
                 return new BuildingTask(empire, planet, BuildingType.CRYSTAL_MINE);
             }
             if (buildings.getMetalMine() < currentMax
+                    && buildings.getMetalMine() <= buildings.getCrystalMine() + 1
                     && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.METAL_MINE, buildings.getMetalMine()))) {
                 return new BuildingTask(empire, planet, BuildingType.METAL_MINE);
             }
@@ -537,7 +538,8 @@ public class TaskGenerator {
                     return new BuildingTask(empire, planet, BuildingType.DEUTERIUM_STORAGE);
                 }
             }
-            if (resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.SOLAR_PLANT, buildings.getSolarPlant()))) {
+            if (buildings.getSolarPlant() <= buildings.getCrystalMine() + 2
+                    && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.SOLAR_PLANT, buildings.getSolarPlant()))) {
                 return new BuildingTask(empire, planet, BuildingType.SOLAR_PLANT);
             }
         }
