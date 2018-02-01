@@ -10,6 +10,7 @@ import ru.tki.models.types.*;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -212,15 +213,18 @@ public class TaskGenerator {
         if (empire.getMaxExpeditions() > empire.getActiveExpeditions()
                 && empire.canSendFleet()
                 && config.SEND_EXPEDITIONS) {
-            AbstractPlanet planet = empire.getPlanets().stream().filter(planet1 -> empire.isPlanetMain(planet1) && !planet1.hasTask()).max((a, b) -> {
+            Optional<AbstractPlanet> planet = empire.getPlanets().stream().filter(planet1 -> empire.isPlanetMain(planet1) && !planet1.hasTask()).max((a, b) -> {
                 if (a.getFleet().getLargeCargo() > 0 || b.getFleet().getLargeCargo() > 0) {
                     return a.getFleet().getLargeCargo() - b.getFleet().getLargeCargo();
                 }
                 return a.getFleet().getSmallCargo() - b.getFleet().getSmallCargo();
-            }).get();
-            Fleet fleet = empire.getFleetForExpedition(planet);
-            if (!fleet.isEmpty()) {
-                return new FleetTask(empire, planet, empire.getPlanetForExpedition(planet), fleet, MissionType.EXPEDITION);
+            });
+            if(planet.isPresent()) {
+                AbstractPlanet p = planet.get();
+                Fleet fleet = empire.getFleetForExpedition(p);
+                if (!fleet.isEmpty()) {
+                    return new FleetTask(empire, p, empire.getPlanetForExpedition(p), fleet, MissionType.EXPEDITION);
+                }
             }
         }
         return null;

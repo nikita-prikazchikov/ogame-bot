@@ -21,6 +21,6 @@ public class BasePage extends PageObject {
     }
 
     public boolean isUnderAttack() {
-        return isElementDisplayed(ATTACK_ALERT);
+        return isElementDisplayed(ATTACK_ALERT) && !getElement(ATTACK_ALERT).getAttribute("class").contains("wreckField");
     }
 }
