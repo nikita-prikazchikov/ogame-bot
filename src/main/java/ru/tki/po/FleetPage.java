@@ -145,9 +145,9 @@ public class FleetPage extends PageObject {
     }
 
     public void setResources(Resources resources){
-        setValue(getElement(METAL), Integer.toString(resources.getMetal()));
         setValue(getElement(CRYSTAL), Integer.toString(resources.getCrystal()));
         setValue(getElement(DEUTERIUM), Integer.toString(resources.getDeuterium()));
+        setValue(getElement(METAL), Integer.toString(resources.getMetal()));
     }
 
     public void selectAllShips(){

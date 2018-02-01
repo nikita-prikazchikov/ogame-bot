@@ -219,7 +219,7 @@ public class TaskGenerator {
                 }
                 return a.getFleet().getSmallCargo() - b.getFleet().getSmallCargo();
             });
-            if(planet.isPresent()) {
+            if (planet.isPresent()) {
                 AbstractPlanet p = planet.get();
                 Fleet fleet = empire.getFleetForExpedition(p);
                 if (!fleet.isEmpty()) {
@@ -416,9 +416,9 @@ public class TaskGenerator {
                     (currentMax > 25
                             || (currentMax > 15 && researches.getWeapon() < 3)//need 3 for gauss
                     )
-                    && researches.getWeapon() <= 25
-                    && OGameLibrary.canBuild(empire, planet, ResearchType.WEAPON)
-                    && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.WEAPON, researches.getEspionage()))) {
+                            && researches.getWeapon() <= 25
+                            && OGameLibrary.canBuild(empire, planet, ResearchType.WEAPON)
+                            && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.WEAPON, researches.getEspionage()))) {
                 return new ResearchTask(empire, planet, ResearchType.WEAPON);
             }
 
@@ -472,7 +472,7 @@ public class TaskGenerator {
         Resources resources = planet.getResources().add(additionalResources);
         Buildings buildings = planet.getBuildings();
         Factories factories = planet.getFactories();
-        if (!planet.getBuildInProgress() && config.BUILD_FACTORIES) {
+        if (!planet.getBuildInProgress() && config.BUILD_FACTORIES && planet.getFactories().getResearchLab() > 0) {
             if (factories.getRobotsFactory() < 10
                     && currentMax > 8
                     && factories.getRobotsFactory() < currentMax / 2.5
@@ -526,21 +526,19 @@ public class TaskGenerator {
 
                 return new BuildingTask(empire, planet, BuildingType.DEUTERIUM_MINE);
             }
-            if (currentMax > 12) {
-                //TODO: Review storage amount for actual required value of buildings
-                //Build storage after solar plant level 13
-                if (buildings.getMetalStorage() < currentMax / 3
-                        && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.METAL_STORAGE, buildings.getMetalStorage()))) {
-                    return new BuildingTask(empire, planet, BuildingType.METAL_STORAGE);
-                }
-                if (buildings.getCrystalStorage() < (currentMax - 2) / 3
-                        && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.CRYSTAL_STORAGE, buildings.getCrystalStorage()))) {
-                    return new BuildingTask(empire, planet, BuildingType.CRYSTAL_STORAGE);
-                }
-                if (buildings.getDeuteriumStorage() < currentMax / 6
-                        && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.DEUTERIUM_STORAGE, buildings.getDeuteriumStorage()))) {
-                    return new BuildingTask(empire, planet, BuildingType.DEUTERIUM_STORAGE);
-                }
+
+
+            if (planet.getResources().getMetal() >= OGameLibrary.getStorageCapacity(buildings.getMetalStorage()) * .9
+                    && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.METAL_STORAGE, buildings.getMetalStorage()))) {
+                return new BuildingTask(empire, planet, BuildingType.METAL_STORAGE);
+            }
+            if (planet.getResources().getCrystal() >= OGameLibrary.getStorageCapacity(buildings.getCrystalStorage()) * .9
+                    && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.CRYSTAL_STORAGE, buildings.getCrystalStorage()))) {
+                return new BuildingTask(empire, planet, BuildingType.CRYSTAL_STORAGE);
+            }
+            if (planet.getResources().getDeuterium() >= OGameLibrary.getStorageCapacity(buildings.getDeuteriumStorage()) * .9
+                    && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.DEUTERIUM_STORAGE, buildings.getDeuteriumStorage()))) {
+                return new BuildingTask(empire, planet, BuildingType.DEUTERIUM_STORAGE);
             }
             if (buildings.getSolarPlant() <= buildings.getCrystalMine() + 2
                     && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.SOLAR_PLANT, buildings.getSolarPlant()))) {

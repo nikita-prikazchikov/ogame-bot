@@ -325,4 +325,9 @@ public class OGameLibrary {
         Double value = 10 * level * Math.pow(1.1, level) * (-0.004 * 0 + 1.36) * ContextHolder.getBotConfigMain().UNIVERSE_SPEED;
         return value.intValue();
     }
+
+    public static Integer getStorageCapacity(Integer level) {
+        Double value = 5000 * Math.floor(2.5 * Math.exp(20 * level.doubleValue() / 33));
+        return value.intValue();
+    }
 }
