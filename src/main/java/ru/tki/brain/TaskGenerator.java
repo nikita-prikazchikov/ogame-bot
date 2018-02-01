@@ -85,6 +85,10 @@ public class TaskGenerator {
         return null;
     }
 
+    public void setEmpire(Empire empire){
+        this.empire = empire;
+    }
+
     //Minimize main planets count in the empire
     // Keep them 2 for now
     public Task checkMainPlanetsCount() {
@@ -93,7 +97,7 @@ public class TaskGenerator {
         if (mainPlanets.get().count() > empire.getCurrentPlanetsCount() / 4 + 1 && empire.canSendFleet()) {
             AbstractPlanet smallest = mainPlanets.get().min(Comparator.comparingInt(AbstractPlanet::getLevel)).get();
             AbstractPlanet biggest = mainPlanets.get().max(Comparator.comparingInt(AbstractPlanet::getLevel)).get();
-            Fleet fleet = smallest.getFleet().deduct(smallest.getFleet().getRequiredFleet(empire.getProductionOnPlanetInTimeframe(smallest)));
+            Fleet fleet = empire.getPlanetFleetToMove(smallest);
             if (!fleet.isEmpty() && !empire.isPlanetUnderAttack(biggest)) {
                 System.out.println(String.format("There are more than 2 main planets. Move resources from planet %s to %s",
                         smallest.getCoordinates(), biggest.getCoordinates()));
@@ -137,11 +141,22 @@ public class TaskGenerator {
                             task = getTaskResearches((Planet) planet, empire.getResearches(), main.getResources());
                         }
                         if (null != task) {
-                            //If we find possible task then create fleet task for resources transport with subtask for execution
-                            Resources requiredResources = task.getResources().deduct(planet.getResources());
-                            Fleet fleet = main.getFleet().getRequiredFleet(requiredResources);
+                            Resources requiredResources;
+                            Fleet fleet;
+                            MissionType missionType;
+                            if(task.getResources().getCapacity() > 1000 * 1000) {
+                                missionType = MissionType.KEEP;
+                                requiredResources = main.getResources().deduct(planet.getResources());
+                                fleet = empire.getPlanetFleetToMove(main);
+                            }
+                            else{
+                                requiredResources = task.getResources().deduct(planet.getResources());
+                                fleet = main.getFleet().getRequiredFleet(requiredResources);
+                                missionType = MissionType.TRANSPORT;
+                            }
+
                             if (main.getFleet().has(fleet)) {
-                                FleetTask fleetTask = new FleetTask(empire, main, planet, fleet, MissionType.TRANSPORT, requiredResources);
+                                FleetTask fleetTask = new FleetTask(empire, main, planet, fleet, missionType, requiredResources);
                                 fleetTask.addTask(task);
                                 return fleetTask;
                             } else {

@@ -285,6 +285,11 @@ public class Empire {
         return fleet;
     }
 
+    //Get planet fleet minus required for move resources fleet
+    public Fleet getPlanetFleetToMove(AbstractPlanet planet){
+        return planet.getFleet().deduct(planet.getFleet().getRequiredFleet(getProductionOnPlanetInTimeframe(planet)));
+    }
+
     public AbstractPlanet selectMain() {
         return planets.stream().max(Comparator.comparingInt(AbstractPlanet::getLevel)).get();
     }

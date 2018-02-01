@@ -154,6 +154,7 @@ public class Mainframe {
         System.out.println("=========================================================================================");
         this.empire = new Empire();
         empire.addTask(new EmpireTask(empire));
+        taskGenerator.setEmpire(empire);
         setEmpireInitialTasks();
     }
 
