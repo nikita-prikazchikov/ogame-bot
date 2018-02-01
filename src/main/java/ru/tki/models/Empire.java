@@ -12,6 +12,7 @@ import ru.tki.models.types.MissionType;
 import ru.tki.models.types.PlanetType;
 
 import java.io.*;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -271,7 +272,25 @@ public class Empire {
     }
 
     public boolean isPlanetUnderAttack(AbstractPlanet planet) {
-        return getEnemyFleets().stream().filter(action -> action.getTargetPlanet().equals(planet)).count() > 0;
+        return getEnemyFleets().stream().filter(action -> action.getTargetPlanet().equals(planet) &&
+                (action.getMissionType() == MissionType.ATTACK
+                        || action.getMissionType() == MissionType.JOINT_ATTACK)
+        ).count() > 0;
+    }
+
+    public boolean isAttackMeetsFleet(FleetAction myFleet) {
+        List<FleetAction> fleets = getEnemyFleets().stream().filter(action ->
+                action.getTargetPlanet().equals(myFleet.getTargetPlanet())&&
+                        (action.getMissionType() == MissionType.ATTACK
+                                || action.getMissionType() == MissionType.JOINT_ATTACK)
+        ).collect(Collectors.toList());
+        for (FleetAction fleetAction : fleets){
+            Duration gap = Duration.between(fleetAction.getFinishTime(), myFleet.getFleetTimeToTarget()).abs();
+            if(gap.minus(Duration.ofSeconds(config.FLEET_SAVE_TIMEOUT)).isNegative()){
+                return true;
+            }
+        }
+        return false;
     }
 
     public Fleet getFleetForExpedition(AbstractPlanet planet) {

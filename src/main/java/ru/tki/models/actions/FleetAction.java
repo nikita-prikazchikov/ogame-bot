@@ -95,6 +95,11 @@ public class FleetAction extends Action {
 
     public void setTargetAchieved() {
         this.oneSideFleetTime = null;
+        setReturnFlight(true);
+    }
+
+    public Instant getFleetTimeToTarget() {
+        return oneSideFleetTime;
     }
 
     public Boolean isSaveFlight() {

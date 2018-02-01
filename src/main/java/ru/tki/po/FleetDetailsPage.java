@@ -51,6 +51,7 @@ public class FleetDetailsPage extends AbstractFleetDetails {
     }
 
     public void revertFleet(FleetTask task) {
+        // TODO: 01.02.2018 Identify correct flight in case of 2 similar from to target flights
         WebElement element = getElement(getFleetElement(task), By.cssSelector(".reversal"));
         scrollToElement(element);
         element.click();
@@ -63,7 +64,6 @@ public class FleetDetailsPage extends AbstractFleetDetails {
 
     public Duration getRevertDuration(FleetTask fleetTask) {
         WebElement element = getFleetElement(fleetTask);
-        // TODO: 30/01/2018 Revert duration is 0 for some reason. Double check it.
         return getDurationReturn(element).minus(getDuration(element).multipliedBy(2));
     }
 

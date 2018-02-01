@@ -101,7 +101,9 @@ public class TaskGenerator {
             if (!fleet.isEmpty() && !empire.isPlanetUnderAttack(biggest)) {
                 System.out.println(String.format("There are more than 2 main planets. Move resources from planet %s to %s",
                         smallest.getCoordinates(), biggest.getCoordinates()));
-                return new FleetTask(empire, smallest, biggest, fleet, MissionType.KEEP, smallest.getResources());
+                FleetTask task = new FleetTask(empire, smallest, biggest, fleet, MissionType.KEEP, smallest.getResources());
+                task.setRandomTransportSpeed();
+                return task;
             }
         }
         return null;
@@ -157,6 +159,7 @@ public class TaskGenerator {
 
                             if (main.getFleet().has(fleet)) {
                                 FleetTask fleetTask = new FleetTask(empire, main, planet, fleet, missionType, requiredResources);
+                                fleetTask.setRandomTransportSpeed();
                                 fleetTask.addTask(task);
                                 return fleetTask;
                             } else {

@@ -3,7 +3,6 @@ package ru.tki.models.tasks;
 import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
 import ru.tki.models.actions.FleetAction;
-import ru.tki.models.types.FleetSpeed;
 
 public class SaveFleetTask extends FleetTask {
 
@@ -11,7 +10,7 @@ public class SaveFleetTask extends FleetTask {
         super(empire, planet);
         name = "Save fleet on planet: " + planet.getCoordinates();
         setTargetPlanet(empire.getPlanets().stream().filter(p -> !p.equals(planet)).reduce(planet::closer).get());
-        setFleetSpeed(FleetSpeed.S10);
+        setRandomSaveSpeed();
         setFleet(planet.getFleet());
         setResources(planet.getResources());
     }

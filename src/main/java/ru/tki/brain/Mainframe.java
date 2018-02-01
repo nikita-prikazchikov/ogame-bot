@@ -161,22 +161,23 @@ public class Mainframe {
     // Add tasks that are periodic in the system
     // Like: check attack or update existing resources
     private void verifySchedules() {
-        if (config.DO_CHECK_ATTACK && lastAttackCheck.plus(checkAttackDuration).compareTo(Instant.now()) < 0) {
+        Instant now = Instant.now();
+        if (config.DO_CHECK_ATTACK && lastAttackCheck.plus(checkAttackDuration).compareTo(now) < 0) {
             empire.addTask(new CheckAttackTask(empire));
             lastAttackCheck = Instant.now();
         }
 
-        if (lastUpdateResources.plus(checkUpdateResourcesDuration).compareTo(Instant.now()) < 0) {
+        if (lastUpdateResources.plus(checkUpdateResourcesDuration).compareTo(now) < 0) {
             empire.addTask(new UpdateResourcesTask(empire));
             lastUpdateResources = Instant.now();
         }
 
-        if (lastFlagsCheck.plus(checkFlagsDuration).compareTo(Instant.now()) < 0) {
+        if (lastFlagsCheck.plus(checkFlagsDuration).compareTo(now) < 0) {
             empire.addTask(new CheckExistingFlagsTask(empire));
             lastFlagsCheck = Instant.now();
         }
 
-        if (lastFleetCheck.plus(checkFleetDuration).compareTo(Instant.now()) < 0) {
+        if (lastFleetCheck.plus(checkFleetDuration).compareTo(now) < 0) {
             empire.addTask(new CheckFleetsCountTask(empire));
             lastFleetCheck = Instant.now();
         }
@@ -223,7 +224,15 @@ public class Mainframe {
                     empire.addTask(new UpdateInfoTask(empire, action.getTargetPlanet(), UpdateTaskType.FLEET));
                 }
             }
+            //Revert save flight in case planet is no longer under attack
             if (action.isSaveFlight() && !empire.isPlanetUnderAttack(action.getPlanet())) {
+                empire.addTask(new RevertFleetTask(empire, action));
+                actions.add(action);
+            }
+            //Revert KEEP flights in case target planet is under attack in range save fleet frame
+            if(action.getMissionType() == MissionType.KEEP
+                    && !action.isReturnFlight()
+                    && empire.isAttackMeetsFleet(action)){
                 empire.addTask(new RevertFleetTask(empire, action));
                 actions.add(action);
             }

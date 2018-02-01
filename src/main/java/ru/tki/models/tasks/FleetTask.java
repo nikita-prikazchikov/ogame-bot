@@ -40,7 +40,7 @@ public class FleetTask extends Task {
 
     public FleetTask(Empire empire, AbstractPlanet fromPlanet, AbstractPlanet targetPlanet, Fleet fleet, MissionType missionType) {
         this(empire, fromPlanet, targetPlanet, fleet);
-        this.missionType = missionType;
+        setMissionType(missionType);
     }
 
     public FleetTask(Empire empire, AbstractPlanet fromPlanet, AbstractPlanet targetPlanet, Fleet fleet, MissionType missionType, Resources resources) {
@@ -80,12 +80,36 @@ public class FleetTask extends Task {
         this.missionType = missionType;
     }
 
+    public void setRandomSaveSpeed() {
+        Double r = Math.random();
+        if (r < .25) {
+            setFleetSpeed(FleetSpeed.S10);
+        } else if (r < .5) {
+            setFleetSpeed(FleetSpeed.S20);
+        } else if (r < .075) {
+            setFleetSpeed(FleetSpeed.S30);
+        } else {
+            setFleetSpeed(FleetSpeed.S40);
+        }
+    }
+
+    public void setRandomTransportSpeed() {
+        Double r = Math.random();
+        if (r < 0.333) {
+            setFleetSpeed(FleetSpeed.S100);
+        } else if (r < 0.666) {
+            setFleetSpeed(FleetSpeed.S90);
+        } else {
+            setFleetSpeed(FleetSpeed.S80);
+        }
+    }
+
     @Override
     public FleetAction execute() {
         super.execute();
         FleetAction action = new FleetAction(this);
 
-        if(fleet.isEmpty()){
+        if (fleet.isEmpty()) {
             return action;
         }
 
