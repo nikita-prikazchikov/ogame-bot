@@ -3,6 +3,7 @@ package ru.tki.models.tasks;
 import ru.tki.executor.Navigation;
 import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
+import ru.tki.models.Resources;
 import ru.tki.models.actions.Action;
 import ru.tki.po.BasePage;
 
@@ -21,11 +22,14 @@ public class UpdateResourcesTask extends Task {
         Navigation navigation = new Navigation();
         navigation.openResources();
         BasePage basePage = new BasePage();
+        Resources r = new Resources();
         for (AbstractPlanet planet : empire.getPlanets()){
             navigation.selectPlanet(planet);
             planet.setResources(basePage.resources.getResources());
             planet.logResources();
+            r = r.add(planet.getResources());
         }
+        System.out.println("Total empire resources: " + r);
         return null;
     }
 

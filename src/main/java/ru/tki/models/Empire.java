@@ -449,7 +449,7 @@ public class Empire {
     }
 
     public boolean load(File directory) {
-        logger.info("Read empire details from directory: " + directory);
+        System.out.println("Read empire details from directory: " + directory);
         if (!directory.exists()) {
             return false;
         }
