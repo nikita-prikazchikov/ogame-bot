@@ -89,7 +89,7 @@ public class TaskGenerator {
     public Task checkMainPlanetsCount() {
         Supplier<Stream<AbstractPlanet>> mainPlanets = () ->
                 empire.getPlanets().stream().filter(planet -> empire.isPlanetMain(planet));
-        if (mainPlanets.get().count() > 2 && empire.canSendFleet()) {
+        if (mainPlanets.get().count() > empire.getCurrentPlanetsCount() / 4 + 1 && empire.canSendFleet()) {
             AbstractPlanet smallest = mainPlanets.get().min(Comparator.comparingInt(AbstractPlanet::getLevel)).get();
             AbstractPlanet biggest = mainPlanets.get().max(Comparator.comparingInt(AbstractPlanet::getLevel)).get();
             Fleet fleet = smallest.getFleet().deduct(smallest.getFleet().getRequiredFleet(empire.getProductionOnPlanetInTimeframe(smallest)));
