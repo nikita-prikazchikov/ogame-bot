@@ -69,8 +69,8 @@ public class Mainframe {
 
         //Following flags are for internal use and should not be configurable
         checkFlagsDuration = Duration.ofMinutes(30);
-        checkFleetDuration = Duration.ofMinutes(60);
-        checkDailyBonusDuration = Duration.ofMinutes(120);
+        checkFleetDuration = Duration.ofMinutes(58);
+        checkDailyBonusDuration = Duration.ofMinutes(123);
     }
 
     private void loadEmpire() {

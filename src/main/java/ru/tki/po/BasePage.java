@@ -8,10 +8,11 @@ import ru.tki.po.components.ResourcesComponent;
 public class BasePage extends PageObject {
 
     private static final By ATTACK_ALERT = By.cssSelector("#attack_alert");
+    private static final By MESSAGES     = By.cssSelector(".messages");
 
-    public LeftMenuComponent leftMenu;
+    public LeftMenuComponent  leftMenu;
     public ResourcesComponent resources;
-    public MyWorldsComponent myWorlds;
+    public MyWorldsComponent  myWorlds;
 
     public BasePage() {
         super();
@@ -22,5 +23,9 @@ public class BasePage extends PageObject {
 
     public boolean isUnderAttack() {
         return isElementDisplayed(ATTACK_ALERT) && !getElement(ATTACK_ALERT).getAttribute("class").contains("wreckField");
+    }
+
+    public void openMessages(){
+        getElement(MESSAGES).click();
     }
 }

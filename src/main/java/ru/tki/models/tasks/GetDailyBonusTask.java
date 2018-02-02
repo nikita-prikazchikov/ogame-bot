@@ -31,7 +31,6 @@ public class GetDailyBonusTask extends Task {
         navigation.selectPlanet(getPlanet());
         navigation.leftMenu.openTraderOverview();
         traderPage.selectImportExport();
-//        traderPage.pause(1500);
 
         if (traderPage.getCost() < getPlanet().getResources().getMetal()) {
             traderPage.payWithMetal();

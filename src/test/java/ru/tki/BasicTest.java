@@ -254,4 +254,17 @@ public class BasicTest {
         fleetDetailsPage.getRevertDuration(fleetActions.get(0));
 
     }
+
+    @Test
+    public void testSpy() {
+        navigation.openHomePage();
+        loginPage.checkLogin();
+
+        basePage.openMessages();
+
+        MessagesPage messagesPage = new MessagesPage();
+
+        List<Planet> i = messagesPage.parseSpyReports();
+        System.out.println(i);
+    }
 }
