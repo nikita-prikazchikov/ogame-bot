@@ -38,12 +38,12 @@ public class TaskGenerator {
     private Empire        empire;
     private BotConfigMain config;
 
-    public TaskGenerator(Empire empire, BotConfigMain config) {
+    TaskGenerator(Empire empire, BotConfigMain config) {
         this.empire = empire;
         this.config = config;
     }
 
-    public Task getTask(Planet planet) {
+    Task getTask(Planet planet) {
         Resources resources = planet.getResources();
         Researches researches = empire.getResearches();
 
@@ -73,7 +73,7 @@ public class TaskGenerator {
         return null;
     }
 
-    public Task getFleetTask(Planet planet) {
+    Task getFleetTask(Planet planet) {
         Task task = getFleetMoveResourcesTask(planet);
         if (task != null) return task;
 
@@ -86,7 +86,7 @@ public class TaskGenerator {
 
     //Minimize main planets count in the empire
     // Keep them 2 for now
-    public Task checkMainPlanetsCount() {
+    Task checkMainPlanetsCount() {
         Supplier<Stream<AbstractPlanet>> mainPlanets = () ->
                 empire.getPlanets().stream().filter(planet -> empire.isPlanetMain(planet));
         if (mainPlanets.get().count() > empire.getCurrentPlanetsCount() / 4 + 1 && empire.canSendFleet()) {
@@ -106,7 +106,7 @@ public class TaskGenerator {
 
     // Verify if we can build or research something with move of resources from one planet to another
     // Don't sent single level building until level 13
-    public Task checkTransportForBuild() {
+    Task checkTransportForBuild() {
         Task task;
         for (AbstractPlanet planet : empire.getPlanets()) {
             //avoid 2 tasks on 1 planet
@@ -171,7 +171,7 @@ public class TaskGenerator {
         return null;
     }
 
-    public Task getColonyTask() {
+    Task getColonyTask() {
         Integer currentPlanets = empire.getCurrentPlanetsCount();
         Integer maxPlanets = empire.getMaxPlanetsCount();
         if (!config.BUILD_COLONIES) {
@@ -222,7 +222,7 @@ public class TaskGenerator {
         return null;
     }
 
-    public Task sendExpedition() {
+    Task sendExpedition() {
         if (empire.getMaxExpeditions() > empire.getActiveExpeditions()
                 && empire.canSendFleet()
                 && config.SEND_EXPEDITIONS) {
@@ -255,6 +255,20 @@ public class TaskGenerator {
                 task.addTask(subtask);
                 return task;
             }
+        }
+        return null;
+    }
+
+    Task getTaskImportExport() {
+
+        Optional<AbstractPlanet> planetOptional = empire.getPlanets().stream().max(Comparator.comparingInt(p -> p.getResources().getMetal()));
+        if (planetOptional.isPresent()) {
+            AbstractPlanet planet = planetOptional.get();
+            if (planet.getLevel() < 18){
+                //Don't spend resources until level 18
+                return null;
+            }
+            return new GetDailyBonusTask(empire, planet);
         }
         return null;
     }

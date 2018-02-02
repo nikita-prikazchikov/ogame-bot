@@ -38,7 +38,7 @@ public class Navigation {
     }
 
     public void openFleet() {
-        if (!leftMenu.onPage("page=fleet1"))
+        if (!isOnFleetPage())
         leftMenu.openFleet();
     }
 
@@ -76,5 +76,9 @@ public class Navigation {
         if(!myWorldsComponent.isPlanetSelected(planet)) {
             myWorldsComponent.selectPlanet(planet);
         }
+    }
+
+    public boolean isOnFleetPage() {
+        return leftMenu.onPage("page=fleet1");
     }
 }

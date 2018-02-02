@@ -10,7 +10,7 @@ public class Galaxy {
     private static Logger  logger     = Logger.getLogger(String.valueOf(Galaxy.class));
     private static Integer MIN_SYSTEM = 1;
     private static Integer MAX_SYSTEM = 499;
-    private static Integer STEP       = 10;
+    private static Integer STEP       = 3;
 
     private Integer systemLeft;
     private Integer systemRight;

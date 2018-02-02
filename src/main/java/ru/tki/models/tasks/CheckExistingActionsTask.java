@@ -8,6 +8,7 @@ import ru.tki.models.actions.FleetAction;
 import ru.tki.models.types.UpdateTaskType;
 import ru.tki.po.BasePage;
 import ru.tki.po.FleetDetailsPage;
+import ru.tki.po.FleetPage;
 import ru.tki.po.OverviewPage;
 
 import java.util.List;
@@ -25,9 +26,10 @@ public class CheckExistingActionsTask extends Task {
     @Override
     public Action execute() {
         Navigation navigation = new Navigation();
-        navigation.openOverview();
         BasePage basePage = new BasePage();
         OverviewPage overviewPage = new OverviewPage();
+
+        navigation.openOverview();
 
         Action action = overviewPage.getResearchAction(empire, empire.getPlanets().get(0));
         addActionWithUpdateSubtask(action, new UpdateInfoTask(empire, empire.selectMain(), UpdateTaskType.RESEARCHES));
@@ -44,6 +46,13 @@ public class CheckExistingActionsTask extends Task {
 
         for (AbstractPlanet planet : empire.getPlanets()) {
             navigation.selectPlanet(planet);
+            boolean fleetChecked = false;
+            if (navigation.isOnFleetPage()) {
+                FleetPage fleetPage = new FleetPage();
+                planet.setFleet(fleetPage.getFleet());
+                fleetChecked = true;
+            }
+            navigation.openOverview();
             planet.setResources(basePage.resources.getResources());
             planet.logResources();
 
@@ -52,6 +61,12 @@ public class CheckExistingActionsTask extends Task {
 
             action = overviewPage.getBuildAction(empire, planet);
             addActionWithUpdateSubtask(action, new UpdateInfoTask(empire, planet, UpdateTaskType.All));
+
+            if (!fleetChecked) {
+                navigation.openFleet();
+                FleetPage fleetPage = new FleetPage();
+                planet.setFleet(fleetPage.getFleet());
+            }
         }
         return null;
     }

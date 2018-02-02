@@ -24,11 +24,13 @@ public class Mainframe {
     private static Duration saveFleetDuration;
     private static Duration checkFlagsDuration;
     private static Duration checkFleetDuration;
+    private static Duration checkDailyBonusDuration;
 
     private Instant lastAttackCheck     = Instant.now();
     private Instant lastUpdateResources = Instant.now();
     private Instant lastFlagsCheck      = Instant.now();
     private Instant lastFleetCheck      = Instant.now();
+    private Instant lastDailyBonusCheck = Instant.now();
     private Instant executionStopTime;
 
     private TaskGenerator taskGenerator;
@@ -68,6 +70,7 @@ public class Mainframe {
         //Following flags are for internal use and should not be configurable
         checkFlagsDuration = Duration.ofMinutes(30);
         checkFleetDuration = Duration.ofMinutes(60);
+        checkDailyBonusDuration = Duration.ofMinutes(120);
     }
 
     private void loadEmpire() {
@@ -86,6 +89,7 @@ public class Mainframe {
     private void setEmpireInitialTasks() {
         empire.addTask(new CheckAttackTask(empire));
         empire.addTask(new CheckExistingActionsTask(empire));
+        empire.addTask(taskGenerator.getTaskImportExport());
     }
 
     //Verify if bot should work only limited time
@@ -181,6 +185,11 @@ public class Mainframe {
             empire.addTask(new CheckFleetsCountTask(empire));
             lastFleetCheck = Instant.now();
         }
+
+        if (lastDailyBonusCheck.plus(checkDailyBonusDuration).compareTo(now) < 0) {
+            empire.addTask(taskGenerator.getTaskImportExport());
+            lastDailyBonusCheck = Instant.now();
+        }
     }
 
     private void verifySaveEmpireFromAttack() {
@@ -230,9 +239,9 @@ public class Mainframe {
                 actions.add(action);
             }
             //Revert KEEP flights in case target planet is under attack in range save fleet frame
-            if(action.getMissionType() == MissionType.KEEP
+            if (action.getMissionType() == MissionType.KEEP
                     && !action.isReturnFlight()
-                    && empire.isAttackMeetsFleet(action)){
+                    && empire.isAttackMeetsFleet(action)) {
                 empire.addTask(new RevertFleetTask(empire, action));
                 actions.add(action);
             }

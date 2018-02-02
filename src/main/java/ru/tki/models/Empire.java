@@ -10,6 +10,7 @@ import ru.tki.models.actions.FleetAction;
 import ru.tki.models.tasks.Task;
 import ru.tki.models.types.MissionType;
 import ru.tki.models.types.PlanetType;
+import ru.tki.models.types.ShipType;
 
 import java.io.*;
 import java.time.Duration;
@@ -301,7 +302,34 @@ public class Empire {
         } else if (existingFleet.getSmallCargo() > 0) {
             fleet.setSmallCargo(Math.min(Math.max(1, existingFleet.getSmallCargo() / 5), 100));
         }
+        addStrongestBattleship(existingFleet, fleet);
         return fleet;
+    }
+
+    private void addStrongestBattleship(Fleet existing, Fleet target){
+        if (existing.get(ShipType.DESTROYER) > 0){
+            target.set(ShipType.DESTROYER, 1);
+            return;
+        }
+        if (existing.get(ShipType.BATTLECRUISER) > 0){
+            target.set(ShipType.BATTLECRUISER, 1);
+            return;
+        }
+        if (existing.get(ShipType.BATTLESHIP) > 0){
+            target.set(ShipType.BATTLESHIP, 1);
+            return;
+        }
+        if (existing.get(ShipType.CRUISER) > 0){
+            target.set(ShipType.CRUISER, 1);
+            return;
+        }
+        if (existing.get(ShipType.HEAVY_FIGHTER) > 0){
+            target.set(ShipType.HEAVY_FIGHTER, 1);
+            return;
+        }
+        if (existing.get(ShipType.LIGHT_FIGHTER) > 0){
+            target.set(ShipType.LIGHT_FIGHTER, 1);
+        }
     }
 
     //Get planet fleet minus required for move resources fleet
