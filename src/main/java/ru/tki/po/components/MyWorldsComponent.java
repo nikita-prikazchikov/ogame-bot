@@ -17,20 +17,22 @@ public class MyWorldsComponent extends PageObject {
     public void selectPlanet(AbstractPlanet planet){
         switch (planet.getType()){
             case PLANET:
-                selectPlanet(planet.getCoordinates());
+                getPlanetElement(planet.getCoordinates()).click();
                 break;
             case MOON:
-                selectMoon(planet.getCoordinates());
+                getMoonElement(planet.getCoordinates()).click();
                 break;
         }
     }
 
-    private void selectPlanet(Coordinates coordinates){
-        getElement(By.xpath(String.format(PLANET_XPATH, coordinates.getFormattedCoordinates()))).click();
-    }
-
-    private void selectMoon(Coordinates coordinates){
-        getElement(By.xpath(String.format(MOON_XPATH, coordinates.getFormattedCoordinates()))).click();
+    public boolean isPlanetSelected(AbstractPlanet planet) {
+        switch (planet.getType()){
+            case PLANET:
+                return getPlanetElement(planet.getCoordinates()).getAttribute("class").contains("active");
+            case MOON:
+                return getMoonElement(planet.getCoordinates()).getAttribute("class").contains("active");
+        }
+        return false;
     }
 
     public List<AbstractPlanet> getPlanets(){
@@ -49,5 +51,13 @@ public class MyWorldsComponent extends PageObject {
             }
         }
         return planetList;
+    }
+
+    private WebElement getPlanetElement(Coordinates coordinates){
+        return getElement(By.xpath(String.format(PLANET_XPATH, coordinates.getFormattedCoordinates())));
+    }
+
+    private WebElement getMoonElement(Coordinates coordinates){
+        return getElement(By.xpath(String.format(MOON_XPATH, coordinates.getFormattedCoordinates())));
     }
 }

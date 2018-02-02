@@ -19,7 +19,7 @@ public class CheckAttackTask extends Task {
     @Override
     public Action execute() {
         Navigation navigation = new Navigation();
-        navigation.openOverview();
+        navigation.leftMenu.openOverview();
         BasePage basePage = new BasePage();
         if( basePage.isUnderAttack()){
             empire.setUnderAttack(true);

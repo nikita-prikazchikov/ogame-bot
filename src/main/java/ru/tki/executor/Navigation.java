@@ -23,46 +23,58 @@ public class Navigation {
     }
 
     public void openOverview() {
+        if (!leftMenu.onPage("page=overview"))
         leftMenu.openOverview();
     }
 
     public void openShipyard() {
+        if (!leftMenu.onPage("page=shipyard"))
         leftMenu.openShipyard();
     }
 
     public void openResearch() {
+        if (!leftMenu.onPage("page=research"))
         leftMenu.openResearch();
     }
 
     public void openFleet() {
+        if (!leftMenu.onPage("page=fleet1"))
         leftMenu.openFleet();
     }
 
     public void openDefense() {
+        if (!leftMenu.onPage("page=defense"))
         leftMenu.openDefense();
     }
 
     public void openResources() {
+        if (!leftMenu.onPage("page=resources"))
         leftMenu.openResources();
     }
 
     public void openGalaxy() {
+        if (!leftMenu.onPage("page=galaxy"))
         leftMenu.openGalaxy();
     }
 
     public void openTraderOverview() {
+        if (!leftMenu.onPage("page=traderOverview"))
         leftMenu.openTraderOverview();
     }
 
     public void openFactory() {
+        if (!leftMenu.onPage("page=station"))
         leftMenu.openFactory();
     }
 
     public void openFleetMove() {
+        if (!leftMenu.onPage("page=movement"))
         leftMenu.openFleetMove();
     }
 
     public void selectPlanet(AbstractPlanet planet) {
-        myWorldsComponent.selectPlanet(planet);
+        if(!myWorldsComponent.isPlanetSelected(planet)) {
+            myWorldsComponent.selectPlanet(planet);
+        }
     }
 }

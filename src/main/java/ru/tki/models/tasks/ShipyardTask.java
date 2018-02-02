@@ -1,5 +1,6 @@
 package ru.tki.models.tasks;
 
+import ru.tki.executor.Navigation;
 import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
 import ru.tki.models.actions.ShipyardAction;
@@ -51,8 +52,9 @@ public class ShipyardTask extends Task {
         ShipyardAction action = new ShipyardAction(getPlanet(), type);
 
         BasePage basePage = new BasePage();
+        Navigation navigation = new Navigation();
         basePage.myWorlds.selectPlanet(getPlanet());
-        basePage.leftMenu.openShipyard();
+        navigation.openShipyard();
 
         ShipyardPage shipyardPage = new ShipyardPage();
         shipyardPage.select(type);
