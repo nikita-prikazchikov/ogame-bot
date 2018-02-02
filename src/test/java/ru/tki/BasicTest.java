@@ -216,7 +216,7 @@ public class BasicTest {
 
         List<AbstractPlanet> planets = basePage.myWorlds.getPlanets();
 
-        DefenceTask task = new DefenceTask(planets.get(0), DefenceType.LIGHT_LASER, 3);
+        DefenceTask task = new DefenceTask(empire, planets.get(0), DefenceType.LIGHT_LASER, 3);
         Action action = task.execute();
 
         logger.info(action.toString());

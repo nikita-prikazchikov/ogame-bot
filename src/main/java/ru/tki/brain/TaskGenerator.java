@@ -65,15 +65,10 @@ public class TaskGenerator {
         if (task != null) return task;
 
         task = getRequiredCargoTask(planet);
-        if (task != null) {
-            task.addTask(new UpdateInfoTask(empire, planet, UpdateTaskType.FLEET));
-            return task;
-        }
+        if (task != null) return task;
+
         task = getDefenceTask(planet);
-        if (task != null) {
-            task.addTask(new UpdateInfoTask(empire, planet, UpdateTaskType.DEFENCE));
-            return task;
-        }
+        if (task != null) return task;
 
         return null;
     }
@@ -95,11 +90,11 @@ public class TaskGenerator {
         Supplier<Stream<AbstractPlanet>> mainPlanets = () ->
                 empire.getPlanets().stream().filter(planet -> empire.isPlanetMain(planet));
         if (mainPlanets.get().count() > empire.getCurrentPlanetsCount() / 4 + 1 && empire.canSendFleet()) {
-            AbstractPlanet smallest = mainPlanets.get().min(Comparator.comparingInt(AbstractPlanet::getLevel)).get();
-            AbstractPlanet biggest = mainPlanets.get().max(Comparator.comparingInt(AbstractPlanet::getLevel)).get();
+            AbstractPlanet smallest = mainPlanets.get().min(Comparator.comparingLong(p->p.getFleet().getCost())).get();
+            AbstractPlanet biggest = mainPlanets.get().filter(planet -> !planet.equals(smallest)).max(Comparator.comparingLong(p->p.getFleet().getCost())).get();
             Fleet fleet = empire.getPlanetFleetToMove(smallest);
             if (!fleet.isEmpty() && !empire.isPlanetUnderAttack(biggest)) {
-                System.out.println(String.format("There are more than 2 main planets. Move resources from planet %s to %s",
+                System.out.println(String.format("There are more than 2 main planets. Move fleet from planet %s to %s",
                         smallest.getCoordinates(), biggest.getCoordinates()));
                 FleetTask task = new FleetTask(empire, smallest, biggest, fleet, MissionType.KEEP, smallest.getResources());
                 task.setRandomTransportSpeed();
@@ -271,7 +266,7 @@ public class TaskGenerator {
         if (!planet.getShipyardBusy() && currentMax > 12 && config.BUILD_FLEET) {
             Integer planetProduction = empire.getProductionOnPlanetInTimeframe(planet);
             //task to build 1/8 of transports required to cover full planet production
-            Integer buildAmount = Math.max(planetProduction / (5000 * 8), 2);
+            Integer buildAmount = Math.max(planetProduction / (5000 * 8), 1);
             if (empire.getPlanetTotalFleet(planet).getSmallCargoCapacity() < planetProduction
                     && OGameLibrary.canBuild(empire, planet, ShipType.SMALL_CARGO)
                     && resources.isEnoughFor(OGameLibrary.getShipPrice(ShipType.SMALL_CARGO).multiply(buildAmount))) {
@@ -282,7 +277,7 @@ public class TaskGenerator {
                 return new ShipyardTask(empire, planet, ShipType.SMALL_CARGO, buildAmount);
             }
             //Main planet need to have minimum double amount of transports for regular production or full coverage for existing fleet
-            buildAmount = Math.max(buildAmount / 5, 2);
+            buildAmount = Math.max(buildAmount / 5, 1);
             if (empire.isPlanetMain(planet)
                     && (empire.getPlanetTotalFleet(planet).getCapacity() < planetProduction * 2
                     || planet.getFleet().getCapacity() < planet.getResources().getCapacity())
@@ -329,43 +324,43 @@ public class TaskGenerator {
             if (defence.getRocket() < optimalDefence.get(DefenceType.ROCKET) * multiplier
                     && OGameLibrary.canBuild(empire, planet, DefenceType.ROCKET)
                     && resources.isEnoughFor(OGameLibrary.getDefencePrice(DefenceType.ROCKET).multiply(5))) {
-                return new DefenceTask(planet, DefenceType.ROCKET, 5);
+                return new DefenceTask(empire, planet, DefenceType.ROCKET, 5);
             }
             if (defence.getLightLaser() < optimalDefence.get(DefenceType.LIGHT_LASER) * multiplier
                     && OGameLibrary.canBuild(empire, planet, DefenceType.LIGHT_LASER)
                     && resources.isEnoughFor(OGameLibrary.getDefencePrice(DefenceType.LIGHT_LASER).multiply(5))) {
-                return new DefenceTask(planet, DefenceType.LIGHT_LASER, 5);
+                return new DefenceTask(empire, planet, DefenceType.LIGHT_LASER, 5);
             }
             if (defence.getHeavyLaser() < optimalDefence.get(DefenceType.HEAVY_LASER) * multiplier
                     && OGameLibrary.canBuild(empire, planet, DefenceType.HEAVY_LASER)
                     && resources.isEnoughFor(OGameLibrary.getDefencePrice(DefenceType.HEAVY_LASER))) {
-                return new DefenceTask(planet, DefenceType.HEAVY_LASER, 1);
+                return new DefenceTask(empire, planet, DefenceType.HEAVY_LASER, 1);
             }
             if (defence.getGauss() < optimalDefence.get(DefenceType.GAUSS) * multiplier
                     && OGameLibrary.canBuild(empire, planet, DefenceType.GAUSS)
                     && resources.isEnoughFor(OGameLibrary.getDefencePrice(DefenceType.GAUSS))) {
-                return new DefenceTask(planet, DefenceType.GAUSS, 1);
+                return new DefenceTask(empire, planet, DefenceType.GAUSS, 1);
             }
             if (defence.getPlasma() < optimalDefence.get(DefenceType.PLASMA) * multiplier
                     && OGameLibrary.canBuild(empire, planet, DefenceType.PLASMA)
                     && resources.isEnoughFor(OGameLibrary.getDefencePrice(DefenceType.PLASMA))) {
-                return new DefenceTask(planet, DefenceType.PLASMA, 1);
+                return new DefenceTask(empire, planet, DefenceType.PLASMA, 1);
             }
             if (defence.getSmallShield() < 1
                     && OGameLibrary.canBuild(empire, planet, DefenceType.SMALL_SHIELD)
                     && resources.isEnoughFor(OGameLibrary.getDefencePrice(DefenceType.SMALL_SHIELD))) {
-                return new DefenceTask(planet, DefenceType.SMALL_SHIELD, 1);
+                return new DefenceTask(empire, planet, DefenceType.SMALL_SHIELD, 1);
             }
             if (defence.getBigShield() < 1
                     && OGameLibrary.canBuild(empire, planet, DefenceType.BIG_SHIELD)
                     && resources.isEnoughFor(OGameLibrary.getDefencePrice(DefenceType.BIG_SHIELD))) {
-                return new DefenceTask(planet, DefenceType.BIG_SHIELD, 1);
+                return new DefenceTask(empire, planet, DefenceType.BIG_SHIELD, 1);
             }
 
             if (defence.getDefenceMissile() < planet.getFactories().getMissileSilos() * 10
                     && OGameLibrary.canBuild(empire, planet, DefenceType.DEFENCE_MISSILE)
                     && resources.isEnoughFor(OGameLibrary.getDefencePrice(DefenceType.DEFENCE_MISSILE))) {
-                return new DefenceTask(planet, DefenceType.DEFENCE_MISSILE, 1);
+                return new DefenceTask(empire, planet, DefenceType.DEFENCE_MISSILE, 1);
             }
         }
         return null;

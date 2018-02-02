@@ -385,7 +385,7 @@ public class Empire {
 
     public Integer getProductionOnPlanet(AbstractPlanet planet) {
         if (getResearches().getPlasma() > 0) {
-            Double res = planet.getProduction() * 0.01 * getResearches().getPlasma();
+            Double res = planet.getProduction() + planet.getProduction() * 0.01 * getResearches().getPlasma();
             return res.intValue();
         } else {
             return planet.getProduction();

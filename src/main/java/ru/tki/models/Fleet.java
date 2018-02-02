@@ -192,6 +192,14 @@ public class Fleet {
         return res.toString();
     }
 
+    public Long getCost(){
+        Long cost = 0L;
+        for(ShipType type:  ShipType.values()){
+            cost += OGameLibrary.getShipPrice(type).getCapacity() * get(type);
+        }
+        return cost;
+    }
+
     public Fleet getRequiredFleet(Resources resources) {
         return getRequiredFleet(resources.getCapacity());
     }

@@ -1,8 +1,10 @@
 package ru.tki.models.tasks;
 
 import ru.tki.models.AbstractPlanet;
+import ru.tki.models.Empire;
 import ru.tki.models.actions.DefenceAction;
 import ru.tki.models.types.DefenceType;
+import ru.tki.models.types.UpdateTaskType;
 import ru.tki.po.BasePage;
 import ru.tki.po.DefencePage;
 import ru.tki.po.components.BuildDetailComponent;
@@ -12,10 +14,11 @@ import java.time.Duration;
 //Build new defence on the planet
 public class DefenceTask extends Task {
 
-    DefenceType type;
-    Integer amount;
+    private           DefenceType type;
+    private           Integer     amount;
+    private transient Empire      empire;
 
-    public DefenceTask(AbstractPlanet planet, DefenceType type, Integer amount) {
+    public DefenceTask(Empire empire, AbstractPlanet planet, DefenceType type, Integer amount) {
         name = "Defence task";
         this.amount = amount;
         setPlanet(planet);
@@ -46,12 +49,13 @@ public class DefenceTask extends Task {
         BuildDetailComponent buildDetailComponent = new BuildDetailComponent();
         Duration duration = buildDetailComponent.getDuration();
         action.addDuration(duration.multipliedBy(amount));
-        if(type != DefenceType.SMALL_SHIELD && type != DefenceType.BIG_SHIELD) {
+        if (type != DefenceType.SMALL_SHIELD && type != DefenceType.BIG_SHIELD) {
             buildDetailComponent.setAmount(amount);
         }
         buildDetailComponent.build();
 
         getPlanet().setResources(basePage.resources.getResources());
+        action.addTask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.DEFENCE));
 
         return action;
     }
