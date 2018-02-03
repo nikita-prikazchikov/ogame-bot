@@ -21,8 +21,10 @@ public class GalaxyPage extends PageObject {
     private static final By NEXT_ITEM                 = By.cssSelector(".galaxy_icons.next");
     private static final By PREVIOUS_ITEM             = By.cssSelector(".galaxy_icons.prev");
     private static final By GALAXY_TABLE_ROW          = By.cssSelector("#galaxytable tr.row");
-    private static final By GALAXY_TABLE_INACTIVE_ROW = By.cssSelector("#galaxytable tr.row.inactive_filter");
     private static final By GALAXY_TABLE_EMPTY_ROW    = By.cssSelector("#galaxytable tr.row.empty_filter");
+    private static final By SEND_SPY                  = By.cssSelector(".action .espionage");
+
+    private static final String TABLE_ROW = "//table[@id='galaxytable']//tr[contains(@class, 'row') and ./td[contains(@class, 'position') and ./text()='%s']]";
 
     private static final By POSITION = By.cssSelector(".position");
 
@@ -37,6 +39,8 @@ public class GalaxyPage extends PageObject {
     }
 
     public void selectSystem(Integer value) {
+        setValue(getElement(SYSTEM_NUMBER), "");
+        pause();
         setValue(getElement(SYSTEM_NUMBER), value.toString() + Keys.ENTER);
         waitLoading();
     }
@@ -84,8 +88,17 @@ public class GalaxyPage extends PageObject {
 
     public List<Planet> getInactivePlanets() {
         List<Planet> planets = new ArrayList<>();
-        planets.addAll(findElements(GALAXY_TABLE_INACTIVE_ROW).stream().map(this::getPlanet).collect(Collectors.toList()));
+        planets.addAll(findElements(GALAXY_TABLE_ROW).stream().filter(element -> element.getAttribute("class").contains("inactive_filter") && !element.getAttribute("class").contains("vacation_filter")).map(this::getPlanet).collect(Collectors.toList()));
         return planets;
+    }
+
+    public void sendSpy(AbstractPlanet planet) {
+        getElement(getPlanet(planet), SEND_SPY).click();
+        pause(500);
+    }
+
+    private WebElement getPlanet(AbstractPlanet planet) {
+        return getElement(By.xpath(String.format(TABLE_ROW, planet.getCoordinates().getPlanet())));
     }
 
     private Planet getPlanet(WebElement element) {
@@ -95,5 +108,6 @@ public class GalaxyPage extends PageObject {
     private void waitLoading() {
         waitForWebElementIsDisplayed(GALAXY_LOADING, 1);
         waitForWebElementNotDisplayed(GALAXY_LOADING, 1);
+        pause();
     }
 }

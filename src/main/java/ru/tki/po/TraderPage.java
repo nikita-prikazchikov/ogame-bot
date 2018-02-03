@@ -47,6 +47,7 @@ public class TraderPage extends PageObject {
         }
         if (isElementDisplayed(IMPORT_PAY)) {
             payImportExport();
+            pause();
         }
         if(isElementExists(IMPORT_GET_BONUS) && isElementDisplayed(IMPORT_GET_BONUS)){
             waitForWebElementStopMoving(IMPORT_GET_BONUS);

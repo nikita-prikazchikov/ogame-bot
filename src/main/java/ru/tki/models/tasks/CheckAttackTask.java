@@ -19,17 +19,24 @@ public class CheckAttackTask extends Task {
     @Override
     public Action execute() {
         Navigation navigation = new Navigation();
-        navigation.leftMenu.openOverview();
+        //Open random
+        Double r = Math.random();
+        if (r < 0.166) navigation.leftMenu.openOverview();
+        else if (r < 0.333) navigation.leftMenu.openResources();
+        else if (r < 0.5) navigation.leftMenu.openDefense();
+        else if (r < 0.666) navigation.leftMenu.openFleet();
+        else if (r < 0.833) navigation.leftMenu.openResearch();
+        else navigation.leftMenu.openFactory();
+
         BasePage basePage = new BasePage();
-        if( basePage.isUnderAttack()){
+        if (basePage.isUnderAttack()) {
             empire.setUnderAttack(true);
             System.out.println("Empire is under attack!");
             EventComponent eventComponent = new EventComponent();
             //Refresh enemy attacks every scan
             empire.setEnemyFleets(null);
             empire.addEnemyFleets(eventComponent.getHostileFleets(empire));
-        }
-        else{
+        } else {
             empire.setUnderAttack(false);
             empire.setEnemyFleets(null);
         }

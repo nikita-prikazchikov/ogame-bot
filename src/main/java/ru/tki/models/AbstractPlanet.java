@@ -13,11 +13,7 @@ public abstract class AbstractPlanet {
     protected Boolean     shipyardBusy = false;
     protected Boolean     hasTask = false;
 
-    private Long fleetCost;
-    private Long defenceCost;
 
-    public boolean fleetDiscovered = false;
-    public boolean defenceDiscovered = false;
 
     protected Resources resources = new Resources();
     protected Fleet fleet = new Fleet();
@@ -147,19 +143,18 @@ public abstract class AbstractPlanet {
         System.out.println(String.format("Resources on %s %s %s", getType(), getCoordinates().getFormattedCoordinates(), getResources()));
     }
 
-    public Long getFleetCost() {
-        return fleetCost != null ? fleetCost : fleet.getCost();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AbstractPlanet)) return false;
+
+        AbstractPlanet planet = (AbstractPlanet) o;
+
+        return coordinates != null ? coordinates.equals(planet.coordinates) : planet.coordinates == null;
     }
 
-    public void setFleetCost(Long fleetCost) {
-        this.fleetCost = fleetCost;
-    }
-
-    public Long getDefenceCost() {
-        return defenceCost != null ? defenceCost : 0;
-    }
-
-    public void setDefenceCost(Long defenceCost) {
-        this.defenceCost = defenceCost;
+    @Override
+    public int hashCode() {
+        return coordinates != null ? coordinates.hashCode() : 0;
     }
 }

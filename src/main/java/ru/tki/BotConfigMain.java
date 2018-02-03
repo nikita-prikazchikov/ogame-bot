@@ -33,4 +33,5 @@ public class BotConfigMain {
     public Integer FLEET_SAVE_TIMEOUT = 180;
 
     public Boolean DO_CHECK_ATTACK = true;
+    public Boolean SCAN_FOR_INACTIVE = true;
 }

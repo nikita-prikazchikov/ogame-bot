@@ -4,13 +4,10 @@ import ru.tki.executor.Navigation;
 import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
 import ru.tki.models.actions.ShipyardAction;
-import ru.tki.models.types.ShipType;
 import ru.tki.po.TraderPage;
+import ru.tki.po.components.ResourcesComponent;
 
-import java.util.Comparator;
-import java.util.Optional;
-
-//Build new ships on the planet
+//Get daily bonus in import/export
 public class GetDailyBonusTask extends Task {
 
     transient Empire empire;
@@ -27,6 +24,7 @@ public class GetDailyBonusTask extends Task {
 
         Navigation navigation = new Navigation();
         TraderPage traderPage = new TraderPage();
+        ResourcesComponent resourcesComponent = new ResourcesComponent();
 
         navigation.selectPlanet(getPlanet());
         navigation.leftMenu.openTraderOverview();
@@ -34,8 +32,8 @@ public class GetDailyBonusTask extends Task {
 
         if (traderPage.getCost() < getPlanet().getResources().getMetal()) {
             traderPage.payWithMetal();
-        }
-        else {
+            getPlanet().setResources(resourcesComponent.getResources());
+        } else {
             System.out.println(String.format("Planet %s does not have enough metal to pay daily bonus", getPlanet().getCoordinates()));
         }
 

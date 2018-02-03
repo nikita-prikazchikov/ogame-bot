@@ -40,6 +40,10 @@ public class Coordinates {
         return a;
     }
 
+    public Coordinates nextSystem(){
+        return new Coordinates(galaxy, system + 1, planet);
+    }
+
     public String getFormattedCoordinates() {
         return String.format("%s:%s:%s", galaxy, system, planet);
     }
@@ -65,9 +69,21 @@ public class Coordinates {
         return String.format("%s_%s_%s", galaxy, system, planet);
     }
 
-    public boolean equals(Coordinates obj) {
-        return this.galaxy.equals(obj.galaxy)
-                && this.system.equals(obj.system)
-                && this.planet.equals(obj.planet);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Coordinates that = (Coordinates) o;
+
+        return galaxy.equals(that.galaxy) && system.equals(that.system) && planet.equals(that.planet);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = galaxy.hashCode();
+        result = 31 * result + system.hashCode();
+        result = 31 * result + planet.hashCode();
+        return result;
     }
 }

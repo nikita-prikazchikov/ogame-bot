@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import org.openqa.selenium.InvalidArgumentException;
 import ru.tki.BotConfigMain;
 import ru.tki.ContextHolder;
+import ru.tki.helpers.FileHelper;
 import ru.tki.models.actions.Action;
 import ru.tki.models.actions.FleetAction;
 import ru.tki.models.tasks.Task;
@@ -43,6 +44,7 @@ public class Empire {
     private           BotConfigMain config;
     private transient Gson          gson;
     private transient Galaxy        galaxy;
+    private transient GalaxyHelper  galaxyHelper;
 
     private boolean isUnderAttack;
     private boolean researchInProgress = false;
@@ -68,7 +70,8 @@ public class Empire {
         createDirectory(stateDirectory);
 
         gson = new GsonBuilder().setPrettyPrinting().create();
-        galaxy = new Galaxy();
+        galaxyHelper = new GalaxyHelper();
+        galaxy = new Galaxy(storageDirectory);
 
         // Timeframe for transport resources from colony to main planet
         productionTimeHours = 4;
@@ -281,13 +284,13 @@ public class Empire {
 
     public boolean isAttackMeetsFleet(FleetAction myFleet) {
         List<FleetAction> fleets = getEnemyFleets().stream().filter(action ->
-                action.getTargetPlanet().equals(myFleet.getTargetPlanet())&&
+                action.getTargetPlanet().equals(myFleet.getTargetPlanet()) &&
                         (action.getMissionType() == MissionType.ATTACK
                                 || action.getMissionType() == MissionType.JOINT_ATTACK)
         ).collect(Collectors.toList());
-        for (FleetAction fleetAction : fleets){
+        for (FleetAction fleetAction : fleets) {
             Duration gap = Duration.between(fleetAction.getFinishTime(), myFleet.getFleetTimeToTarget()).abs();
-            if(gap.minus(Duration.ofSeconds(config.FLEET_SAVE_TIMEOUT)).isNegative()){
+            if (gap.minus(Duration.ofSeconds(config.FLEET_SAVE_TIMEOUT)).isNegative()) {
                 return true;
             }
         }
@@ -306,34 +309,34 @@ public class Empire {
         return fleet;
     }
 
-    private void addStrongestBattleship(Fleet existing, Fleet target){
-        if (existing.get(ShipType.DESTROYER) > 0){
+    private void addStrongestBattleship(Fleet existing, Fleet target) {
+        if (existing.get(ShipType.DESTROYER) > 0) {
             target.set(ShipType.DESTROYER, 1);
             return;
         }
-        if (existing.get(ShipType.BATTLECRUISER) > 0){
+        if (existing.get(ShipType.BATTLECRUISER) > 0) {
             target.set(ShipType.BATTLECRUISER, 1);
             return;
         }
-        if (existing.get(ShipType.BATTLESHIP) > 0){
+        if (existing.get(ShipType.BATTLESHIP) > 0) {
             target.set(ShipType.BATTLESHIP, 1);
             return;
         }
-        if (existing.get(ShipType.CRUISER) > 0){
+        if (existing.get(ShipType.CRUISER) > 0) {
             target.set(ShipType.CRUISER, 1);
             return;
         }
-        if (existing.get(ShipType.HEAVY_FIGHTER) > 0){
+        if (existing.get(ShipType.HEAVY_FIGHTER) > 0) {
             target.set(ShipType.HEAVY_FIGHTER, 1);
             return;
         }
-        if (existing.get(ShipType.LIGHT_FIGHTER) > 0){
+        if (existing.get(ShipType.LIGHT_FIGHTER) > 0) {
             target.set(ShipType.LIGHT_FIGHTER, 1);
         }
     }
 
     //Get planet fleet minus required for move resources fleet
-    public Fleet getPlanetFleetToMove(AbstractPlanet planet){
+    public Fleet getPlanetFleetToMove(AbstractPlanet planet) {
         return planet.getFleet().deduct(planet.getFleet().getRequiredFleet(getProductionOnPlanetInTimeframe(planet)));
     }
 
@@ -351,7 +354,7 @@ public class Empire {
     }
 
     public AbstractPlanet findNewColony(AbstractPlanet planet) {
-        return galaxy.findNewColony(planet);
+        return galaxyHelper.findNewColony(planet);
     }
 
     public AbstractPlanet getPlanetForExpedition(AbstractPlanet planet) {
@@ -449,7 +452,7 @@ public class Empire {
     private void savePlanet(File directory, AbstractPlanet planet) {
         File file = new File(directory, planet.getCoordinates().getFileSafeString() + "_" + planet.getType() + ".json");
         String jsonString = gson.toJson(planet);
-        writeToFile(file, jsonString);
+        FileHelper.writeToFile(file, jsonString);
     }
 
     public void saveResearches() {
@@ -459,17 +462,7 @@ public class Empire {
     private void saveResearches(File directory) {
         File file = new File(directory, RESEARCHES);
         String jsonString = gson.toJson(researches);
-        writeToFile(file, jsonString);
-    }
-
-    private void writeToFile(File file, String content) {
-        try {
-            FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write(content);
-            fileWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        FileHelper.writeToFile(file, jsonString);
     }
 
     public boolean load() {
@@ -484,6 +477,9 @@ public class Empire {
         boolean isLoaded;
         isLoaded = loadPlanets(directory);
         isLoaded = isLoaded && loadResearches(directory);
+
+        galaxy.loadGalaxy();
+
         return isLoaded;
     }
 
@@ -498,10 +494,10 @@ public class Empire {
         for (File fileEntry : planetsDir.listFiles()) {
             if (!fileEntry.isDirectory()) {
                 if (fileEntry.getName().contains(PlanetType.PLANET.toString())) {
-                    addPlanet(readFromFile(fileEntry, Planet.class));
+                    addPlanet(FileHelper.readFromFile(fileEntry, Planet.class));
                 }
                 if (fileEntry.getName().contains(PlanetType.MOON.toString())) {
-                    addPlanet(readFromFile(fileEntry, Moon.class));
+                    addPlanet(FileHelper.readFromFile(fileEntry, Moon.class));
                 }
             }
         }
@@ -510,7 +506,7 @@ public class Empire {
 
     public boolean loadResearches(File directory) {
         File file = new File(directory, RESEARCHES);
-        Researches researches = readFromFile(file, Researches.class);
+        Researches researches = FileHelper.readFromFile(file, Researches.class);
 
         if (null != researches) {
             this.researches = researches;
@@ -531,18 +527,8 @@ public class Empire {
         String fileName = "empire_" + Instant.now().toString().replace(":", "-") + ".json";
         File directory = new File(stateDirectory, fileName);
         String jsonString = gson.toJson(this);
-        writeToFile(directory, jsonString);
+        FileHelper.writeToFile(directory, jsonString);
         return fileName;
-    }
-
-    private <T> T readFromFile(File file, Class<T> classOfT) {
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            return gson.fromJson(br, classOfT);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     public Integer getProductionTimeHours() {
@@ -553,4 +539,7 @@ public class Empire {
         this.productionTimeHours = productionTimeHours;
     }
 
+    public Galaxy getGalaxy() {
+        return galaxy;
+    }
 }

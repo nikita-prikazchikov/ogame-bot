@@ -1,95 +1,138 @@
 package ru.tki.models;
 
-import ru.tki.executor.Navigation;
-import ru.tki.po.GalaxyPage;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.openqa.selenium.InvalidArgumentException;
+import ru.tki.helpers.FileHelper;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class Galaxy {
-    private static Logger  logger     = Logger.getLogger(String.valueOf(Galaxy.class));
-    private static Integer MIN_SYSTEM = 1;
-    private static Integer MAX_SYSTEM = 499;
-    private static Integer STEP       = 3;
+    private static final String galaxyFolder = "galaxy";
+    public static Integer MIN_SYSTEM = 1;
+    public static Integer MAX_SYSTEM = 499;
+    public static Integer SECTOR_SIZE = 50;
 
-    private Integer systemLeft;
-    private Integer systemRight;
+    private List<EnemyPlanet> enemyPlanets = new LinkedList<>();
+    private List<GalaxySector> sectors = new ArrayList<>(60);
 
-    private GalaxyPage galaxyPage;
+    private           File galaxyDirectory;
+    private transient Gson gson;
 
-    public AbstractPlanet findNewColony(AbstractPlanet planet) {
-        Navigation navigation = new Navigation();
-        galaxyPage = new GalaxyPage();
+    public Galaxy(File storageDirectory) {
+        this.galaxyDirectory = new File(storageDirectory, galaxyFolder);
+        gson = new GsonBuilder().setPrettyPrinting().create();
+        if(!loadGalaxy()){
+            createGalaxy();
+        }
+    }
 
-        navigation.selectPlanet(planet);
-        navigation.openGalaxy();
+    public void addPlanet(EnemyPlanet planet){
+        if(enemyPlanets.contains(planet)){
+            enemyPlanets.remove(planet);
+        }
+        enemyPlanets.add(planet);
+        savePlanet(planet);
+    }
 
-        Integer galaxy = planet.getCoordinates().getGalaxy();
-        Integer system = planet.getCoordinates().getSystem();
+    public void removePlanet(EnemyPlanet planet){
+        if(enemyPlanets.contains(planet)){
+            enemyPlanets.remove(planet);
+            deletePlanet(planet);
+        }
+    }
 
-        while (galaxy < 8) {
+    public boolean hasPlanet(AbstractPlanet planet){
+        return enemyPlanets.contains(planet);
+    }
 
-            systemLeft = system;
-            systemRight = system + 1;
+    public GalaxySector getPlanetSector(AbstractPlanet planet){
+        return sectors.stream().filter(sector -> sector.planetInSector(planet)).findFirst().get();
+    }
 
-            Planet newColony;
-            while (systemLeft > MIN_SYSTEM && systemRight < MAX_SYSTEM) {
-                newColony = moveLeft();
-                if (null != newColony) {
-                    return newColony;
+    public void addSector(GalaxySector sector){
+        if(sectors.contains(sector)){
+            sectors.remove(sector);
+        }
+        sectors.add(sector);
+    }
+
+    public void updateSector(GalaxySector sector){
+        sector.setUpdatedNow();
+        addSector(sector);
+        saveSector(sector);
+    }
+
+    public boolean loadGalaxy(){
+        if (!galaxyDirectory.exists() ||  galaxyDirectory.listFiles().length == 0) {
+            return false;
+        }
+
+        for (File fileEntry : galaxyDirectory.listFiles()) {
+            if (!fileEntry.isDirectory()) {
+                if (fileEntry.getName().contains("planet")) {
+                    enemyPlanets.add(FileHelper.readFromFile(fileEntry, EnemyPlanet.class));
                 }
-                newColony = moveRight();
-                if (null != newColony) {
-                    return newColony;
+                if (fileEntry.getName().contains("sector")) {
+                    addSector(FileHelper.readFromFile(fileEntry, GalaxySector.class));
                 }
             }
-            galaxy++;
-            galaxyPage.selectGalaxy(galaxy);
         }
-
-        return null;
+        return true;
     }
 
-    private Planet moveLeft() {
-        int stop = Math.max(systemLeft - STEP, MIN_SYSTEM);
-        if (systemLeft > stop && Integer.parseInt(galaxyPage.getSystem()) != systemLeft) {
-            galaxyPage.selectSystem(systemLeft);
-        }
-        while (systemLeft > stop) {
-            Planet planet = getGoodPlanet(galaxyPage.getEmptyPlanets());
-            if (planet != null) {
-                return planet;
+    private void createGalaxy(){
+        for(int galaxy = 1; galaxy < 6; galaxy++) {
+            for (int system = 0; system < MAX_SYSTEM; system += SECTOR_SIZE) {
+                int start = system + 1;
+                int end = Math.min(system + SECTOR_SIZE, MAX_SYSTEM);
+                GalaxySector sector = new GalaxySector(new Coordinates(galaxy, start, 1), new Coordinates(galaxy, end, 1));
+                addSector(sector);
+                saveSector(sector);
             }
-            galaxyPage.prevSystem();
-            systemLeft--;
         }
-        return null;
     }
 
-    private Planet moveRight() {
-        int stop = Math.min(systemRight + STEP, MAX_SYSTEM);
-        if (systemRight < stop && Integer.parseInt(galaxyPage.getSystem()) != systemRight) {
-            galaxyPage.selectSystem(systemRight);
-        }
-        while (systemRight < stop) {
-            Planet planet = getGoodPlanet(galaxyPage.getEmptyPlanets());
-            if (planet != null) {
-                return planet;
+    private void saveSector(GalaxySector sector){
+        if (!galaxyDirectory.exists()) {
+            if (!galaxyDirectory.mkdirs()) {
+                throw new InvalidArgumentException("Unable to create directory: " + galaxyDirectory);
             }
-            galaxyPage.nextSystem();
-            systemRight++;
         }
-        return null;
+        String jsonString = gson.toJson(sector);
+        FileHelper.writeToFile(getSectorFilename(sector), jsonString);
     }
 
-    private Planet getGoodPlanet(List<Planet> planets) {
-        for (Planet planet : planets) {
-            int position = planet.getCoordinates().getPlanet();
-            if (position > 5 && position < 11) {
-                return planet;
+    private File getSectorFilename(GalaxySector sector){
+        return new File(galaxyDirectory, "sector_" + sector.getStart().getFileSafeString()+ "__" + sector.getEnd().getFileSafeString() + ".json");
+    }
+
+    private void savePlanet(EnemyPlanet planet){
+        if (!galaxyDirectory.exists()) {
+            if (!galaxyDirectory.mkdirs()) {
+                throw new InvalidArgumentException("Unable to create directory: " + galaxyDirectory);
             }
         }
-        System.out.printf("No good planet for colonization in: %s:%s%n", galaxyPage.getGalaxy(), galaxyPage.getSystem());
-        return null;
+        String jsonString = gson.toJson(planet);
+        FileHelper.writeToFile(getPlanetFilename(planet), jsonString);
+    }
+
+    private File getPlanetFilename(EnemyPlanet planet){
+        return new File(galaxyDirectory, "planet_" + planet.getCoordinates().getFileSafeString() + ".json");
+    }
+
+    private void deletePlanet(EnemyPlanet planet){
+        File file = getPlanetFilename(planet);
+        if(file.exists()){
+            boolean deleted = file.delete();
+        }
+        if(enemyPlanets.contains(planet)){
+            enemyPlanets.remove(planet);
+        }
     }
 }
+
+

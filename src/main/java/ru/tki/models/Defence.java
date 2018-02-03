@@ -107,6 +107,14 @@ public class Defence {
         }
     }
 
+    public Long getCost(){
+        Long cost = 0L;
+        for(DefenceType type:  DefenceType.values()){
+            cost += OGameLibrary.getDefencePrice(type).getCapacity() * get(type);
+        }
+        return cost;
+    }
+
     public Integer getRocket() {
         return rocket;
     }

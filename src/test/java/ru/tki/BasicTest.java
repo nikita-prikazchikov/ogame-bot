@@ -264,7 +264,7 @@ public class BasicTest {
 
         MessagesPage messagesPage = new MessagesPage();
 
-        List<Planet> i = messagesPage.parseSpyReports();
+        List<EnemyPlanet> i = messagesPage.parseSpyReports();
         System.out.println(i);
     }
 }

@@ -1,11 +1,9 @@
 package ru.tki.po;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
-import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Coordinates;
-import ru.tki.models.Planet;
+import ru.tki.models.EnemyPlanet;
 import ru.tki.models.Resources;
 import ru.tki.utils.DataParser;
 
@@ -20,8 +18,7 @@ public class MessagesPage extends PageObject {
 
     private static final By SPY_REPORTS = By.cssSelector("#fleetsgenericpage");
 
-    //    private static final By NEW_MESSAGES = By.cssSelector(".msg.msg_new");
-    private static final By NEW_MESSAGES  = By.cssSelector(".msg");
+    private static final By NEW_MESSAGES  = By.cssSelector(".msg.msg_new");
     private static final By TITLE         = By.cssSelector(".msg_title");
     private static final By RESOURCE_SPAN = By.cssSelector(".resspan");
     private static final By TEXT          = By.cssSelector("span.ctn");
@@ -33,14 +30,14 @@ public class MessagesPage extends PageObject {
     private Pattern fleets    = Pattern.compile("Флоты:\\s*([\\d.]+)");
     private Pattern defence   = Pattern.compile("Оборона:\\s*([\\d.]+)");
 
-    public List<Planet> parseSpyReports() {
-        List<Planet> planets = new ArrayList<>();
+    public List<EnemyPlanet> parseSpyReports() {
+        List<EnemyPlanet> planets = new ArrayList<>();
         planets.addAll(findElements(NEW_MESSAGES).stream().map(this::parseSpyReport).collect(Collectors.toList()));
         return planets;
     }
 
-    private Planet parseSpyReport(WebElement element) {
-        Planet planet = new Planet();
+    private EnemyPlanet parseSpyReport(WebElement element) {
+        EnemyPlanet planet = new EnemyPlanet();
 
         planet.setCoordinates(new Coordinates(getElement(element, TITLE).getText()));
 
@@ -74,6 +71,4 @@ public class MessagesPage extends PageObject {
         }
         return null;
     }
-
-
 }

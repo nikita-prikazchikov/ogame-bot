@@ -7,6 +7,8 @@ import ru.tki.models.actions.ShipyardAction;
 import ru.tki.models.tasks.*;
 import ru.tki.models.types.*;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +23,10 @@ public class TaskGenerator {
     // Solar main level X
     // Metal = X Crystal = X - 2 Deuterium X / 2
     // MS = M / 3 CS = C / 3 DS = D / 3
+
+    //Rescan sector for inactive players every 25 hours
+    private static Duration checkGalaxySectorTimeout = Duration.ofHours(25);
+
 
     private static final Map<DefenceType, Integer> optimalDefence = new HashMap<DefenceType, Integer>() {{
         put(DefenceType.ROCKET, 60);
@@ -44,21 +50,12 @@ public class TaskGenerator {
     }
 
     Task getTask(Planet planet) {
-        Resources resources = planet.getResources();
         Researches researches = empire.getResearches();
 
-        if (!planet.getShipyardBusy() && planet.getLevel() > 12) {
-            if (planet.getResources().getEnergy() < 0) {
-                //Build 1/4 of required solar satellites
-                Integer count = Math.max(1, planet.getResources().getEnergy() * -1 / 30 / 4);
-                if (OGameLibrary.canBuild(empire, planet, ShipType.SOLAR_SATELLITE)
-                        && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.SOLAR_SATELLITE, 1).multiply(count))) {
-                    return new ShipyardTask(empire, planet, ShipType.SOLAR_SATELLITE, count);
-                }
-            }
-        }
+        Task task = getSolarSatelliteTask(planet);
+        if (task != null) return task;
 
-        Task task = getTaskBuilding(planet);
+        task = getTaskBuilding(planet);
         if (task != null) return task;
 
         task = getTaskResearches(planet, researches);
@@ -70,6 +67,21 @@ public class TaskGenerator {
         task = getDefenceTask(planet);
         if (task != null) return task;
 
+        return null;
+    }
+
+    private Task getSolarSatelliteTask(Planet planet) {
+        Resources resources = planet.getResources();
+        if (!planet.getShipyardBusy() && planet.getLevel() > 12) {
+            if (planet.getResources().getEnergy() < 0) {
+                //Build 1/4 of required solar satellites
+                Integer count = Math.max(1, planet.getResources().getEnergy() * -1 / 30 / 4);
+                if (OGameLibrary.canBuild(empire, planet, ShipType.SOLAR_SATELLITE)
+                        && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.SOLAR_SATELLITE, 1).multiply(count))) {
+                    return new ShipyardTask(empire, planet, ShipType.SOLAR_SATELLITE, count);
+                }
+            }
+        }
         return null;
     }
 
@@ -243,6 +255,33 @@ public class TaskGenerator {
         return null;
     }
 
+    Task getTaskImportExport() {
+
+        Optional<AbstractPlanet> planetOptional = empire.getPlanets().stream().max(Comparator.comparingInt(p -> p.getResources().getMetal()));
+        if (planetOptional.isPresent()) {
+            AbstractPlanet planet = planetOptional.get();
+            if (planet.getLevel() < 20){
+                //Don't spend resources until level 20
+                return null;
+            }
+            return new GetDailyBonusTask(empire, planet);
+        }
+        return null;
+    }
+
+    Task getScanGalaxyTask(){
+        Optional<AbstractPlanet> planetOptional = empire.getPlanets().stream().filter(planet1 -> planet1.getFleet().getEspionageProbe() > 0).max(Comparator.comparingInt(p -> p.getFleet().getEspionageProbe()));
+        if(planetOptional.isPresent()) {
+            AbstractPlanet planet = planetOptional.get();
+            Galaxy galaxy = empire.getGalaxy();
+            GalaxySector sector = galaxy.getPlanetSector(planet);
+            if(null == sector.getLastUpdated() || sector.getLastUpdated().plus(checkGalaxySectorTimeout).compareTo(Instant.now())<0){
+                return new ScanSectorForInactivePlayerTask(empire, planet, sector);
+            }
+        }
+        return null;
+    }
+
     private Task findResourcesOnMain(AbstractPlanet planet, Resources resources, Task subtask) {
         for (AbstractPlanet main : empire.getMainPlanets()) {
             if (!planet.equals(main) && !main.hasTask() && main.hasResources(resources) && empire.canSendFleet()) {
@@ -255,20 +294,6 @@ public class TaskGenerator {
                 task.addTask(subtask);
                 return task;
             }
-        }
-        return null;
-    }
-
-    Task getTaskImportExport() {
-
-        Optional<AbstractPlanet> planetOptional = empire.getPlanets().stream().max(Comparator.comparingInt(p -> p.getResources().getMetal()));
-        if (planetOptional.isPresent()) {
-            AbstractPlanet planet = planetOptional.get();
-            if (planet.getLevel() < 18){
-                //Don't spend resources until level 18
-                return null;
-            }
-            return new GetDailyBonusTask(empire, planet);
         }
         return null;
     }
@@ -524,7 +549,7 @@ public class TaskGenerator {
                     return new FactoryTask(empire, planet, FactoryType.RESEARCH_LAB);
                 }
             }
-            if (currentMax > 20
+            if (config.BUILD_DEFENCE && currentMax > 20
                     && factories.getMissileSilos() < currentMax / 5
                     && OGameLibrary.canBuild(empire, planet, FactoryType.MISSILE_SILOS)
                     && resources.isEnoughFor(OGameLibrary.getFactoryPrice(FactoryType.MISSILE_SILOS, factories.getMissileSilos()))) {

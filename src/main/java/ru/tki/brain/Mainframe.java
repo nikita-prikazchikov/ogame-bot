@@ -89,7 +89,7 @@ public class Mainframe {
     private void setEmpireInitialTasks() {
         empire.addTask(new CheckAttackTask(empire));
         empire.addTask(new CheckExistingActionsTask(empire));
-        empire.addTask(taskGenerator.getTaskImportExport());
+//        empire.addTask(taskGenerator.getTaskImportExport());
     }
 
     //Verify if bot should work only limited time
@@ -277,14 +277,15 @@ public class Mainframe {
             empire.addTask(taskGenerator.getFleetTask((Planet) p));
         });
 
-        //empire.addTask(taskGenerator.getColonyTask());
         empire.addTask(taskGenerator.sendExpedition());
+
+        empire.addTask(taskGenerator.getScanGalaxyTask());
     }
 
     //Execute existing tasks
     private void execute() throws InterruptedException {
         if (empire.getTasks().isEmpty()) {
-            System.out.print('.');
+            System.out.print('>');
             Thread.sleep(config.SLEEP_TIMEOUT);
         }
 
