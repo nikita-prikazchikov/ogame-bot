@@ -89,7 +89,7 @@ public class Mainframe {
     private void setEmpireInitialTasks() {
         empire.addTask(new CheckAttackTask(empire));
         empire.addTask(new CheckExistingActionsTask(empire));
-//        empire.addTask(taskGenerator.getTaskImportExport());
+        empire.addTask(taskGenerator.getTaskImportExport());
     }
 
     //Verify if bot should work only limited time

@@ -32,7 +32,7 @@ public class MessagesPage extends PageObject {
 
     public List<EnemyPlanet> parseSpyReports() {
         List<EnemyPlanet> planets = new ArrayList<>();
-        planets.addAll(findElements(NEW_MESSAGES).stream().map(this::parseSpyReport).collect(Collectors.toList()));
+        planets.addAll(findElements(NEW_MESSAGES).stream().map(this::parseSpyReport).filter(planet -> null != planet).collect(Collectors.toList()));
         return planets;
     }
 
@@ -42,12 +42,16 @@ public class MessagesPage extends PageObject {
         planet.setCoordinates(new Coordinates(getElement(element, TITLE).getText()));
 
         Resources resources = planet.getResources();
+        String res = findMatch(element, metal);
+        if(null == res){
+            return null;
+        }
 
         resources.setMetal(DataParser.parseResource(findMatch(element, metal)));
         resources.setCrystal(DataParser.parseResource(findMatch(element, crystal)));
         resources.setDeuterium(DataParser.parseResource(findMatch(element, deuterium)));
 
-        String res = findMatch(element, fleets);
+        res = findMatch(element, fleets);
         if (null != res) {
             planet.fleetDiscovered = true;
             planet.setFleetCost((long) DataParser.parseResource(res));

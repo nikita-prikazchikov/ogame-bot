@@ -25,7 +25,7 @@ public class TaskGenerator {
     // MS = M / 3 CS = C / 3 DS = D / 3
 
     //Rescan sector for inactive players every 25 hours
-    private static Duration checkGalaxySectorTimeout = Duration.ofHours(25);
+    private static Duration checkGalaxySectorTimeout = Duration.ofHours(40);
 
 
     private static final Map<DefenceType, Integer> optimalDefence = new HashMap<DefenceType, Integer>() {{
@@ -61,7 +61,7 @@ public class TaskGenerator {
         task = getTaskResearches(planet, researches);
         if (task != null) return task;
 
-        task = getRequiredCargoTask(planet);
+        task = getFleetBuildTask(planet);
         if (task != null) return task;
 
         task = getDefenceTask(planet);
@@ -92,7 +92,7 @@ public class TaskGenerator {
         return null;
     }
 
-    public void setEmpire(Empire empire){
+    public void setEmpire(Empire empire) {
         this.empire = empire;
     }
 
@@ -102,8 +102,8 @@ public class TaskGenerator {
         Supplier<Stream<AbstractPlanet>> mainPlanets = () ->
                 empire.getPlanets().stream().filter(planet -> empire.isPlanetMain(planet));
         if (mainPlanets.get().count() > empire.getCurrentPlanetsCount() / 4 + 1 && empire.canSendFleet()) {
-            AbstractPlanet smallest = mainPlanets.get().min(Comparator.comparingLong(p->p.getFleet().getCost())).get();
-            AbstractPlanet biggest = mainPlanets.get().filter(planet -> !planet.equals(smallest)).max(Comparator.comparingLong(p->p.getFleet().getCost())).get();
+            AbstractPlanet smallest = mainPlanets.get().min(Comparator.comparingLong(p -> p.getFleet().getCost())).get();
+            AbstractPlanet biggest = mainPlanets.get().filter(planet -> !planet.equals(smallest)).max(Comparator.comparingLong(p -> p.getFleet().getCost())).get();
             Fleet fleet = empire.getPlanetFleetToMove(smallest);
             if (!fleet.isEmpty() && !empire.isPlanetUnderAttack(biggest)) {
                 System.out.println(String.format("There are more than 2 main planets. Move fleet from planet %s to %s",
@@ -153,12 +153,11 @@ public class TaskGenerator {
                             Resources requiredResources;
                             Fleet fleet;
                             MissionType missionType;
-                            if(task.getResources().getCapacity() > 1000 * 1000) {
+                            if (task.getResources().getCapacity() > 1000 * 1000) {
                                 missionType = MissionType.KEEP;
                                 requiredResources = main.getResources().deduct(planet.getResources());
                                 fleet = empire.getPlanetFleetToMove(main);
-                            }
-                            else{
+                            } else {
                                 requiredResources = task.getResources().deduct(planet.getResources());
                                 fleet = main.getFleet().getRequiredFleet(requiredResources);
                                 missionType = MissionType.TRANSPORT;
@@ -260,7 +259,7 @@ public class TaskGenerator {
         Optional<AbstractPlanet> planetOptional = empire.getPlanets().stream().max(Comparator.comparingInt(p -> p.getResources().getMetal()));
         if (planetOptional.isPresent()) {
             AbstractPlanet planet = planetOptional.get();
-            if (planet.getLevel() < 20){
+            if (planet.getLevel() < 20) {
                 //Don't spend resources until level 20
                 return null;
             }
@@ -269,14 +268,21 @@ public class TaskGenerator {
         return null;
     }
 
-    Task getScanGalaxyTask(){
+    Task getScanGalaxyTask() {
         Optional<AbstractPlanet> planetOptional = empire.getPlanets().stream().filter(planet1 -> planet1.getFleet().getEspionageProbe() > 0).max(Comparator.comparingInt(p -> p.getFleet().getEspionageProbe()));
-        if(planetOptional.isPresent()) {
+        if (planetOptional.isPresent()) {
             AbstractPlanet planet = planetOptional.get();
+            if (planet.getLevel() < 15
+                    && empire.getResearches().getEspionage() < 4
+                    && empire.getMaxFleets() - empire.getActiveFleets() < 2
+                    && !empire.isPlanetUnderAttack(planet)) {
+                return null;
+            }
             Galaxy galaxy = empire.getGalaxy();
-            GalaxySector sector = galaxy.getPlanetSector(planet);
-            if(null == sector.getLastUpdated() || sector.getLastUpdated().plus(checkGalaxySectorTimeout).compareTo(Instant.now())<0){
-                return new ScanSectorForInactivePlayerTask(empire, planet, sector);
+            for (GalaxySector sector : galaxy.getSectorsForScan(planet, empire.getResearches().getReactiveEngine(), empire.getResearches().getImpulseEngine())) {
+                if (null == sector.getLastUpdated() || sector.getLastUpdated().plus(checkGalaxySectorTimeout).compareTo(Instant.now()) < 0) {
+                    return new ScanSectorForInactivePlayerTask(empire, planet, sector);
+                }
             }
         }
         return null;
@@ -295,6 +301,16 @@ public class TaskGenerator {
                 return task;
             }
         }
+        return null;
+    }
+
+    private Task getFleetBuildTask(Planet planet) {
+        Task task = getRequiredCargoTask(planet);
+        if (task != null) return task;
+
+        task = getRequiredSpies(planet);
+        if (task != null) return task;
+
         return null;
     }
 
@@ -327,6 +343,22 @@ public class TaskGenerator {
                                 " Current fleet: %s",
                         buildAmount, ShipType.LARGE_CARGO, planet.getCoordinates(), planetProduction * 2, planet.getResources(), planet.getFleet().getDetails()));
                 return new ShipyardTask(empire, planet, ShipType.LARGE_CARGO, buildAmount);
+            }
+        }
+        return null;
+    }
+
+    private Task getRequiredSpies(Planet planet) {
+        Integer requiredSpies = Math.min(empire.getResearches().getComputer(), 8);
+        if (!planet.getShipyardBusy()
+                && empire.isPlanetMain(planet)
+                && planet.getLevel() > 15
+                && planet.getFleet().getEspionageProbe() < requiredSpies
+                && config.BUILD_FLEET) {
+            Integer buildAmount = requiredSpies - planet.getFleet().getEspionageProbe();
+            if (OGameLibrary.canBuild(empire, planet, ShipType.ESPIONAGE_PROBE)
+                    && planet.getResources().isEnoughFor(OGameLibrary.getShipPrice(ShipType.ESPIONAGE_PROBE).multiply(buildAmount))) {
+                return new ShipyardTask(empire, planet, ShipType.ESPIONAGE_PROBE, buildAmount);
             }
         }
         return null;

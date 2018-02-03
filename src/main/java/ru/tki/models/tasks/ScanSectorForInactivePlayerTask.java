@@ -48,7 +48,7 @@ public class ScanSectorForInactivePlayerTask extends Task {
         while (current.getSystem() <= end.getSystem()) {
             navigation.openGalaxy();
             System.out.println("Scan from system: " + current );
-            galaxyPage.selectSystem(current.getSystem());
+            galaxyPage.findPlanet(current);
             int spies = 0;
 
             boolean completed = true;
@@ -61,6 +61,7 @@ public class ScanSectorForInactivePlayerTask extends Task {
                     }
                     if (spies < maxSpy) {
                         galaxyPage.sendSpy(planet);
+                        galaxyPage.pause(1000);
                         currentPlanet = planet.getCoordinates().getPlanet();
                         spies++;
                     } else {
@@ -90,7 +91,7 @@ public class ScanSectorForInactivePlayerTask extends Task {
         Navigation navigation = new Navigation();
         FleetDetailsPage fleetPage = new FleetDetailsPage();
 
-        System.out.println("Spies are sent. Wait them for return");
+        System.out.println("Spies are sent. Wait them to return");
         Instant finishTime = Instant.now().plus(Duration.ofMinutes(ContextHolder.getBotConfigMain().ATTACK_CHECK_TIMEOUT));
         do {
             if (Instant.now().compareTo(finishTime) > 0) {

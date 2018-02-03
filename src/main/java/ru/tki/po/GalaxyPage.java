@@ -33,7 +33,11 @@ public class GalaxyPage extends PageObject {
     }
 
     public void findPlanet(Coordinates coordinates) {
+        setValue(getElement(GALAXY_NUMBER), "");
+        pause();
         setValue(getElement(GALAXY_NUMBER), coordinates.getGalaxy());
+        setValue(getElement(SYSTEM_NUMBER), "");
+        pause();
         setValue(getElement(SYSTEM_NUMBER), coordinates.getSystem().toString() + Keys.ENTER);
         waitLoading();
     }
@@ -94,7 +98,7 @@ public class GalaxyPage extends PageObject {
 
     public void sendSpy(AbstractPlanet planet) {
         getElement(getPlanet(planet), SEND_SPY).click();
-        pause(500);
+        pause();
     }
 
     private WebElement getPlanet(AbstractPlanet planet) {
