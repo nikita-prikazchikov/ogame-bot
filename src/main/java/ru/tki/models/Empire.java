@@ -201,14 +201,19 @@ public class Empire {
         this.activeFleets++;
     }
 
+    public Integer getMaxFleets() {
+        return researches.getComputer() + 1;
+    }
+
+    public Integer getActiveAttackFleets() {
+        Long res = actions.stream().filter(action -> action instanceof FleetAction && ((FleetAction)action).getMissionType() == MissionType.ATTACK).count();
+        return res.intValue();
+    }
+
     public void removeActiveFleet() {
         if (this.activeFleets > 0) {
             this.activeFleets--;
         }
-    }
-
-    public Integer getMaxFleets() {
-        return researches.getComputer() + 1;
     }
 
     public Integer getMaxExpeditions() {
@@ -269,6 +274,10 @@ public class Empire {
 
     public boolean canSendFleet() {
         return activeFleets < getMaxFleets();
+    }
+
+    public boolean isLastFleetSlot() {
+        return getMaxFleets() - activeFleets < 1;
     }
 
     public boolean isPlanetMain(AbstractPlanet planet) {
@@ -394,7 +403,8 @@ public class Empire {
 
         fleetActions.get().filter(fleetAction -> fleetAction.getPlanet().equals(planet)
                 && (fleetAction.getMissionType() == MissionType.TRANSPORT
-                || fleetAction.getMissionType() == MissionType.ATTACK
+//                Disable attack calculation to build small cargo required for normal attacks
+//                || fleetAction.getMissionType() == MissionType.ATTACK
                 || fleetAction.getMissionType() == MissionType.JOINT_ATTACK
                 || fleetAction.getMissionType() == MissionType.RECYCLING))
                 .map(FleetAction::getFleet)

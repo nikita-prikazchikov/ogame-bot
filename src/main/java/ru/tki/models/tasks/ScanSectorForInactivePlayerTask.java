@@ -1,44 +1,33 @@
 package ru.tki.models.tasks;
 
-import org.openqa.selenium.StaleElementReferenceException;
-import ru.tki.ContextHolder;
 import ru.tki.executor.Navigation;
 import ru.tki.models.*;
 import ru.tki.models.actions.FleetAction;
-import ru.tki.po.BasePage;
-import ru.tki.po.FleetDetailsPage;
 import ru.tki.po.GalaxyPage;
-import ru.tki.po.MessagesPage;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 
-//Task for rescan of sector for new inactive players. Known I will not be rescanned here
-public class ScanSectorForInactivePlayerTask extends Task {
+//Task for rescan of sector for new inactive players. Known (I)(i) planets will not be rescanned here
+public class ScanSectorForInactivePlayerTask extends AbstractGalaxyScanTask {
 
-    private Empire empire;
-    private Galaxy galaxy;
-    private AbstractPlanet planet;
     private GalaxySector   sector;
 
-
     public ScanSectorForInactivePlayerTask(Empire empire, AbstractPlanet planet, GalaxySector sector) {
-        this.empire = empire;
-        this.galaxy = empire.getGalaxy();
-        this.planet = planet;
+        super(empire);
+        setPlanet(planet);
         this.sector = sector;
     }
 
     @Override
     public FleetAction execute() {
+        super.execute();
         Navigation navigation = new Navigation();
         GalaxyPage galaxyPage = new GalaxyPage();
 
-        navigation.selectPlanet(planet);
+        navigation.selectPlanet(getPlanet());
 
         int activeFleets = empire.getActiveFleets();
-        int maxSpy = Math.min(Math.min(empire.getMaxFleets() - activeFleets, 8), planet.getFleet().getEspionageProbe());
+        int maxSpy = Math.min(Math.min(empire.getMaxFleets() - activeFleets, 8), getPlanet().getFleet().getEspionageProbe());
         System.out.println(String.format("Maximum can send: %s spies", maxSpy));
 
         Coordinates current = sector.getStart();
@@ -85,35 +74,6 @@ public class ScanSectorForInactivePlayerTask extends Task {
 
         galaxy.updateSector(sector);
         return null;
-    }
-
-    private void waitActiveFleets(int active) {
-        Navigation navigation = new Navigation();
-        FleetDetailsPage fleetPage = new FleetDetailsPage();
-
-        System.out.println("Spies are sent. Wait them to return");
-        Instant finishTime = Instant.now().plus(Duration.ofMinutes(ContextHolder.getBotConfigMain().ATTACK_CHECK_TIMEOUT));
-        do {
-            if (Instant.now().compareTo(finishTime) > 0) {
-                break;
-            }
-            navigation.openFleetMove();
-            try {
-                if (fleetPage.getActiveFleets() > active) {
-                    fleetPage.pause(ContextHolder.getBotConfigMain().SLEEP_TIMEOUT);
-                    System.out.print("-");
-                } else break;
-            }catch (StaleElementReferenceException ignored){}
-        } while (true);
-    }
-
-    private void readMessages() {
-        System.out.println("");
-        System.out.println("Read new spy reports");
-        BasePage basePage = new BasePage();
-        basePage.openMessages();
-        MessagesPage messagesPage = new MessagesPage();
-        messagesPage.parseSpyReports().forEach(planet1 -> galaxy.addPlanet(planet1));
     }
 
     @Override

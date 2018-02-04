@@ -271,15 +271,12 @@ public class Mainframe {
 
         //Find possible task with adding resources by transport them
         empire.addTask(taskGenerator.checkTransportForBuild());
-
         empire.getPlanets().stream().filter(planet -> !planet.hasTask() && planet.isPlanet() && !empire.isPlanetMain(planet)).forEach(p -> {
             //Move resources to main planet if possible
-            empire.addTask(taskGenerator.getFleetTask((Planet) p));
+            empire.addTask(taskGenerator.getFleetMoveResourcesTask((Planet) p));
         });
-
+        empire.addTask(taskGenerator.raidInactivePlayers());
         empire.addTask(taskGenerator.sendExpedition());
-
-        empire.addTask(taskGenerator.getScanGalaxyTask());
     }
 
     //Execute existing tasks

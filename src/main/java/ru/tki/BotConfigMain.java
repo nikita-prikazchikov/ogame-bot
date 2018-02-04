@@ -28,10 +28,10 @@ public class BotConfigMain {
     //Sleep In milliseconds between fails and when nothing to do
     public Integer SLEEP_TIMEOUT = 10000;
     //In seconds
-    public Integer ATTACK_CHECK_TIMEOUT = 120;
+    public Integer ATTACK_CHECK_TIMEOUT = 180;
     public Integer UPDATE_RESOURCES_TIMEOUT = 900;
     public Integer FLEET_SAVE_TIMEOUT = 180;
 
     public Boolean DO_CHECK_ATTACK = true;
-    public Boolean SCAN_FOR_INACTIVE = true;
+    public Boolean RAID_INACTIVE = true;
 }

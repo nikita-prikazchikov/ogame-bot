@@ -3,12 +3,16 @@ package ru.tki.models;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.openqa.selenium.InvalidArgumentException;
+import ru.tki.ContextHolder;
 import ru.tki.helpers.FileHelper;
 
 import java.io.File;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Galaxy {
@@ -31,32 +35,13 @@ public class Galaxy {
         }
     }
 
-    public void addPlanet(EnemyPlanet planet) {
-        if (enemyPlanets.contains(planet)) {
-            enemyPlanets.remove(planet);
-        }
-        enemyPlanets.add(planet);
-        savePlanet(planet);
-    }
-
-    public void removePlanet(EnemyPlanet planet) {
-        if (enemyPlanets.contains(planet)) {
-            enemyPlanets.remove(planet);
-            deletePlanet(planet);
-        }
-    }
-
-    public boolean hasPlanet(AbstractPlanet planet) {
-        return enemyPlanets.contains(planet);
-    }
-
     public GalaxySector getPlanetSector(AbstractPlanet planet) {
         return sectors.stream().filter(sector -> sector.planetInSector(planet)).findFirst().get();
     }
 
     public List<GalaxySector> getSectorsForScan(AbstractPlanet planet, Integer combustionEngineLevel, Integer impulseEngineLevel) {
         List<GalaxySector> sectors = new ArrayList<>();
-        if (impulseEngineLevel > 8) {
+        if (impulseEngineLevel > 8 && ContextHolder.getBotConfigMain().UNIVERSE_FLEET_SPEED > 3) {
             sectors.addAll(this.sectors.stream().filter(sector ->
                     Math.abs(sector.getStart().getGalaxy() - planet.getCoordinates().getGalaxy()) < 3
             ).collect(Collectors.toList()));
@@ -70,6 +55,64 @@ public class Galaxy {
             ).collect(Collectors.toList()));
         } else sectors.add(getPlanetSector(planet));
         return sectors;
+    }
+
+    public List<EnemyPlanet> getPlanetsOutdated() {
+        return enemyPlanets.stream().filter(p ->
+                p.getLastUpdated().compareTo(Instant.now().minus(Duration.ofHours(24))) < 0
+        ).collect(Collectors.toList());
+    }
+
+    public List<EnemyPlanet> getPlanetsOutdated6HWithKnownDetails() {
+        return enemyPlanets.stream().filter(p ->
+                p.getLastUpdated().compareTo(Instant.now().minus(Duration.ofHours(6))) < 0
+                        && p.defenceDiscovered
+                        && p.fleetDiscovered
+        ).collect(Collectors.toList());
+    }
+
+    public List<EnemyPlanet> getPlanetsOutdatedWithKnownDetails() {
+        return enemyPlanets.stream().filter(p ->
+                p.getLastUpdated().compareTo(Instant.now().minus(Duration.ofHours(3))) < 0
+                        && p.defenceDiscovered
+                        && p.fleetDiscovered
+                        && p.getResources().getCapacity() > 50000
+        ).collect(Collectors.toList());
+    }
+
+    public EnemyPlanet getBestTarget() {
+        Optional<EnemyPlanet> planet = enemyPlanets.stream().filter(p ->
+                p.getLastUpdated().compareTo(Instant.now().minus(Duration.ofHours(1))) > 0
+                        && p.defenceDiscovered
+                        && p.getDefenceCost().equals(0L)
+                        && p.fleetDiscovered
+                        && p.getFleetCost().equals(0L)
+                        && !p.isUnderAttack()
+                        && p.getResources().getCapacity() > 50000
+        ).findFirst();
+        if(planet.isPresent()){
+            return planet.get();
+        }
+        return null;
+    }
+
+    public void addPlanet(EnemyPlanet planet) {
+        if (hasPlanet(planet)) {
+            enemyPlanets.remove(planet);
+        }
+        enemyPlanets.add(planet);
+        savePlanet(planet);
+    }
+
+    public boolean hasPlanet(AbstractPlanet planet) {
+        return enemyPlanets.contains(planet);
+    }
+
+    public void removePlanet(EnemyPlanet planet) {
+        if (hasPlanet(planet)) {
+            enemyPlanets.remove(planet);
+            deletePlanet(planet);
+        }
     }
 
     public void addSector(GalaxySector sector) {
@@ -147,9 +190,6 @@ public class Galaxy {
         File file = getPlanetFilename(planet);
         if (file.exists()) {
             boolean deleted = file.delete();
-        }
-        if (enemyPlanets.contains(planet)) {
-            enemyPlanets.remove(planet);
         }
     }
 }

@@ -29,6 +29,9 @@ public class GalaxyPage extends PageObject {
     private static final By POSITION = By.cssSelector(".position");
 
     public void findPlanet(AbstractPlanet planet) {
+        if(planet.getCoordinates().getGalaxy().toString().equals(getGalaxy()) && planet.getCoordinates().getSystem().toString().equals(getSystem())){
+            return;
+        }
         this.findPlanet(planet.getCoordinates());
     }
 
@@ -65,7 +68,7 @@ public class GalaxyPage extends PageObject {
     }
 
     public boolean isEmpty(AbstractPlanet planet) {
-        return isEmpty(planet.getCoordinates().getPlanet());
+        return isEmpty(getPlanet(planet));
     }
 
     public boolean isEmpty(String planet) {
@@ -73,7 +76,27 @@ public class GalaxyPage extends PageObject {
     }
 
     public boolean isEmpty(int planet) {
-        return findElements(GALAXY_TABLE_ROW).get(planet).getAttribute("class").contains("empty_filter");
+        return isEmpty(getPlanet(planet));
+    }
+
+    private boolean isEmpty(WebElement planet){
+        return planet.getAttribute("class").contains("empty_filter");
+    }
+
+    public boolean isInactive(AbstractPlanet planet) {
+        return isInactive(getPlanet(planet));
+    }
+
+    public boolean isInactive(String planet) {
+        return this.isInactive(Integer.parseInt(planet));
+    }
+
+    public boolean isInactive(int planet) {
+        return isInactive(getPlanet(planet));
+    }
+
+    private boolean isInactive(WebElement planet){
+        return planet.getAttribute("class").contains("inactive_filter");
     }
 
     public String getGalaxy() {
@@ -102,7 +125,11 @@ public class GalaxyPage extends PageObject {
     }
 
     private WebElement getPlanet(AbstractPlanet planet) {
-        return getElement(By.xpath(String.format(TABLE_ROW, planet.getCoordinates().getPlanet())));
+        return getPlanet(planet.getCoordinates().getPlanet());
+    }
+
+    private WebElement getPlanet(Integer planet) {
+        return getElement(By.xpath(String.format(TABLE_ROW, planet)));
     }
 
     private Planet getPlanet(WebElement element) {

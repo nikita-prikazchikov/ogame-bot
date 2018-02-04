@@ -10,6 +10,7 @@ public class EnemyPlanet extends Planet {
 
     public boolean fleetDiscovered   = false;
     public boolean defenceDiscovered = false;
+    public boolean isUnderAttack     = false;
 
     private boolean isInactive = false;
     private Instant lastUpdated;
@@ -69,6 +70,11 @@ public class EnemyPlanet extends Planet {
         lastUpdated = Instant.now();
     }
 
+    public boolean isUnderAttack() {
+        return isUnderAttack;
+    }
 
-
+    public void setUnderAttack(boolean underAttack) {
+        isUnderAttack = underAttack;
+    }
 }

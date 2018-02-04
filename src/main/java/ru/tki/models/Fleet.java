@@ -227,6 +227,19 @@ public class Fleet {
         return fleet;
     }
 
+    public Fleet getRequiredSmallCargo(Integer capacity) {
+        Fleet fleet = new Fleet();
+        if(smallCargo > 0){
+            if(capacity < smallCargo * SMALL_CARGO_CAPACITY){
+                fleet.setSmallCargo(capacity / SMALL_CARGO_CAPACITY + 1);
+            }
+            else{
+                fleet.setSmallCargo(smallCargo);
+            }
+        }
+        return fleet;
+    }
+
     public Integer getLightFighter() {
         return lightFighter;
     }
