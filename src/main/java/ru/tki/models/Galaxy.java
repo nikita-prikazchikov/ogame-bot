@@ -9,10 +9,7 @@ import ru.tki.helpers.FileHelper;
 import java.io.File;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Galaxy {
@@ -81,15 +78,16 @@ public class Galaxy {
     }
 
     public EnemyPlanet getBestTarget() {
+        final Integer capacity = ContextHolder.getBotConfigMain().RESOURCES_THRESHOLD_ATTACK;
         Optional<EnemyPlanet> planet = enemyPlanets.stream().filter(p ->
-                p.getLastUpdated().compareTo(Instant.now().minus(Duration.ofHours(1))) > 0
+                p.getLastUpdated().compareTo(Instant.now().minus(Duration.ofMinutes(90))) > 0
                         && p.defenceDiscovered
                         && p.getDefenceCost().equals(0L)
                         && p.fleetDiscovered
                         && p.getFleetCost().equals(0L)
                         && !p.isUnderAttack()
-                        && p.getResources().getCapacity() > 50000
-        ).findFirst();
+                        && p.getResources().getCapacity() > capacity
+        ).max(Comparator.comparingInt(p->p.getResources().getCapacity()));
         if(planet.isPresent()){
             return planet.get();
         }

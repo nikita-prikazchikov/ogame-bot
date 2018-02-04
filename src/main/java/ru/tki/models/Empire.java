@@ -41,6 +41,7 @@ public class Empire {
 
     private           File          storageDirectory;
     private           File          stateDirectory;
+    private           boolean       isAdmiralActive;
     private           BotConfigMain config;
     private transient Gson          gson;
     private transient Galaxy        galaxy;
@@ -202,11 +203,11 @@ public class Empire {
     }
 
     public Integer getMaxFleets() {
-        return researches.getComputer() + 1;
+        return researches.getComputer() + 1 + (isAdmiralActive() ? 2 : 0);
     }
 
     public Integer getActiveAttackFleets() {
-        Long res = actions.stream().filter(action -> action instanceof FleetAction && ((FleetAction)action).getMissionType() == MissionType.ATTACK).count();
+        Long res = actions.stream().filter(action -> action instanceof FleetAction && ((FleetAction) action).getMissionType() == MissionType.ATTACK).count();
         return res.intValue();
     }
 
@@ -551,5 +552,13 @@ public class Empire {
 
     public Galaxy getGalaxy() {
         return galaxy;
+    }
+
+    public boolean isAdmiralActive() {
+        return isAdmiralActive;
+    }
+
+    public void setAdmiralActive(boolean admiralActive) {
+        isAdmiralActive = admiralActive;
     }
 }

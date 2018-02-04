@@ -25,12 +25,14 @@ public class Mainframe {
     private static Duration checkFlagsDuration;
     private static Duration checkFleetDuration;
     private static Duration checkDailyBonusDuration;
+    private static Duration checkAdmiralDuration;
 
     private Instant lastAttackCheck     = Instant.now();
     private Instant lastUpdateResources = Instant.now();
     private Instant lastFlagsCheck      = Instant.now();
     private Instant lastFleetCheck      = Instant.now();
     private Instant lastDailyBonusCheck = Instant.now();
+    private Instant lastAdmiralCheck    = Instant.now();
     private Instant executionStopTime;
 
     private TaskGenerator taskGenerator;
@@ -71,6 +73,7 @@ public class Mainframe {
         checkFlagsDuration = Duration.ofMinutes(30);
         checkFleetDuration = Duration.ofMinutes(58);
         checkDailyBonusDuration = Duration.ofMinutes(123);
+        checkAdmiralDuration = Duration.ofMinutes(60);
     }
 
     private void loadEmpire() {
@@ -87,7 +90,12 @@ public class Mainframe {
 
     //Setup initial tasks in the Empire
     private void setEmpireInitialTasks() {
-        empire.addTask(new CheckAttackTask(empire));
+        if (config.DO_CHECK_ATTACK) {
+            empire.addTask(new CheckAttackTask(empire));
+        }
+        if (config.CHECK_ADMIRAL) {
+            empire.addTask(new CheckAdmiralActiveTask(empire));
+        }
         empire.addTask(new CheckExistingActionsTask(empire));
         empire.addTask(taskGenerator.getTaskImportExport());
     }
@@ -169,6 +177,11 @@ public class Mainframe {
         if (config.DO_CHECK_ATTACK && lastAttackCheck.plus(checkAttackDuration).compareTo(now) < 0) {
             empire.addTask(new CheckAttackTask(empire));
             lastAttackCheck = Instant.now();
+        }
+
+        if (config.CHECK_ADMIRAL && lastAdmiralCheck.plus(checkAdmiralDuration).compareTo(now) < 0) {
+            empire.addTask(new CheckAdmiralActiveTask(empire));
+            lastAdmiralCheck = Instant.now();
         }
 
         if (lastUpdateResources.plus(checkUpdateResourcesDuration).compareTo(now) < 0) {

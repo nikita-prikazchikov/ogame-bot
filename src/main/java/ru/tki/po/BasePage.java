@@ -9,6 +9,8 @@ public class BasePage extends PageObject {
 
     private static final By ATTACK_ALERT = By.cssSelector("#attack_alert");
     private static final By MESSAGES     = By.cssSelector(".messages");
+    private static final By ADMIRAL      = By.cssSelector("#officers .admiral");
+
 
     public LeftMenuComponent  leftMenu;
     public ResourcesComponent resources;
@@ -25,7 +27,15 @@ public class BasePage extends PageObject {
         return isElementDisplayed(ATTACK_ALERT) && !getElement(ATTACK_ALERT).getAttribute("class").contains("wreckField");
     }
 
-    public void openMessages(){
+    public void openMessages() {
         getElement(MESSAGES).click();
+    }
+
+    public void clickAdmiral(){
+        getElement(ADMIRAL).click();
+    }
+
+    public boolean isAdmiralActive(){
+        return getElement(ADMIRAL).getAttribute("class").contains(" on ");
     }
 }

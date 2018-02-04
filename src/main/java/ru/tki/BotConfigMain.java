@@ -34,4 +34,8 @@ public class BotConfigMain {
 
     public Boolean DO_CHECK_ATTACK = true;
     public Boolean RAID_INACTIVE = true;
+    public Boolean CHECK_ADMIRAL = true;
+    public Boolean HIRE_ADMIRAL = true;
+
+    public Integer RESOURCES_THRESHOLD_ATTACK = 29999;
 }

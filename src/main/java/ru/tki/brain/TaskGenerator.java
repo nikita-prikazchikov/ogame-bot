@@ -73,7 +73,7 @@ public class TaskGenerator {
 
     //Check if we need to move resources from colony to main planet
     Task getFleetMoveResourcesTask(Planet planet) {
-        if (empire.isPlanetMain(planet) || planet.getLevel() <= 15) {
+        if (empire.isPlanetMain(planet) || planet.getLevel() <= 15 || empire.isLastFleetSlot()) {
             return null;
         }
         AbstractPlanet target = empire.getClosestMainPlanet(planet);
@@ -117,7 +117,7 @@ public class TaskGenerator {
     // Don't sent single level building until level 13
     Task checkTransportForBuild() {
         Task task;
-        if(empire.isLastFleetSlot()){
+        if (empire.isLastFleetSlot()) {
             return null;
         }
         for (AbstractPlanet planet : empire.getPlanets()) {
@@ -287,13 +287,13 @@ public class TaskGenerator {
     Task raidInactivePlayers() {
 
         if (!config.RAID_INACTIVE
-                || empire.getResearches().getEspionage() < 6
-                || empire.getMaxFleets() - empire.getActiveFleets() < 3) {
+                || empire.getResearches().getEspionage() < 6) {
             return null;
         }
 
         Optional<AbstractPlanet> planetOptional = getPlanetWithMaxSpies();
-        if (planetOptional.isPresent()) {
+        if (planetOptional.isPresent()
+                && empire.getMaxFleets() - empire.getActiveFleets() > 3) {
             AbstractPlanet planet = planetOptional.get();
             if (planet.getLevel() < 15
                     && !empire.isPlanetUnderAttack(planet)) {
@@ -327,7 +327,7 @@ public class TaskGenerator {
 
     private Task attackInactivePlayers(AbstractPlanet planet) {
         EnemyPlanet enemyPlanet = empire.getGalaxy().getBestTarget();
-        if (null != enemyPlanet && empire.getActiveAttackFleets() <  empire.getMaxFleets() / 2) {
+        if (null != enemyPlanet && empire.getActiveAttackFleets() <= empire.getMaxFleets() / 2 && !empire.isLastFleetSlot()) {
             enemyPlanet.setUnderAttack(true);
             return new FleetTask(empire, planet, enemyPlanet, planet.getFleet().getRequiredSmallCargo(enemyPlanet.getResources().multiply(0.5).getCapacity()), MissionType.ATTACK);
         }
@@ -335,7 +335,11 @@ public class TaskGenerator {
     }
 
     private Task rescanInactivePlayers(AbstractPlanet planet) {
-        int MAX_PLANETS = 30;
+        int MAX_PLANETS = 20;
+        if(empire.isUnderAttack()){
+            MAX_PLANETS = 7;
+        }
+
         List<EnemyPlanet> planetList = new ArrayList<>();
 
         //scan planets with result 1+ days

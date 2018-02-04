@@ -20,6 +20,9 @@ public class ResourcesComponent extends PageObject {
     @FindBy(id="resources_energy")
     WebElement energy;
 
+    @FindBy(id="resources_darkmatter")
+    WebElement resources_darkmatter;
+
     public int getMetal() {
         return DataParser.parseResource(metal.getText());
     }
@@ -34,6 +37,10 @@ public class ResourcesComponent extends PageObject {
 
     public int getEnergy() {
         return DataParser.parseResource(energy.getText());
+    }
+
+    public int getDarkMatter() {
+        return DataParser.parseResource(resources_darkmatter.getText());
     }
 
     public Resources getResources(){
