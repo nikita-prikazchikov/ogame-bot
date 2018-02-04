@@ -24,7 +24,9 @@ public class CheckAdmiralActiveTask extends Task {
         if (basePage.isAdmiralActive()) {
             empire.setAdmiralActive(true);
         } else {
-            if (ContextHolder.getBotConfigMain().HIRE_ADMIRAL && resourcesComponent.getDarkMatter() > 5000) {
+            if (ContextHolder.getBotConfigMain().HIRE_ADMIRAL
+                    && resourcesComponent.getDarkMatter() > 5000
+                    && empire.getResearches().getImpulseEngine() >= 5) {
                 basePage.clickAdmiral();
                 BuildDetailComponent component = new BuildDetailComponent();
                 component.build();
