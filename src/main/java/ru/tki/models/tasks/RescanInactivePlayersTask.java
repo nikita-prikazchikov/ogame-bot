@@ -34,6 +34,9 @@ public class RescanInactivePlayersTask extends AbstractGalaxyScanTask {
         Iterator<EnemyPlanet> iter = planets.iterator();
         EnemyPlanet planet = iter.next();
 
+        if (maxSpy < 3) {
+            return null;
+        }
         do {
             navigation.openGalaxy();
             int spies = 0;
@@ -50,7 +53,7 @@ public class RescanInactivePlayersTask extends AbstractGalaxyScanTask {
                         spies++;
                     }
                 } else {
-                   break;
+                    break;
                 }
 
                 if (iter.hasNext()) {

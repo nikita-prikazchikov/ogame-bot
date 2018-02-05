@@ -22,11 +22,13 @@ public class OverviewPage extends PageObject {
     private static final By RESEARCH_DURATION = By.cssSelector("#researchCountdown");
     private static final By SHIPYARD_DURATION = By.cssSelector(".shipAllCountdown");
 
+
     private static final By PLANET_MOVE_RENAME_LINK = By.cssSelector(".planetMoveOverviewGivUpLink");
     private static final By PLANET_NAME_INPUT       = By.cssSelector("#planetName");
     private static final By PLANET_RENAME_BUTTON    = By.cssSelector("#planetMaintenance .btn_blue");
     private static final By LEAVE_COLONY_BUTTON     = By.cssSelector("#block");
     private static final By LEAVE_PASSWORD_FIELD    = By.cssSelector(".pw_field");
+    private static final By LEAVE_YES_BUTTON        = By.cssSelector("#errorBoxDecisionYes");
     private static final By CONFIRM_LEAVE_BUTTON    = By.cssSelector("#validate .btn_blue");
 
     private static final By BUILDING_TITLE = By.xpath("//div[@id='overviewBottom']//div[@class='content' and .//span[@id='Countdown']]//th");
@@ -110,5 +112,7 @@ public class OverviewPage extends PageObject {
         waitForWebElementIsDisplayed(LEAVE_PASSWORD_FIELD);
         setValue(getElement(LEAVE_PASSWORD_FIELD), ContextHolder.getBotConfigMain().PASSWORD);
         getElement(CONFIRM_LEAVE_BUTTON).click();
+        waitForWebElementIsDisplayed(LEAVE_YES_BUTTON);
+        getElement(LEAVE_YES_BUTTON).click();
     }
 }

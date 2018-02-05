@@ -90,7 +90,7 @@ public class FleetAction extends Action {
     }
 
     public void setDurationOfFlight(Duration duration) {
-        this.oneSideFleetTime = Instant.now().plus(duration).plus(Duration.ofSeconds(5));
+        this.oneSideFleetTime = Instant.now().plus(duration).plus(Duration.ofSeconds(10));
     }
 
     public void setTargetAchieved() {

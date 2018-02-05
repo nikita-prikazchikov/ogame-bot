@@ -46,11 +46,7 @@ public class Mainframe {
 
     public Mainframe(BotConfigMain config) {
         this.config = config;
-
-        this.empire = new Empire();
-        navigation = new Navigation();
-        loginPage = new LoginPage();
-        taskGenerator = new TaskGenerator(empire, config);
+        setupEmpire();
     }
 
     public void start() {
@@ -163,18 +159,22 @@ public class Mainframe {
     private void restartEmpire() {
         System.out.println("");
         System.out.println("=========================================================================================");
-        System.out.println("                          Restart current empire details                                 ");
+        System.out.println("                            Restart current empire details                               ");
         System.out.println("=========================================================================================");
 
         ContextHolder.getDriverManager().closeDriver();
 
+        setupEmpire();
+        navigation.openHomePage();
+        empire.addTask(new EmpireTask(empire));
+        setEmpireInitialTasks();
+    }
+
+    private void setupEmpire(){
+        this.empire = new Empire();
         navigation = new Navigation();
         loginPage = new LoginPage();
-
-        this.empire = new Empire();
-        empire.addTask(new EmpireTask(empire));
-        taskGenerator.setEmpire(empire);
-        setEmpireInitialTasks();
+        taskGenerator = new TaskGenerator(empire, config);
     }
 
     // Add tasks that are periodic in the system
@@ -242,6 +242,10 @@ public class Mainframe {
                 action.complete(empire);
                 empire.addTask(new UpdateInfoTask(empire, action.getPlanet(), UpdateTaskType.FLEET));
                 actions.add(action);
+                if (action.hasTask()) {
+                    empire.addTasks(action.getTasks());
+                    action.setTasks(null);
+                }
             } else if (action.isTargetAchieved()) {
                 System.out.println(String.format("Fleet come to the target planet: %s : %s ", action.getTargetPlanet().getCoordinates(), action.getFleet().getDetails()));
                 action.setTargetAchieved();

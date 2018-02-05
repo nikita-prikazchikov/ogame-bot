@@ -10,7 +10,7 @@ import java.util.List;
 //Task for rescan of sector for new inactive players. Known (I)(i) planets will not be rescanned here
 public class ScanSectorForInactivePlayerTask extends AbstractGalaxyScanTask {
 
-    private GalaxySector   sector;
+    private GalaxySector sector;
 
     public ScanSectorForInactivePlayerTask(Empire empire, AbstractPlanet planet, GalaxySector sector) {
         super(empire);
@@ -34,9 +34,12 @@ public class ScanSectorForInactivePlayerTask extends AbstractGalaxyScanTask {
         Integer currentPlanet = 0;
         Coordinates end = sector.getEnd();
 
+        if (maxSpy < 3) {
+            return null;
+        }
         while (current.getSystem() <= end.getSystem()) {
             navigation.openGalaxy();
-            System.out.println("Scan from system: " + current );
+            System.out.println("Scan from system: " + current);
             galaxyPage.findPlanet(current);
             int spies = 0;
 

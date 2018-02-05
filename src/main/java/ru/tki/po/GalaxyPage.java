@@ -120,6 +120,7 @@ public class GalaxyPage extends PageObject {
     }
 
     public void sendSpy(AbstractPlanet planet) {
+        scrollToElement(getElement(getPlanet(planet), SEND_SPY));
         getElement(getPlanet(planet), SEND_SPY).click();
         pause();
     }

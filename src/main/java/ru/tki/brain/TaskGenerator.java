@@ -202,7 +202,7 @@ public class TaskGenerator {
 
     private Task findResourcesOnMain(AbstractPlanet planet, Resources resources, Task subtask) {
         for (AbstractPlanet main : empire.getMainPlanets()) {
-            if (!planet.equals(main) && !main.hasTask() && main.hasResources(resources) && empire.canSendFleet()) {
+            if (!planet.equals(main) && !main.hasTask() && main.hasResources(resources) && !empire.isLastFleetSlot()) {
                 System.out.println(String.format("Move resources %s from main %s to colony planet %s for initial builds",
                         resources, main.getCoordinates().getFormattedCoordinates(), planet.getCoordinates().getFormattedCoordinates()));
                 FleetTask task = new FleetTask(empire, main, planet,
@@ -473,17 +473,19 @@ public class TaskGenerator {
             }
 
 
-            if (planet.getResources().getMetal() >= OGameLibrary.getStorageCapacity(buildings.getMetalStorage()) * .9
-                    && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.METAL_STORAGE, buildings.getMetalStorage()))) {
-                return new BuildingTask(empire, planet, BuildingType.METAL_STORAGE);
-            }
-            if (planet.getResources().getCrystal() >= OGameLibrary.getStorageCapacity(buildings.getCrystalStorage()) * .9
-                    && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.CRYSTAL_STORAGE, buildings.getCrystalStorage()))) {
-                return new BuildingTask(empire, planet, BuildingType.CRYSTAL_STORAGE);
-            }
-            if (planet.getResources().getDeuterium() >= OGameLibrary.getStorageCapacity(buildings.getDeuteriumStorage()) * .9
-                    && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.DEUTERIUM_STORAGE, buildings.getDeuteriumStorage()))) {
-                return new BuildingTask(empire, planet, BuildingType.DEUTERIUM_STORAGE);
+            if(currentMax > 11) {
+                if (planet.getResources().getMetal() >= OGameLibrary.getStorageCapacity(buildings.getMetalStorage()) * .9
+                        && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.METAL_STORAGE, buildings.getMetalStorage()))) {
+                    return new BuildingTask(empire, planet, BuildingType.METAL_STORAGE);
+                }
+                if (planet.getResources().getCrystal() >= OGameLibrary.getStorageCapacity(buildings.getCrystalStorage()) * .9
+                        && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.CRYSTAL_STORAGE, buildings.getCrystalStorage()))) {
+                    return new BuildingTask(empire, planet, BuildingType.CRYSTAL_STORAGE);
+                }
+                if (planet.getResources().getDeuterium() >= OGameLibrary.getStorageCapacity(buildings.getDeuteriumStorage()) * .9
+                        && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.DEUTERIUM_STORAGE, buildings.getDeuteriumStorage()))) {
+                    return new BuildingTask(empire, planet, BuildingType.DEUTERIUM_STORAGE);
+                }
             }
             if (buildings.getSolarPlant() <= buildings.getCrystalMine() + 2
                     && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.SOLAR_PLANT, buildings.getSolarPlant()))) {

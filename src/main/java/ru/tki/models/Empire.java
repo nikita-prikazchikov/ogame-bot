@@ -117,7 +117,9 @@ public class Empire {
     }
 
     public void addTasks(List<Task> tasks) {
-        tasks.forEach(this::addTask);
+        if (null != tasks) {
+            tasks.forEach(this::addTask);
+        }
     }
 
     public void addTask(Task task) {
