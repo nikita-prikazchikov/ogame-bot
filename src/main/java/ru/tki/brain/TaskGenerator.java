@@ -10,8 +10,6 @@ import ru.tki.models.types.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 public class TaskGenerator {
 
@@ -93,14 +91,29 @@ public class TaskGenerator {
         return null;
     }
 
-    //Minimize main planets count in the empire
+    // Minimize main planets count in the empire and move them from small planets
     // Keep them 2 for now
     Task checkMainPlanetsCount() {
-        Supplier<Stream<AbstractPlanet>> mainPlanets = () ->
-                empire.getPlanets().stream().filter(planet -> empire.isPlanetMain(planet));
-        if (mainPlanets.get().count() > empire.getCurrentPlanetsCount() / 4 + 1 && !empire.isLastFleetSlot()) {
-            AbstractPlanet smallest = mainPlanets.get().min(Comparator.comparingLong(p -> p.getFleet().getCost())).get();
-            AbstractPlanet biggest = mainPlanets.get().filter(planet -> !planet.equals(smallest)).max(Comparator.comparingLong(p -> p.getFleet().getCost())).get();
+        //Move mani planet from small planets to the biggest by size. To avoid storage build
+        Optional<AbstractPlanet> small = empire.getMainPlanets().stream().filter(planet -> planet.getCoordinates().getPlanet() < 4).findFirst();
+        if(small.isPresent()){
+            AbstractPlanet smallPlanet = small.get();
+            System.out.println("Small planet can't be main. Move it to closest big planet");
+            Optional<AbstractPlanet> targetOptional =  empire.getMainPlanets().stream().filter(planet -> !planet.equals(smallPlanet)).max(Comparator.comparingInt(AbstractPlanet::getSize));
+            if(targetOptional.isPresent()) {
+                AbstractPlanet target = targetOptional.get();
+                Fleet fleet = empire.getPlanetFleetToMove(smallPlanet);
+                if (!fleet.isEmpty()) {
+                    FleetTask task = new FleetTask(empire, smallPlanet, target, fleet, MissionType.KEEP, smallPlanet.getResources());
+                    task.setRandomTransportSpeed();
+                    return task;
+                }
+            }
+        }
+
+        if ( empire.getMainPlanets().size() > empire.getCurrentPlanetsCount() / 4 + 1 && !empire.isLastFleetSlot()) {
+            AbstractPlanet smallest =  empire.getMainPlanets().stream().min(Comparator.comparingLong(p -> p.getFleet().getCost())).get();
+            AbstractPlanet biggest =  empire.getMainPlanets().stream().filter(planet -> !planet.equals(smallest)).max(Comparator.comparingLong(p -> p.getFleet().getCost())).get();
             Fleet fleet = empire.getPlanetFleetToMove(smallest);
             if (!fleet.isEmpty() && !empire.isPlanetUnderAttack(biggest)) {
                 System.out.println(String.format("There are more than 2 main planets. Move fleet from planet %s to %s",
@@ -155,8 +168,13 @@ public class TaskGenerator {
                             MissionType missionType;
                             if (task.getResources().getCapacity() > 1000 * 1000) {
                                 missionType = MissionType.KEEP;
-                                requiredResources = main.getResources().deduct(planet.getResources());
                                 fleet = empire.getPlanetFleetToMove(main);
+                                if(fleet.getCapacity() > main.getResources().getCapacity()){
+                                    requiredResources = main.getResources();
+                                }
+                                else{
+                                    continue;
+                                }
                             } else {
                                 requiredResources = task.getResources().deduct(planet.getResources());
                                 fleet = main.getFleet().getRequiredFleet(requiredResources);
@@ -272,7 +290,7 @@ public class TaskGenerator {
 
     Task getTaskImportExport() {
 
-        Optional<AbstractPlanet> planetOptional = empire.getPlanets().stream().max(Comparator.comparingInt(p -> p.getResources().getMetal()));
+        Optional<AbstractPlanet> planetOptional = empire.getPlanets().stream().max(Comparator.comparingInt(p -> p.getResources().getCapacity()));
         if (planetOptional.isPresent()) {
             AbstractPlanet planet = planetOptional.get();
             if (planet.getLevel() < 20) {
@@ -366,7 +384,7 @@ public class TaskGenerator {
 
     private Optional<AbstractPlanet> getPlanetWithMaxSpies() {
         return empire.getPlanets().stream().filter(planet ->
-                planet.getFleet().getEspionageProbe() > 0).max(Comparator.comparingInt(p -> p.getFleet().getEspionageProbe()));
+                planet.getFleet().getEspionageProbe() > 3).max(Comparator.comparingInt(p -> p.getFleet().getEspionageProbe()));
     }
 
     private Optional<AbstractPlanet> getMainPlanetWithMaxSmallTransports() {

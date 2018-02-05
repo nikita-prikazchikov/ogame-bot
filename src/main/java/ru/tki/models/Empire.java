@@ -218,15 +218,16 @@ public class Empire {
     }
 
     public Integer getMaxExpeditions() {
+        int bonus = isAdmiralActive ? 1 : 0;
         int level = researches.getAstrophysics();
         if (level == 0) {
             return 0;
         } else if (level < 4) {
-            return 1;
+            return 1 + bonus;
         } else if (level < 9) {
-            return 2;
+            return 2 + bonus;
         }
-        return 3;
+        return 3 + bonus;
     }
 
     public Integer getActiveExpeditions() {
@@ -278,7 +279,7 @@ public class Empire {
     }
 
     public boolean isLastFleetSlot() {
-        return getMaxFleets() - activeFleets < 1;
+        return getMaxFleets() - activeFleets <= 1;
     }
 
     public boolean isPlanetMain(AbstractPlanet planet) {

@@ -1,6 +1,7 @@
 package ru.tki.brain;
 
 import ru.tki.BotConfigMain;
+import ru.tki.ContextHolder;
 import ru.tki.executor.Navigation;
 import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
@@ -164,6 +165,12 @@ public class Mainframe {
         System.out.println("=========================================================================================");
         System.out.println("                          Restart current empire details                                 ");
         System.out.println("=========================================================================================");
+
+        ContextHolder.getDriverManager().closeDriver();
+
+        navigation = new Navigation();
+        loginPage = new LoginPage();
+
         this.empire = new Empire();
         empire.addTask(new EmpireTask(empire));
         taskGenerator.setEmpire(empire);

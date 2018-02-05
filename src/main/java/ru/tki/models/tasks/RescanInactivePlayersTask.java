@@ -38,7 +38,6 @@ public class RescanInactivePlayersTask extends AbstractGalaxyScanTask {
             navigation.openGalaxy();
             int spies = 0;
 
-            boolean canSendFleet = true;
             do {
                 galaxyPage.findPlanet(planet);
                 if (spies < maxSpy) {
@@ -51,16 +50,15 @@ public class RescanInactivePlayersTask extends AbstractGalaxyScanTask {
                         spies++;
                     }
                 } else {
-                    canSendFleet = false;
-                    break;
+                   break;
                 }
 
-                if (canSendFleet && iter.hasNext()) {
+                if (iter.hasNext()) {
                     planet = iter.next();
                 } else {
                     break;
                 }
-            } while (canSendFleet);
+            } while (spies < maxSpy);
 
 
             waitActiveFleets(activeFleets);

@@ -118,6 +118,8 @@ public class FleetTask extends Task {
         basePage.leftMenu.openFleet();
 
         FleetPage fleetPage = new FleetPage();
+        fleetPage.waitPage1();
+        fleetPage.pause();
         fleetPage.selectFleet(fleet);
         fleetPage.pause(200);
         fleetPage.clickContinue();

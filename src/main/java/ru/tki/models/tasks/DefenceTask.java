@@ -20,9 +20,10 @@ public class DefenceTask extends Task {
 
     public DefenceTask(Empire empire, AbstractPlanet planet, DefenceType type, Integer amount) {
         name = "Defence task";
+        this.empire = empire;
         this.amount = amount;
-        setPlanet(planet);
         this.type = type;
+        setPlanet(planet);
         getPlanet().setShipyardBusy(true);
     }
 

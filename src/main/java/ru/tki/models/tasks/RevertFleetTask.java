@@ -35,6 +35,7 @@ public class RevertFleetTask extends FleetTask {
         action.addDuration(duration);
         fleetDetailsPage.revertFleet(this);
         action.setReturnFlight(true);
+        action.addTask(new CheckExistingFlagsTask(empire));
 
         return action;
     }
