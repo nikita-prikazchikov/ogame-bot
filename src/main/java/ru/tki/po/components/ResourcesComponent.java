@@ -1,5 +1,6 @@
 package ru.tki.po.components;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import ru.tki.models.Resources;
@@ -44,6 +45,7 @@ public class ResourcesComponent extends PageObject {
     }
 
     public Resources getResources(){
+        waitForWebElementIsDisplayed(By.cssSelector("#resources_metal"));
         return new Resources().setMetal(getMetal())
                 .setCrystal(getCrystal())
                 .setDeuterium(getDeuterium())

@@ -78,7 +78,7 @@ public class TaskGenerator {
         if (!target.equals(planet)
                 && planet.getResources().getCapacity() > empire.getProductionOnPlanetInTimeframe(planet)
                 && !empire.isLastFleetSlot()
-                && !planet.getFleet().isEmpty()) {
+                && planet.getFleet().getCapacity() > 60000) {
 
             System.out.println(String.format("Move resources %s from colony %s to main planet %s",
                     planet.getResources(), planet.getCoordinates().getFormattedCoordinates(),
@@ -87,7 +87,7 @@ public class TaskGenerator {
                     planet.getFleet().getRequiredFleet(planet.getResources()),
                     MissionType.TRANSPORT,
                     planet.getResources());
-            if (task.isEnoughFuel() || task.getFleet().isEmpty()) {
+            if (task.isEnoughFuel()) {
                 return task;
             }
         }
@@ -289,7 +289,7 @@ public class TaskGenerator {
                 AbstractPlanet p = planet.get();
                 Fleet fleet = empire.getFleetForExpedition(p);
                 if (!fleet.isEmpty()) {
-                    FleetTask task =  new FleetTask(empire, p, empire.getPlanetForExpedition(p), fleet, MissionType.EXPEDITION);
+                    FleetTask task = new FleetTask(empire, p, empire.getPlanetForExpedition(p), fleet, MissionType.EXPEDITION);
                     if (task.isEnoughFuel()) {
                         return task;
                     }
@@ -324,16 +324,17 @@ public class TaskGenerator {
         if (planetOptional.isPresent()
                 && empire.getMaxFleets() - empire.getActiveFleets() > 3) {
             AbstractPlanet planet = planetOptional.get();
-            if (planet.getLevel() < 15
-                    && !empire.isPlanetUnderAttack(planet)) {
-                return null;
+
+            if (planet.getLevel() >= 15
+                    && !empire.isPlanetUnderAttack(planet)
+                    && !planet.hasTask()
+                    ) {
+                Task task = getScanGalaxyTask(planet);
+                if (task != null) return task;
+
+                task = rescanInactivePlayers(planet);
+                if (task != null) return task;
             }
-
-            Task task = getScanGalaxyTask(planet);
-            if (task != null) return task;
-
-            task = rescanInactivePlayers(planet);
-            if (task != null) return task;
         }
         Optional<AbstractPlanet> mainPlanetOptional = getMainPlanetWithMaxSmallTransports();
         if (mainPlanetOptional.isPresent()) {
@@ -367,10 +368,8 @@ public class TaskGenerator {
     }
 
     private Task rescanInactivePlayers(AbstractPlanet planet) {
-        int MAX_PLANETS = 20;
-        if (empire.isUnderAttack()) {
-            MAX_PLANETS = 7;
-        }
+        //Don't send more than 8 spies at once so limit to this amount here.
+        int MAX_PLANETS = 8;
 
         List<EnemyPlanet> planetList = new ArrayList<>();
 
@@ -398,7 +397,9 @@ public class TaskGenerator {
 
     private Optional<AbstractPlanet> getPlanetWithMaxSpies() {
         return empire.getPlanets().stream().filter(planet ->
-                planet.getFleet().getEspionageProbe() > 3).max(Comparator.comparingInt(p -> p.getFleet().getEspionageProbe()));
+                planet.getFleet().getEspionageProbe() > 3
+                && !planet.hasTask()
+        ).max(Comparator.comparingInt(p -> p.getFleet().getEspionageProbe()));
     }
 
     private Optional<AbstractPlanet> getMainPlanetWithMaxSmallTransports() {

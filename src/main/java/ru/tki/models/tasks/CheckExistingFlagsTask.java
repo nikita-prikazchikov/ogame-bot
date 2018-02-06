@@ -12,7 +12,7 @@ import java.util.List;
 //Validate existing flags on planets and empire to avoid deadlocks for buildings
 public class CheckExistingFlagsTask extends Task {
 
-    transient Empire     empire;
+    transient Empire empire;
 
     public CheckExistingFlagsTask(Empire empire) {
         name = "Verify all flags on planets are valid";
@@ -46,7 +46,9 @@ public class CheckExistingFlagsTask extends Task {
         empire.getPlanets().stream().filter(AbstractPlanet::isPlanet).forEach(planet -> {
             if (planet.hasTask()) {
                 if (tasks.stream().filter(task ->
-                        task.getPlanet() != null && task.getPlanet().equals(planet)
+                        task.getPlanet() != null
+                                && task.getPlanet().equals(planet)
+                                && !(task instanceof UpdateInfoTask)
                 ).count() == 0) {
                     System.out.printf("%s I don't find any task assigned to planet %s. Set flag HAS_TASK to false%n", Instant.now(), planet.getCoordinates().getFormattedCoordinates());
                     planet.setHasTask(false);

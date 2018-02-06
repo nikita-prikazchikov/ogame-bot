@@ -67,8 +67,8 @@ public class Empire {
         this.config = config;
 
         storageDirectory = new File(STORAGE + File.separator +
-                config.UNIVERSE.toLowerCase() + File.separator +
-                config.LOGIN.toLowerCase());
+                config.UNIVERSE.toLowerCase().trim() + File.separator +
+                config.LOGIN.toLowerCase().trim());
 
         stateDirectory = new File(storageDirectory, "stateLogs");
         createDirectory(storageDirectory);

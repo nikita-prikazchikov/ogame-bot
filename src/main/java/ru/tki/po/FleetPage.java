@@ -18,16 +18,16 @@ import java.util.regex.Pattern;
 public class FleetPage extends PageObject {
 
     private static final By SELECT_ALL = By.cssSelector(".send_all");
-    private static final By CONTINUE = By.cssSelector("#continue");
-    private static final By GALAXY = By.cssSelector("#galaxy");
-    private static final By SYSTEM = By.cssSelector("#system");
-    private static final By POSITION = By.cssSelector("#position");
-    private static final By DURATION = By.cssSelector("#duration");
-    private static final By METAL = By.cssSelector("#metal");
-    private static final By CRYSTAL = By.cssSelector("#crystal");
-    private static final By DEUTERIUM = By.cssSelector("#deuterium");
-    private static final By START = By.cssSelector("#start");
-    private static final By WARNING = By.cssSelector("#warning");
+    private static final By CONTINUE   = By.cssSelector("#continue");
+    private static final By GALAXY     = By.cssSelector("#galaxy");
+    private static final By SYSTEM     = By.cssSelector("#system");
+    private static final By POSITION   = By.cssSelector("#position");
+    private static final By DURATION   = By.cssSelector("#duration");
+    private static final By METAL      = By.cssSelector("#metal");
+    private static final By CRYSTAL    = By.cssSelector("#crystal");
+    private static final By DEUTERIUM  = By.cssSelector("#deuterium");
+    private static final By START      = By.cssSelector("#start");
+    private static final By WARNING    = By.cssSelector("#warning");
 
     private static final Map<ShipType, By> ships = new HashMap<ShipType, By>() {{
         put(ShipType.LIGHT_FIGHTER, By.cssSelector("#battleships #button204"));
@@ -121,7 +121,10 @@ public class FleetPage extends PageObject {
     }
 
     public void selectShip(ShipType type, int value) {
-        setValue(getElement(getElement(ships.get(type)), By.cssSelector(".fleetValues")), Integer.toString(value));
+        try {
+            setValue(getElement(getElement(ships.get(type)), By.cssSelector(".fleetValues")), Integer.toString(value));
+        } catch (Exception ignored) {
+        }
     }
 
     public void setTarget(PlanetType type) {
@@ -136,7 +139,7 @@ public class FleetPage extends PageObject {
         getElement(FleetPage.missionTypes.get(mission)).click();
     }
 
-    public void setCoordinates(Coordinates coordinates){
+    public void setCoordinates(Coordinates coordinates) {
         waitForWebElement(GALAXY);
         pause();
         setValue(getElement(GALAXY), coordinates.getGalaxy());
@@ -144,31 +147,31 @@ public class FleetPage extends PageObject {
         setValue(getElement(POSITION), coordinates.getPlanet());
     }
 
-    public void setResources(Resources resources){
+    public void setResources(Resources resources) {
         setValue(getElement(METAL), Integer.toString(resources.getMetal()));
         setValue(getElement(CRYSTAL), Integer.toString(resources.getCrystal()));
         setValue(getElement(DEUTERIUM), Integer.toString(resources.getDeuterium()));
     }
 
-    public void selectAllShips(){
+    public void selectAllShips() {
         getElement(SELECT_ALL).click();
     }
 
-    public void clickContinue(){
+    public void clickContinue() {
         scrollToElement(getElement(CONTINUE));
         getElement(CONTINUE).click();
     }
 
-    public void clickStart(){
+    public void clickStart() {
         getElement(START).click();
     }
 
-    public Duration getDuration(){
+    public Duration getDuration() {
         Duration d = Duration.ZERO;
 
         String text = getElement(DURATION).getText();
         Matcher m = Pattern.compile("(\\d+):(\\d+):(\\d+)").matcher(text);
-        if(m.find()){
+        if (m.find()) {
             d = d.plusHours(Integer.parseInt(m.group(1)))
                     .plusMinutes(Integer.parseInt(m.group(2)))
                     .plusSeconds(Integer.parseInt(m.group(3)));
@@ -183,7 +186,7 @@ public class FleetPage extends PageObject {
 
     public Fleet getFleet() {
         Fleet fleet = new Fleet();
-        if (isElementExists(WARNING)){
+        if (isElementExists(WARNING)) {
             return fleet;
         }
         for (ShipType type : ShipType.values()) {
@@ -194,7 +197,7 @@ public class FleetPage extends PageObject {
         return fleet;
     }
 
-    public boolean waitPage1(){
+    public boolean waitPage1() {
         return waitForWebElement(ships.get(ShipType.LIGHT_FIGHTER)) != null;
     }
 }

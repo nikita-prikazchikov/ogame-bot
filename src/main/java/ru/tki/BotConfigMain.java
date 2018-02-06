@@ -30,7 +30,8 @@ public class BotConfigMain {
     //In seconds
     public Integer ATTACK_CHECK_TIMEOUT = 180;
     public Integer UPDATE_RESOURCES_TIMEOUT = 900;
-    public Integer FLEET_SAVE_TIMEOUT = 180;
+    //Keep this value at least 5 minutes to allow bot to do it.
+    public Integer FLEET_SAVE_TIMEOUT = 300;
 
     public Boolean DO_CHECK_ATTACK = true;
     public Boolean RAID_INACTIVE = true;

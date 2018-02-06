@@ -32,41 +32,23 @@ public class RescanInactivePlayersTask extends AbstractGalaxyScanTask {
         System.out.println(String.format("Maximum can send: %s spies", maxSpy));
 
         Iterator<EnemyPlanet> iter = planets.iterator();
-        EnemyPlanet planet = iter.next();
 
-        if (maxSpy < 3) {
-            return null;
-        }
-        do {
+        int spies = 0;
+        while (spies < maxSpy && iter.hasNext()) {
+            EnemyPlanet planet = iter.next();
             navigation.openGalaxy();
-            int spies = 0;
-
-            do {
-                galaxyPage.findPlanet(planet);
-                if (spies < maxSpy) {
-                    if (galaxyPage.isEmpty(planet) || !galaxyPage.isInactive(planet)) {
-                        System.out.println(String.format("Planet %s is not inactive or doesn't exist anymore", planet.getCoordinates()));
-                        galaxy.removePlanet(planet);
-                    } else {
-                        galaxyPage.sendSpy(planet);
-                        galaxyPage.pause(1000);
-                        spies++;
-                    }
-                } else {
-                    break;
-                }
-
-                if (iter.hasNext()) {
-                    planet = iter.next();
-                } else {
-                    break;
-                }
-            } while (spies < maxSpy);
-
-
-            waitActiveFleets(activeFleets);
-            readMessages();
-        } while (iter.hasNext());
+            galaxyPage.findPlanet(planet);
+            if (galaxyPage.isEmpty(planet) || !galaxyPage.isInactive(planet)) {
+                System.out.println(String.format("Planet %s is not inactive or doesn't exist anymore", planet.getCoordinates()));
+                galaxy.removePlanet(planet);
+            } else {
+                galaxyPage.sendSpy(planet);
+                galaxyPage.pause(1000);
+                spies++;
+            }
+        }
+        waitActiveFleets(activeFleets);
+        readMessages();
         return null;
     }
 

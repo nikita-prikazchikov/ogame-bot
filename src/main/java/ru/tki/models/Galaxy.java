@@ -88,10 +88,8 @@ public class Galaxy {
                         && !p.isUnderAttack()
                         && p.getResources().getCapacity() > capacity
         ).max(Comparator.comparingInt(p->p.getResources().getCapacity()));
-        if(planet.isPresent()){
-            return planet.get();
-        }
-        return null;
+
+        return planet.orElse(null);
     }
 
     public void addPlanet(EnemyPlanet planet) {

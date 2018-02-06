@@ -67,7 +67,7 @@ public class Mainframe {
         saveFleetDuration = Duration.ofSeconds(config.FLEET_SAVE_TIMEOUT);
 
         //Following flags are for internal use and should not be configurable
-        checkFlagsDuration = Duration.ofMinutes(30);
+        checkFlagsDuration = Duration.ofMinutes(10);
         checkFleetDuration = Duration.ofMinutes(58);
         checkDailyBonusDuration = Duration.ofMinutes(123);
         checkAdmiralDuration = Duration.ofMinutes(60);
