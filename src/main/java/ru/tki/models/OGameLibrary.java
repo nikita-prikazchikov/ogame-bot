@@ -60,6 +60,37 @@ public class OGameLibrary {
         put(ShipType.SOLAR_SATELLITE, new Resources(0, 2000, 500));
     }};
 
+    private static final Map<ShipType, Integer> fuel = new HashMap<ShipType, Integer>() {{
+        put(ShipType.LIGHT_FIGHTER, 20);
+        put(ShipType.HEAVY_FIGHTER, 75);
+        put(ShipType.CRUISER, 300);
+        put(ShipType.BATTLESHIP, 500);
+        put(ShipType.BATTLECRUISER, 250);
+        put(ShipType.BOMBER, 2000);
+        put(ShipType.DESTROYER, 1000);
+        put(ShipType.DEATHSTAR, 1);
+
+        put(ShipType.SMALL_CARGO, 20);
+        put(ShipType.LARGE_CARGO, 50);
+        put(ShipType.COLONY_SHIP, 1000);
+        put(ShipType.RECYCLER, 300);
+        put(ShipType.ESPIONAGE_PROBE, 1);
+        put(ShipType.SOLAR_SATELLITE, 0);
+    }};
+
+    private static final Map<FleetSpeed, Integer> speedValue = new HashMap<FleetSpeed, Integer>() {{
+        put(FleetSpeed.S10, 10);
+        put(FleetSpeed.S20, 20);
+        put(FleetSpeed.S30, 30);
+        put(FleetSpeed.S40, 40);
+        put(FleetSpeed.S50, 50);
+        put(FleetSpeed.S60, 60);
+        put(FleetSpeed.S70, 70);
+        put(FleetSpeed.S80, 80);
+        put(FleetSpeed.S90, 90);
+        put(FleetSpeed.S100, 100);
+    }};
+
     private static final Map<ResearchType, Resources> researches = new HashMap<ResearchType, Resources>() {{
         put(ResearchType.ENERGY, new Resources(0, 800, 400));
         put(ResearchType.LASER, new Resources(200, 100));
@@ -329,5 +360,32 @@ public class OGameLibrary {
     public static Integer getStorageCapacity(Integer level) {
         Double value = 5000 * Math.floor(2.5 * Math.exp(20 * level.doubleValue() / 33));
         return value.intValue();
+    }
+
+    public static Integer getDistance(Coordinates c1, Coordinates c2) {
+        if (!c1.getGalaxy().equals(c2.getGalaxy())) {
+            return 20000 * Math.abs(c1.getGalaxy() - c2.getGalaxy());
+        }
+        if (!c1.getSystem().equals(c2.getSystem())) {
+            return 2700 + 95 * Math.abs(c1.getSystem() - c2.getSystem());
+        }
+        return 1000 + 5 * Math.abs(c1.getPlanet() - c2.getPlanet());
+    }
+
+    public static Integer getDistance(AbstractPlanet p1, AbstractPlanet p2) {
+        return getDistance(p1.getCoordinates(), p2.getCoordinates());
+    }
+
+    public static Integer getFuelConsumption(Fleet fleet, Integer distance, FleetSpeed speed) {
+        Integer fuel = 0;
+        for(ShipType type : ShipType.values()){
+            fuel += getFuelConsumption(type, distance, speed) * fleet.get(type);
+        }
+        return fuel;
+    }
+
+    public static Integer getFuelConsumption(ShipType type, Integer distance, FleetSpeed speed) {
+        Double d = Math.floor(fuel.get(type) * distance / 35000.0 * Math.pow(1 + speedValue.get(speed) / 100.0, 2));
+        return 1 + d.intValue();
     }
 }

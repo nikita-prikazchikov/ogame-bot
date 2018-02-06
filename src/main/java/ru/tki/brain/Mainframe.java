@@ -131,6 +131,7 @@ public class Mainframe {
                 exceptionCount++;
                 System.out.println("Exception count: " + exceptionCount);
                 ex.printStackTrace();
+                empire.captureScreen();
                 try {
                     Thread.sleep(config.SLEEP_TIMEOUT);
                 } catch (InterruptedException e) {
@@ -165,7 +166,7 @@ public class Mainframe {
         ContextHolder.getDriverManager().closeDriver();
 
         setupEmpire();
-        navigation.openHomePage();
+        checkLogin();
         empire.addTask(new EmpireTask(empire));
         setEmpireInitialTasks();
     }

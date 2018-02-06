@@ -104,6 +104,11 @@ public class FleetTask extends Task {
         }
     }
 
+    public boolean isEnoughFuel(){
+        // TODO: 05.02.2018 replace with valid calculation
+        return getPlanet().getResources().getDeuterium() > 500;
+    }
+
     @Override
     public FleetAction execute() {
         super.execute();

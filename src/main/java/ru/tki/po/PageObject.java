@@ -297,5 +297,4 @@ public abstract class PageObject {
     protected Boolean waitForWebElementStopMoving(final SearchContext parent, final By bySelector) {
         return waitForWebElementStopMoving(getElement(parent, bySelector));
     }
-
 }

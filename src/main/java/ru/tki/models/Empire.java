@@ -2,7 +2,10 @@ package ru.tki.models;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.InvalidArgumentException;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import ru.tki.BotConfigMain;
 import ru.tki.ContextHolder;
 import ru.tki.helpers.FileHelper;
@@ -27,9 +30,10 @@ import java.util.stream.Stream;
 public class Empire {
     private static Logger logger = Logger.getLogger(String.valueOf(Empire.class));
 
-    private static final String STORAGE    = "storage";
-    private static final String PLANETS    = "planets";
-    private static final String RESEARCHES = "researches.json";
+    private static final String STORAGE     = "storage";
+    private static final String SCREENSHOTS = "screenshots";
+    private static final String PLANETS     = "planets";
+    private static final String RESEARCHES  = "researches.json";
 
     private Researches           researches = new Researches();
     private List<AbstractPlanet> planets    = new ArrayList<>();
@@ -563,5 +567,19 @@ public class Empire {
 
     public void setAdmiralActive(boolean admiralActive) {
         isAdmiralActive = admiralActive;
+    }
+
+    public String captureScreen() {
+        File directory = new File(storageDirectory, SCREENSHOTS);
+        createDirectory(directory);
+        try {
+            File source = ((TakesScreenshot) ContextHolder.getDriver()).getScreenshotAs(OutputType.FILE);
+            File filename = new File(directory, source.getName());
+            FileUtils.copyFile(source, filename);
+            return filename.getAbsolutePath();
+        } catch (IOException e) {
+            System.out.println("Failed to capture screenshot: " + e.getMessage());
+        }
+        return null;
     }
 }

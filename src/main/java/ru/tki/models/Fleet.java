@@ -215,13 +215,13 @@ public class Fleet {
                 fleet.setSmallCargo(smallCargo);
                 capacity -= smallCargo*SMALL_CARGO_CAPACITY;
             }
-            if (capacity > 0 && largeCargo > 0){
-                if(capacity < largeCargo * LARGE_CARGO_CAPACITY){
-                    fleet.setLargeCargo(capacity / LARGE_CARGO_CAPACITY + 1);
-                }
-                else{
-                    fleet.setLargeCargo(largeCargo);
-                }
+        }
+        if (capacity > 0 && largeCargo > 0){
+            if(capacity < largeCargo * LARGE_CARGO_CAPACITY){
+                fleet.setLargeCargo(capacity / LARGE_CARGO_CAPACITY + 1);
+            }
+            else{
+                fleet.setLargeCargo(largeCargo);
             }
         }
         return fleet;
