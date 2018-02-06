@@ -499,7 +499,7 @@ public class TaskGenerator {
                 return new BuildingTask(empire, planet, BuildingType.METAL_MINE);
             }
             if (currentMax > 8
-                    && buildings.getDeuteriumMine() < currentMax / 2 + currentMax / 9 - (planet.getCoordinates().getPlanet() < 6 ? 10 : 0)
+                    && buildings.getDeuteriumMine() < currentMax / 2 + currentMax / 9 - (planet.getCoordinates().getPlanet() < 4 ? 10 : 0)
                     && resources.isEnoughFor(OGameLibrary.getBuildingPrice(BuildingType.DEUTERIUM_MINE, buildings.getDeuteriumMine()))) {
 
                 return new BuildingTask(empire, planet, BuildingType.DEUTERIUM_MINE);
