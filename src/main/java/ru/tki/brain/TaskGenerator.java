@@ -483,6 +483,7 @@ public class TaskGenerator {
             }
 
             if (OGameLibrary.canBuild(empire, planet, FactoryType.NANITE_FACTORY)
+                    && factories.getNaniteFactory() < 4
                     && resources.isEnoughFor(OGameLibrary.getFactoryPrice(FactoryType.NANITE_FACTORY, factories.getNaniteFactory()))) {
                 return new FactoryTask(empire, planet, FactoryType.NANITE_FACTORY);
             }
