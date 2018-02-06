@@ -2,6 +2,7 @@ package ru.tki.po;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Coordinates;
@@ -14,22 +15,22 @@ import java.util.stream.Collectors;
 
 public class GalaxyPage extends PageObject {
 
-    private static final By GALAXY_NUMBER             = By.cssSelector("#galaxy_input");
-    private static final By SYSTEM_NUMBER             = By.cssSelector("#system_input");
-    private static final By OPEN_BUTTON               = By.cssSelector("div.btn_blue");
-    private static final By GALAXY_LOADING            = By.cssSelector("#galaxyLoading");
-    private static final By NEXT_ITEM                 = By.cssSelector(".galaxy_icons.next");
-    private static final By PREVIOUS_ITEM             = By.cssSelector(".galaxy_icons.prev");
-    private static final By GALAXY_TABLE_ROW          = By.cssSelector("#galaxytable tr.row");
-    private static final By GALAXY_TABLE_EMPTY_ROW    = By.cssSelector("#galaxytable tr.row.empty_filter");
-    private static final By SEND_SPY                  = By.cssSelector(".action .espionage");
+    private static final By GALAXY_NUMBER          = By.cssSelector("#galaxy_input");
+    private static final By SYSTEM_NUMBER          = By.cssSelector("#system_input");
+    private static final By OPEN_BUTTON            = By.cssSelector("div.btn_blue");
+    private static final By GALAXY_LOADING         = By.cssSelector("#galaxyLoading");
+    private static final By NEXT_ITEM              = By.cssSelector(".galaxy_icons.next");
+    private static final By PREVIOUS_ITEM          = By.cssSelector(".galaxy_icons.prev");
+    private static final By GALAXY_TABLE_ROW       = By.cssSelector("#galaxytable tr.row");
+    private static final By GALAXY_TABLE_EMPTY_ROW = By.cssSelector("#galaxytable tr.row.empty_filter");
+    private static final By SEND_SPY               = By.cssSelector(".action .espionage");
 
     private static final String TABLE_ROW = "//table[@id='galaxytable']//tr[contains(@class, 'row') and ./td[contains(@class, 'position') and ./text()='%s']]";
 
     private static final By POSITION = By.cssSelector(".position");
 
     public void findPlanet(AbstractPlanet planet) {
-        if(planet.getCoordinates().getGalaxy().toString().equals(getGalaxy()) && planet.getCoordinates().getSystem().toString().equals(getSystem())){
+        if (planet.getCoordinates().getGalaxy().toString().equals(getGalaxy()) && planet.getCoordinates().getSystem().toString().equals(getSystem())) {
             return;
         }
         this.findPlanet(planet.getCoordinates());
@@ -79,7 +80,7 @@ public class GalaxyPage extends PageObject {
         return isEmpty(getPlanet(planet));
     }
 
-    private boolean isEmpty(WebElement planet){
+    private boolean isEmpty(WebElement planet) {
         return planet.getAttribute("class").contains("empty_filter");
     }
 
@@ -95,7 +96,7 @@ public class GalaxyPage extends PageObject {
         return isInactive(getPlanet(planet));
     }
 
-    private boolean isInactive(WebElement planet){
+    private boolean isInactive(WebElement planet) {
         return planet.getAttribute("class").contains("inactive_filter");
     }
 
@@ -120,9 +121,12 @@ public class GalaxyPage extends PageObject {
     }
 
     public void sendSpy(AbstractPlanet planet) {
-        scrollToElement(getElement(getPlanet(planet), SEND_SPY));
-        getElement(getPlanet(planet), SEND_SPY).click();
-        pause();
+        try {
+            scrollToElement(getElement(getPlanet(planet), SEND_SPY));
+            getElement(getPlanet(planet), SEND_SPY).click();
+            pause();
+        } catch (WebDriverException ignored) {
+        }
     }
 
     private WebElement getPlanet(AbstractPlanet planet) {

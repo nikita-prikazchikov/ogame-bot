@@ -10,6 +10,7 @@ import ru.tki.models.types.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TaskGenerator {
 
@@ -385,6 +386,22 @@ public class TaskGenerator {
         if (planetList.size() < MAX_PLANETS) {
             planetList.addAll(empire.getGalaxy().getPlanetsOutdatedWithKnownDetails());
         }
+
+        planetList = planetList.stream().sorted((o1, o2) -> {
+            int sComp = o1.getCoordinates().getGalaxy().compareTo(o2.getCoordinates().getGalaxy());
+            if(sComp != 0){
+                return sComp;
+            }
+            else{
+                sComp = o1.getCoordinates().getSystem().compareTo(o2.getCoordinates().getSystem());
+                if(sComp != 0){
+                    return sComp;
+                }
+                else{
+                    return o1.getCoordinates().getPlanet().compareTo(o2.getCoordinates().getPlanet());
+                }
+            }
+        }).collect(Collectors.toList());
 
         if (planetList.size() > MAX_PLANETS) {
             planetList = planetList.subList(0, MAX_PLANETS);
