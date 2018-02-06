@@ -3,6 +3,7 @@ package ru.tki.models.tasks;
 import ru.tki.executor.Navigation;
 import ru.tki.models.AbstractPlanet;
 import ru.tki.models.Empire;
+import ru.tki.models.Moon;
 import ru.tki.models.Planet;
 import ru.tki.models.actions.Action;
 import ru.tki.models.types.UpdateTaskType;
@@ -33,6 +34,9 @@ public class UpdateInfoTask extends Task {
 
         ResourcesComponent resourcesComponent = new ResourcesComponent();
 
+        if(getPlanet() instanceof Moon){
+            return null;
+        }
         Planet p = (Planet) getPlanet();
         navigation.selectPlanet(getPlanet());
         getPlanet().setResources(resourcesComponent.getResources());
