@@ -47,4 +47,8 @@ public class ShipyardPage extends PageObject {
         }
         return fleet;
     }
+
+    public void waitLoading(){
+        waitForWebElementIsDisplayed(elements.get(ShipType.LIGHT_FIGHTER));
+    }
 }

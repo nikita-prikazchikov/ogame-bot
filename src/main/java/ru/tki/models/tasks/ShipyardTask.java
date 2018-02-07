@@ -57,6 +57,8 @@ public class ShipyardTask extends Task {
         navigation.openShipyard();
 
         ShipyardPage shipyardPage = new ShipyardPage();
+        shipyardPage.waitLoading();
+        shipyardPage.pause();
         shipyardPage.select(type);
 
         BuildDetailComponent buildDetailComponent = new BuildDetailComponent();
