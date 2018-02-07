@@ -39,6 +39,6 @@ public class CheckAdmiralActiveTask extends Task {
 
     @Override
     public String toString() {
-        return "Check if the EMPIRE is under attack";
+        return "Check if the ADMIRAL is active";
     }
 }
