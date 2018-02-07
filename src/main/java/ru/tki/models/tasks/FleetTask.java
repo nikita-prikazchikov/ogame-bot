@@ -48,6 +48,12 @@ public class FleetTask extends Task {
         this.resources = resources;
     }
 
+    @Override
+    public void removeFromQueue() {
+        super.removeFromQueue();
+        empire.removeActiveFleet();
+    }
+
     public AbstractPlanet getTargetPlanet() {
         return targetPlanet;
     }

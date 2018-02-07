@@ -29,6 +29,7 @@ public abstract class Task {
     public void removeFromQueue(){
         if (null != getPlanet()) {
             getPlanet().setHasTask(false);
+            getTasks().forEach(Task::removeFromQueue);
         }
     }
 

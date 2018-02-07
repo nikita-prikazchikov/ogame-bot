@@ -496,8 +496,6 @@ public class Empire {
         isLoaded = loadPlanets(directory);
         isLoaded = isLoaded && loadResearches(directory);
 
-        galaxy.loadGalaxy();
-
         return isLoaded;
     }
 

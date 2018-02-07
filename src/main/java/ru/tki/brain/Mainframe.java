@@ -131,7 +131,7 @@ public class Mainframe {
                 exceptionCount++;
                 System.out.println("Exception count: " + exceptionCount);
                 ex.printStackTrace();
-                empire.captureScreen();
+                System.out.println("Screenshot: " + empire.captureScreen());
                 try {
                     Thread.sleep(config.SLEEP_TIMEOUT);
                 } catch (InterruptedException e) {
@@ -277,7 +277,7 @@ public class Mainframe {
     //Get new task for build resource building or factory
     private void think() {
         //minimize main planets count first
-        empire.addTask(taskGenerator.checkMainPlanetsCount());
+        empire.addTask(taskGenerator.checkMainPlanets());
         empire.addTask(taskGenerator.getColonyTask());
 
         //Find appropriate task on planets thyself

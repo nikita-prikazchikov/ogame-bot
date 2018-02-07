@@ -2,6 +2,7 @@ package ru.tki.brain;
 
 import ru.tki.BotConfigMain;
 import ru.tki.models.*;
+import ru.tki.models.actions.FactoryAction;
 import ru.tki.models.actions.FleetAction;
 import ru.tki.models.actions.ShipyardAction;
 import ru.tki.models.tasks.*;
@@ -76,10 +77,11 @@ public class TaskGenerator {
             return null;
         }
         AbstractPlanet target = empire.getClosestMainPlanet(planet);
+        Integer production = empire.getProductionOnPlanetInTimeframe(planet);
         if (!target.equals(planet)
-                && planet.getResources().getCapacity() > empire.getProductionOnPlanetInTimeframe(planet)
+                && planet.getResources().getCapacity() > production
                 && !empire.isLastFleetSlot()
-                && planet.getFleet().getCapacity() > 60000) {
+                && planet.getFleet().getCapacity() > production * 0.6) {
 
             System.out.println(String.format("Move resources %s from colony %s to main planet %s",
                     planet.getResources(), planet.getCoordinates().getFormattedCoordinates(),
@@ -97,41 +99,67 @@ public class TaskGenerator {
 
     // Minimize main planets count in the empire and move them from small planets
     // Keep them 2 for now
-    Task checkMainPlanetsCount() {
-        //Move mani planet from small planets to the biggest by size. To avoid storage build
-        Optional<AbstractPlanet> small = empire.getMainPlanets().stream().filter(planet -> planet.getCoordinates().getPlanet() < 4).findFirst();
-        if (small.isPresent()) {
-            AbstractPlanet smallPlanet = small.get();
-            System.out.println("Small planet can't be main. Move it to closest big planet");
-            Optional<AbstractPlanet> targetOptional = empire.getMainPlanets().stream().filter(planet -> !planet.equals(smallPlanet)).max(Comparator.comparingInt(AbstractPlanet::getSize));
-            if (targetOptional.isPresent()) {
-                AbstractPlanet target = targetOptional.get();
-                Fleet fleet = empire.getPlanetFleetToMove(smallPlanet);
-                if (!fleet.isEmpty()) {
-                    FleetTask task = new FleetTask(empire, smallPlanet, target, fleet, MissionType.KEEP, smallPlanet.getResources());
-                    task.setRandomTransportSpeed();
-                    if (task.isEnoughFuel()) {
-                        return task;
-                    }
-                    return task;
-                }
-            }
+    // Move main planet from 1-3 positions
+    // Move main from planet with nanite building or shipyard building
+    Task checkMainPlanets() {
+        if (empire.isLastFleetSlot()) {
+            return null;
         }
+        //Move main planet from small planets to the biggest by size. To avoid storage build
+        Optional<AbstractPlanet> small = empire.getMainPlanets().stream().filter(planet ->
+                empire.getActions().stream().filter(action ->
+                        action.getPlanet().equals(planet)
+                                && action instanceof FactoryAction
+                                && (
+                                ((FactoryAction) action).getFactoryType() == FactoryType.NANITE_FACTORY
+                                        || ((FactoryAction) action).getFactoryType() == FactoryType.SHIPYARD)
+                ).count() > 0
+        ).findFirst();
+        Task task = moveMainPlanet(small, "Planet with active building of nanite factory can't be main. Move it to closest big planet");
+        if (null != task) return task;
 
-        if (empire.getMainPlanets().size() > empire.getCurrentPlanetsCount() / 4 + 1 && !empire.isLastFleetSlot()) {
+        //Move main planet from small planets to the biggest by size. To avoid storage build
+        small = empire.getMainPlanets().stream().filter(planet -> planet.getCoordinates().getPlanet() < 4).findFirst();
+        task = moveMainPlanet(small, "Small planet can't be main. Move it to closest big planet");
+        if (null != task) return task;
+
+        if (empire.getMainPlanets().size() > empire.getCurrentPlanetsCount() / 4 + 1) {
             AbstractPlanet smallest = empire.getMainPlanets().stream().min(Comparator.comparingLong(p -> p.getFleet().getCost())).get();
             AbstractPlanet biggest = empire.getMainPlanets().stream().filter(planet -> !planet.equals(smallest)).max(Comparator.comparingLong(p -> p.getFleet().getCost())).get();
             Fleet fleet = empire.getPlanetFleetToMove(smallest);
-            if (!fleet.isEmpty() && !empire.isPlanetUnderAttack(biggest)) {
+            if (!fleet.isEmpty() && !empire.isPlanetUnderAttack(biggest) && !biggest.hasTask()) {
                 System.out.println(String.format("There are more than 2 main planets. Move fleet from planet %s to %s",
                         smallest.getCoordinates(), biggest.getCoordinates()));
-                FleetTask task = new FleetTask(empire, smallest, biggest, fleet, MissionType.KEEP, smallest.getResources());
-                task.setRandomTransportSpeed();
-                if (task.isEnoughFuel()) {
-                    return task;
-                }
-                return task;
+                return moveMainPlanet(smallest, biggest, fleet);
             }
+        }
+        return null;
+    }
+
+    private Task moveMainPlanet(Optional<AbstractPlanet> planetFrom, String description) {
+        if (planetFrom.isPresent()) {
+            AbstractPlanet smallPlanet = planetFrom.get();
+            System.out.println(description);
+            Optional<AbstractPlanet> targetOptional = empire.getMainPlanets().stream().filter(planet -> !planet.equals(smallPlanet)).max(Comparator.comparingInt(AbstractPlanet::getSize));
+            if (!targetOptional.isPresent()) {
+                targetOptional = empire.getPlanets().stream().filter(planet -> !planet.equals(smallPlanet)).max(Comparator.comparingInt(AbstractPlanet::getLevel));
+            }
+            if (targetOptional.isPresent() && !smallPlanet.hasTask()) {
+                AbstractPlanet target = targetOptional.get();
+                Fleet fleet = empire.getPlanetFleetToMove(smallPlanet);
+                if (!fleet.isEmpty()) {
+                    return moveMainPlanet(smallPlanet, target, fleet);
+                }
+            }
+        }
+        return null;
+    }
+
+    private Task moveMainPlanet(AbstractPlanet from, AbstractPlanet to, Fleet fleet) {
+        FleetTask task = new FleetTask(empire, from, to, fleet, MissionType.KEEP, from.getResources());
+        task.setRandomTransportSpeed();
+        if (task.isEnoughFuel()) {
+            return task;
         }
         return null;
     }
@@ -182,6 +210,7 @@ public class TaskGenerator {
                                 if (fleet.getCapacity() > main.getResources().getCapacity()) {
                                     requiredResources = main.getResources();
                                 } else {
+                                    task.removeFromQueue();
                                     continue;
                                 }
                             } else {
@@ -358,7 +387,9 @@ public class TaskGenerator {
 
     private Task attackInactivePlayers(AbstractPlanet planet) {
         EnemyPlanet enemyPlanet = empire.getGalaxy().getBestTarget();
-        if (null != enemyPlanet && empire.getActiveAttackFleets() <= empire.getMaxFleets() / 2 && !empire.isLastFleetSlot()) {
+        if (null != enemyPlanet
+                && empire.getActiveAttackFleets() <= empire.getMaxFleets() / 2
+                && !empire.isLastFleetSlot()) {
             enemyPlanet.setUnderAttack(true);
             FleetTask task = new FleetTask(empire, planet, enemyPlanet, planet.getFleet().getRequiredSmallCargo(enemyPlanet.getResources().multiply(0.5).getCapacity()), MissionType.ATTACK);
             if (task.isEnoughFuel()) {
@@ -389,15 +420,13 @@ public class TaskGenerator {
 
         planetList = planetList.stream().sorted((o1, o2) -> {
             int sComp = o1.getCoordinates().getGalaxy().compareTo(o2.getCoordinates().getGalaxy());
-            if(sComp != 0){
+            if (sComp != 0) {
                 return sComp;
-            }
-            else{
+            } else {
                 sComp = o1.getCoordinates().getSystem().compareTo(o2.getCoordinates().getSystem());
-                if(sComp != 0){
+                if (sComp != 0) {
                     return sComp;
-                }
-                else{
+                } else {
                     return o1.getCoordinates().getPlanet().compareTo(o2.getCoordinates().getPlanet());
                 }
             }
@@ -415,7 +444,7 @@ public class TaskGenerator {
     private Optional<AbstractPlanet> getPlanetWithMaxSpies() {
         return empire.getPlanets().stream().filter(planet ->
                 planet.getFleet().getEspionageProbe() > 3
-                && !planet.hasTask()
+                        && !planet.hasTask()
         ).max(Comparator.comparingInt(p -> p.getFleet().getEspionageProbe()));
     }
 
@@ -423,6 +452,7 @@ public class TaskGenerator {
         return empire.getMainPlanets().stream().filter(planet ->
                 planet.getCoordinates().getPlanet() > 3
                         && !empire.isPlanetUnderAttack(planet)
+                        && !planet.hasTask()
                         && planet.getFleet().getSmallCargo() > 0).max(Comparator.comparingInt(p -> p.getFleet().getSmallCargo()));
     }
 

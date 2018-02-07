@@ -132,7 +132,7 @@ public class Galaxy {
         for (File fileEntry : galaxyDirectory.listFiles()) {
             if (!fileEntry.isDirectory()) {
                 if (fileEntry.getName().contains("planet")) {
-                    enemyPlanets.add(FileHelper.readFromFile(fileEntry, EnemyPlanet.class));
+                    addPlanet(FileHelper.readFromFile(fileEntry, EnemyPlanet.class));
                 }
                 if (fileEntry.getName().contains("sector")) {
                     addSector(FileHelper.readFromFile(fileEntry, GalaxySector.class));

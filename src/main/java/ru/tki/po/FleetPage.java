@@ -122,12 +122,15 @@ public class FleetPage extends PageObject {
 
     public void selectShip(ShipType type, int value) {
         try {
+            //Try to set empty and then real value to avoid refresh all selection to none
+            setValue(getElement(getElement(ships.get(type)), By.cssSelector(".fleetValues")), "");
             setValue(getElement(getElement(ships.get(type)), By.cssSelector(".fleetValues")), Integer.toString(value));
         } catch (Exception ignored) {
         }
     }
 
     public void setTarget(PlanetType type) {
+        waitForWebElementIsDisplayed(targets.get(type));
         getElement(targets.get(type)).click();
     }
 
