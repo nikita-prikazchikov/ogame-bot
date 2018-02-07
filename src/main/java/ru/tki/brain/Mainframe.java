@@ -225,7 +225,7 @@ public class Mainframe {
                     empire.getEnemyFleets().stream().filter(fleetAction ->
                             planet.equals(fleetAction.getTargetPlanet())).forEach(fleetAction -> {
                         if (!planet.getFleet().isEmpty() && fleetAction.getFinishTime().minus(saveFleetDuration).compareTo(Instant.now()) < 0) {
-                            empire.addTask(new SaveFleetTask(empire, planet));
+                            empire.addTask(new SaveFleetTask(empire, planet, fleetAction));
                         }
                     }));
         }
