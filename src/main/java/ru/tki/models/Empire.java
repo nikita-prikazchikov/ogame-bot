@@ -285,7 +285,12 @@ public class Empire {
     }
 
     public boolean isLastFleetSlot() {
-        return getMaxFleets() - activeFleets <= 1;
+        if(!isUnderAttack) {
+            return getMaxFleets() - activeFleets <= 1;
+        }
+        else{
+            return getMaxFleets() - activeFleets <= enemyFleets.stream().map(FleetAction::getTargetPlanet).distinct().count();
+        }
     }
 
     public boolean isPlanetMain(AbstractPlanet planet) {
