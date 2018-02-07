@@ -60,7 +60,7 @@ public class OGameLibrary {
         put(ShipType.SOLAR_SATELLITE, new Resources(0, 2000, 500));
     }};
 
-    private static final Map<ShipType, Integer> fuel = new HashMap<ShipType, Integer>() {{
+    private static final Map<ShipType, Integer> fuelCost = new HashMap<ShipType, Integer>() {{
         put(ShipType.LIGHT_FIGHTER, 20);
         put(ShipType.HEAVY_FIGHTER, 75);
         put(ShipType.CRUISER, 300);
@@ -78,17 +78,36 @@ public class OGameLibrary {
         put(ShipType.SOLAR_SATELLITE, 0);
     }};
 
+    private static final Map<ShipType, Integer> shipSpeed = new HashMap<ShipType, Integer>() {{
+        put(ShipType.LIGHT_FIGHTER, 12500);
+        put(ShipType.HEAVY_FIGHTER, 10000);
+        put(ShipType.CRUISER, 15000);
+        put(ShipType.BATTLESHIP, 10000);
+        put(ShipType.BATTLECRUISER, 10000);
+        put(ShipType.BOMBER, 4000);
+        put(ShipType.DESTROYER, 5000);
+        put(ShipType.DEATHSTAR, 100);
+
+        put(ShipType.SMALL_CARGO, 5000);
+        put(ShipType.LARGE_CARGO, 7500);
+        put(ShipType.COLONY_SHIP, 2500);
+        put(ShipType.RECYCLER, 2000);
+        put(ShipType.ESPIONAGE_PROBE, 100000000);
+        put(ShipType.SOLAR_SATELLITE, 0);
+    }};
+
+
     private static final Map<FleetSpeed, Integer> speedValue = new HashMap<FleetSpeed, Integer>() {{
-        put(FleetSpeed.S10, 10);
-        put(FleetSpeed.S20, 20);
-        put(FleetSpeed.S30, 30);
-        put(FleetSpeed.S40, 40);
-        put(FleetSpeed.S50, 50);
-        put(FleetSpeed.S60, 60);
-        put(FleetSpeed.S70, 70);
-        put(FleetSpeed.S80, 80);
-        put(FleetSpeed.S90, 90);
-        put(FleetSpeed.S100, 100);
+        put(FleetSpeed.S10, 1);
+        put(FleetSpeed.S20, 2);
+        put(FleetSpeed.S30, 3);
+        put(FleetSpeed.S40, 4);
+        put(FleetSpeed.S50, 5);
+        put(FleetSpeed.S60, 6);
+        put(FleetSpeed.S70, 7);
+        put(FleetSpeed.S80, 8);
+        put(FleetSpeed.S90, 9);
+        put(FleetSpeed.S100, 10);
     }};
 
     private static final Map<ResearchType, Resources> researches = new HashMap<ResearchType, Resources>() {{
@@ -376,16 +395,90 @@ public class OGameLibrary {
         return getDistance(p1.getCoordinates(), p2.getCoordinates());
     }
 
-    public static Integer getFuelConsumption(Fleet fleet, Integer distance, FleetSpeed speed) {
-        Integer fuel = 0;
-        for(ShipType type : ShipType.values()){
-            fuel += getFuelConsumption(type, distance, speed) * fleet.get(type);
+    public static Integer getFuelConsumption(Fleet fleet, Integer distance, FleetSpeed speed, Researches researches) {
+        Double fuel = .0;
+        Double maxSpeed = Math.floor(getFleetSpeed(fleet, researches));
+        Double duration = Math.ceil(35000 / speedValue.get(speed) * Math.sqrt(distance * 10 / maxSpeed) + 10) / ContextHolder.getBotConfigMain().UNIVERSE_FLEET_SPEED;
+
+        for (ShipType type : ShipType.values()) {
+            if (fleet.get(type) > 0) {
+                Double f;
+                f = fleet.get(type) * fuelCost.get(type) * .5 * distance / 35000.0 *
+                        Math.pow(
+                                (
+                                        35000 / (duration * ContextHolder.getBotConfigMain().UNIVERSE_FLEET_SPEED - 10) *
+                                                Math.sqrt(distance * 10 / getSpeed(type, researches)) / 10 + 1)
+                                , 2);
+                System.out.println(type + ": " + f);
+                fuel += f;
+            }
         }
-        return fuel;
+        return fuel.intValue();
     }
 
-    public static Integer getFuelConsumption(ShipType type, Integer distance, FleetSpeed speed) {
-        Double d = Math.floor(fuel.get(type) * distance / 35000.0 * Math.pow(1 + speedValue.get(speed) / 100.0, 2));
-        return 1 + d.intValue();
+    public static Double getSpeed(ShipType type, Researches researches) {
+        switch (type) {
+            case LIGHT_FIGHTER:
+            case LARGE_CARGO:
+            case ESPIONAGE_PROBE:
+                return getRealSpeed(shipSpeed.get(type), getDriveBonus(ResearchType.REACTIVE_ENGINE), researches.getReactiveEngine());
+            case HEAVY_FIGHTER:
+            case CRUISER:
+            case COLONY_SHIP:
+                return getRealSpeed(shipSpeed.get(type), getDriveBonus(ResearchType.IMPULSE_ENGINE), researches.getImpulseEngine());
+            case BATTLESHIP:
+            case BATTLECRUISER:
+            case DESTROYER:
+            case DEATHSTAR:
+                return getRealSpeed(shipSpeed.get(type), getDriveBonus(ResearchType.HYPER_ENGINE), researches.getHyperEngine());
+            case BOMBER:
+                if (researches.getHyperEngine() >= 8) {
+                    return getRealSpeed(5000, getDriveBonus(ResearchType.HYPER_ENGINE), researches.getHyperEngine());
+                }
+                return getRealSpeed(shipSpeed.get(type), getDriveBonus(ResearchType.IMPULSE_ENGINE), researches.getImpulseEngine());
+            case SMALL_CARGO:
+                if (researches.getImpulseEngine() >= 5) {
+                    return getRealSpeed(10000, getDriveBonus(ResearchType.IMPULSE_ENGINE), researches.getImpulseEngine());
+                }
+                return getRealSpeed(shipSpeed.get(type), getDriveBonus(ResearchType.REACTIVE_ENGINE), researches.getReactiveEngine());
+            case RECYCLER:
+                if (researches.getHyperEngine() >= 15) {
+                    return getRealSpeed(6000, getDriveBonus(ResearchType.HYPER_ENGINE), researches.getHyperEngine());
+                }
+                if (researches.getImpulseEngine() >= 17) {
+                    return getRealSpeed(4000, getDriveBonus(ResearchType.IMPULSE_ENGINE), researches.getImpulseEngine());
+                }
+                return getRealSpeed(shipSpeed.get(type), getDriveBonus(ResearchType.REACTIVE_ENGINE), researches.getReactiveEngine());
+            case SOLAR_SATELLITE:
+                return .0;
+        }
+        return .0;
+    }
+
+    private static Double getRealSpeed(Integer speed, Double driveBonus, Integer driveLevel) {
+        return speed * (1 + driveBonus * driveLevel);
+    }
+
+    private static Double getDriveBonus(ResearchType type) {
+        switch (type) {
+            case REACTIVE_ENGINE:
+                return .1;
+            case IMPULSE_ENGINE:
+                return .2;
+            case HYPER_ENGINE:
+                return .3;
+            default:
+                return .0;
+        }
+    }
+
+    public static Double getFleetSpeed(Fleet fleet, Researches researches) {
+        Double speed = Double.MAX_VALUE;
+        for (ShipType type : ShipType.values()) {
+            if (fleet.get(type) > 0) {
+                speed = Double.min(speed, getSpeed(type, researches));
+            }
+        }
+        return speed;
     }
 }

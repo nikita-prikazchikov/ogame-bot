@@ -458,7 +458,7 @@ public class TaskGenerator {
 
     private Task getSolarSatelliteTask(Planet planet) {
         Resources resources = planet.getResources();
-        if (!planet.getShipyardBusy() && planet.getLevel() > 12) {
+        if (!planet.getShipyardBusy() && planet.getLevel() > 15) {
             if (planet.getResources().getEnergy() < 0) {
                 //Build 1/4 of required solar satellites
                 Integer count = Math.max(1, planet.getResources().getEnergy() * -1 / 30 / 4);
