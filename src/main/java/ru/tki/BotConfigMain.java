@@ -39,5 +39,6 @@ public class BotConfigMain {
     public Boolean CHECK_ADMIRAL   = true;
     public Boolean HIRE_ADMIRAL    = true;
 
-    public Integer RESOURCES_THRESHOLD_ATTACK = 29999;
+    public Integer RESOURCES_THRESHOLD_ATTACK  = 29999;
+    public Double  FUEL_CONSUMPTION_MULTIPLIER = .5;
 }

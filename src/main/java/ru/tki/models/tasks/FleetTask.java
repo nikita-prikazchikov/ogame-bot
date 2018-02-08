@@ -1,9 +1,6 @@
 package ru.tki.models.tasks;
 
-import ru.tki.models.AbstractPlanet;
-import ru.tki.models.Empire;
-import ru.tki.models.Fleet;
-import ru.tki.models.Resources;
+import ru.tki.models.*;
 import ru.tki.models.actions.FleetAction;
 import ru.tki.models.types.FleetSpeed;
 import ru.tki.models.types.MissionType;
@@ -111,8 +108,8 @@ public class FleetTask extends Task {
     }
 
     public boolean isEnoughFuel(){
-        // TODO: 05.02.2018 replace with valid calculation
-        return getPlanet().getResources().getDeuterium() > 500;
+        Integer distance = OGameLibrary.getDistance(getPlanet(), getTargetPlanet());
+        return OGameLibrary.getFuelConsumption(fleet, distance, fleetSpeed, empire.getResearches()) <= getPlanet().getResources().getDeuterium();
     }
 
     @Override

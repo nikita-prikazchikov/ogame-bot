@@ -402,7 +402,7 @@ public class OGameLibrary {
         for (ShipType type : ShipType.values()) {
             if (fleet.get(type) > 0) {
                 Double f;
-                f = fleet.get(type) * fuelCost.get(type) * .5 * distance / 35000.0 *
+                f = fleet.get(type) * fuelCost.get(type) * ContextHolder.getBotConfigMain().FUEL_CONSUMPTION_MULTIPLIER * distance / 35000.0 *
                         Math.pow(
                                 (
                                         35000 / (duration * ContextHolder.getBotConfigMain().UNIVERSE_FLEET_SPEED - 10) *
@@ -412,6 +412,7 @@ public class OGameLibrary {
                 fuel += f;
             }
         }
+        fuel = Math.ceil(fuel);
         return fuel.intValue();
     }
 
