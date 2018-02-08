@@ -102,6 +102,7 @@ public class UpdateInfoTask extends Task {
     private void updateFleet() {
         navigation.openFleet();
         getPlanet().setFleet(new FleetPage().getFleet());
+        System.out.println(getPlanet().getCoordinates() + " " + getPlanet().getFleet().getDetails());
     }
 
     private void updateResearches() {

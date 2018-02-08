@@ -408,7 +408,6 @@ public class OGameLibrary {
                                         35000 / (duration * ContextHolder.getBotConfigMain().UNIVERSE_FLEET_SPEED - 10) *
                                                 Math.sqrt(distance * 10 / getSpeed(type, researches)) / 10 + 1)
                                 , 2);
-                System.out.println(type + ": " + f);
                 fuel += f;
             }
         }
