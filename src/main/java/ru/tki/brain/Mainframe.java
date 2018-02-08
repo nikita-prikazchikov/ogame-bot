@@ -1,5 +1,6 @@
 package ru.tki.brain;
 
+import org.openqa.selenium.NoSuchSessionException;
 import ru.tki.BotConfigMain;
 import ru.tki.ContextHolder;
 import ru.tki.executor.Navigation;
@@ -115,7 +116,6 @@ public class Mainframe {
         int exceptionCount = 0;
         do {
             try {
-                checkLogin();
                 if (exceptionCount >= 5) {
                     restartEmpire();
                     exceptionCount = 0;
@@ -124,9 +124,14 @@ public class Mainframe {
                     System.out.println("Bot execution time is over. Buy! Till the next time!");
                     return;
                 }
+                checkLogin();
                 execution();
                 //reset fails count in case everything was executed
                 exceptionCount = 0;
+            }catch (NoSuchSessionException ex){
+                ContextHolder.getDriverManager().closeDriver();
+                ContextHolder.getDriverManager().getDriver();
+                checkLogin();
             } catch (Exception ex) {
                 exceptionCount++;
                 System.out.println("Exception count: " + exceptionCount);

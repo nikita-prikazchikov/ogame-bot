@@ -391,6 +391,7 @@ public class TaskGenerator {
                 && empire.getActiveAttackFleets() <= empire.getMaxFleets() / 2
                 && !empire.isLastFleetSlot()) {
             enemyPlanet.setUnderAttack(true);
+            empire.getGalaxy().addPlanet(enemyPlanet);
             FleetTask task = new FleetTask(empire, planet, enemyPlanet, planet.getFleet().getRequiredSmallCargo(enemyPlanet.getResources().multiply(0.5).getCapacity()), MissionType.ATTACK);
             if (task.isEnoughFuel()) {
                 return task;
@@ -705,6 +706,9 @@ public class TaskGenerator {
                     && OGameLibrary.canBuild(empire, planet, ShipType.LARGE_CARGO)
                     && resources.isEnoughFor(OGameLibrary.getShipPrice(ShipType.LARGE_CARGO).multiply(buildAmount))) {
 
+                if(resources.isEnoughFor(OGameLibrary.getShipPrice(ShipType.LARGE_CARGO).multiply(buildAmount * 5))){
+                    buildAmount *= 5;
+                }
                 System.out.println(String.format("Details: need to build %d %s on %s planet to meet double production capacity %s or current resources %s" +
                                 " Current fleet: %s",
                         buildAmount, ShipType.LARGE_CARGO, planet.getCoordinates(), planetProduction * 2, planet.getResources(), planet.getFleet().getDetails()));
@@ -736,6 +740,7 @@ public class TaskGenerator {
         Defence defence = planet.getDefence();
         if (!planet.getShipyardBusy() && currentMax > 15 && config.BUILD_DEFENCE) {
             Integer multiplier = currentMax * currentMax / 120 - 1;
+            Integer buildCount = currentMax;
             if (defence.getRocket() < optimalDefence.get(DefenceType.ROCKET) * multiplier
                     && OGameLibrary.canBuild(empire, planet, DefenceType.ROCKET)
                     && resources.isEnoughFor(OGameLibrary.getDefencePrice(DefenceType.ROCKET).multiply(5))) {
