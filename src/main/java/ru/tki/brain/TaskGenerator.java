@@ -626,7 +626,7 @@ public class TaskGenerator {
                     )
                             && researches.getWeapon() <= 25
                             && OGameLibrary.canBuild(empire, planet, ResearchType.WEAPON)
-                            && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.WEAPON, researches.getEspionage()))) {
+                            && resources.isEnoughFor(OGameLibrary.getResearchPrice(ResearchType.WEAPON, researches.getWeapon()))) {
                 return new ResearchTask(empire, planet, ResearchType.WEAPON);
             }
 
