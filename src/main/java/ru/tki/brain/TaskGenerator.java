@@ -505,7 +505,7 @@ public class TaskGenerator {
                     return new FactoryTask(empire, planet, FactoryType.RESEARCH_LAB);
                 }
             }
-            if (config.BUILD_DEFENCE && currentMax > 20
+            if (config.BUILD_MISSILE_SILOS && currentMax > 20
                     && factories.getMissileSilos() < currentMax / 5
                     && OGameLibrary.canBuild(empire, planet, FactoryType.MISSILE_SILOS)
                     && resources.isEnoughFor(OGameLibrary.getFactoryPrice(FactoryType.MISSILE_SILOS, factories.getMissileSilos()))) {

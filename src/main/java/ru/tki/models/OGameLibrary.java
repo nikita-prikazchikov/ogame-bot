@@ -291,9 +291,8 @@ public class OGameLibrary {
                         && empire.getResearches().getIon() >= 5
                         && empire.getResearches().getEnergy() >= 8;
             case REACTIVE_ENGINE:
-                return planet.getFactories().getResearchLab() >= 4
-                        && empire.getResearches().getLaser() >= 5
-                        && empire.getResearches().getEnergy() >= 4;
+                return planet.getFactories().getResearchLab() >= 1
+                        && empire.getResearches().getEnergy() >= 1;
             case IMPULSE_ENGINE:
                 return planet.getFactories().getResearchLab() >= 2
                         && empire.getResearches().getEnergy() >= 1;

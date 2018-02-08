@@ -10,13 +10,14 @@ public class BotConfigMain {
     public Boolean HEADLESS  = false;
     public Boolean LOG_STATE = true;
 
-    public Boolean BUILD_RESOURCES  = true;
-    public Boolean BUILD_FACTORIES  = true;
-    public Boolean BUILD_DEFENCE    = true;
-    public Boolean BUILD_FLEET      = true;
-    public Boolean BUILD_COLONIES   = true;
-    public Boolean DO_RESEARCHES    = true;
-    public Boolean SEND_EXPEDITIONS = true;
+    public Boolean BUILD_RESOURCES     = true;
+    public Boolean BUILD_FACTORIES     = true;
+    public Boolean BUILD_DEFENCE       = true;
+    public Boolean BUILD_MISSILE_SILOS = false;
+    public Boolean BUILD_FLEET         = true;
+    public Boolean BUILD_COLONIES      = true;
+    public Boolean DO_RESEARCHES       = true;
+    public Boolean SEND_EXPEDITIONS    = true;
 
     public Integer UNIVERSE_SPEED       = 1;
     public Integer UNIVERSE_FLEET_SPEED = 1;
@@ -26,17 +27,17 @@ public class BotConfigMain {
 
     public Integer COLONY_MIN_SIZE;
     //Sleep In milliseconds between fails and when nothing to do
-    public Integer SLEEP_TIMEOUT = 10000;
+    public Integer SLEEP_TIMEOUT            = 10000;
     //In seconds
-    public Integer ATTACK_CHECK_TIMEOUT = 180;
+    public Integer ATTACK_CHECK_TIMEOUT     = 180;
     public Integer UPDATE_RESOURCES_TIMEOUT = 900;
     //Keep this value at least 5 minutes to allow bot to do it.
-    public Integer FLEET_SAVE_TIMEOUT = 300;
+    public Integer FLEET_SAVE_TIMEOUT       = 300;
 
     public Boolean DO_CHECK_ATTACK = true;
-    public Boolean RAID_INACTIVE = true;
-    public Boolean CHECK_ADMIRAL = true;
-    public Boolean HIRE_ADMIRAL = true;
+    public Boolean RAID_INACTIVE   = true;
+    public Boolean CHECK_ADMIRAL   = true;
+    public Boolean HIRE_ADMIRAL    = true;
 
     public Integer RESOURCES_THRESHOLD_ATTACK = 29999;
 }
