@@ -227,7 +227,7 @@ public class OGameLibrary {
                 return false;
             case SMALL_CARGO:
                 return planet.getFactories().getShipyard() >= 2
-                        && empire.getResearches().getReactiveEngine() >= 1;
+                        && empire.getResearches().getReactiveEngine() >= 2;
             case LARGE_CARGO:
                 return planet.getFactories().getShipyard() >= 4
                         && empire.getResearches().getReactiveEngine() >= 6;
