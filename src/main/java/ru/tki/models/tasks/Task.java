@@ -9,11 +9,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Task {
+    protected static final Integer LOW       = 0;
+    protected static final Integer REGULAR   = 1;
+    protected static final Integer IMPORTANT = 2;
+    protected static final Integer HIGH      = 3;
 
     private   Instant        executionDate;
     private   AbstractPlanet planet;
     protected String         name;
 
+    private   Integer    priority   = REGULAR;
     protected Resources  resources  = new Resources();
     protected List<Task> tasks      = new ArrayList<>();
     protected Boolean    isExecuted = false;
@@ -26,7 +31,7 @@ public abstract class Task {
     }
 
     //Delete task and all it blocking requirements
-    public void removeFromQueue(){
+    public void removeFromQueue() {
         if (null != getPlanet()) {
             getPlanet().setHasTask(false);
             getTasks().forEach(Task::removeFromQueue);
@@ -38,7 +43,7 @@ public abstract class Task {
     }
 
     public void setPlanet(AbstractPlanet planet, Boolean planetWillBeChanged) {
-        if(planetWillBeChanged) {
+        if (planetWillBeChanged) {
             planet.setHasTask(true);
         }
         this.planet = planet;
@@ -86,5 +91,13 @@ public abstract class Task {
 
     public void setExecuted(Boolean executed) {
         isExecuted = executed;
+    }
+
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
     }
 }

@@ -92,6 +92,8 @@ public class TaskGenerator {
                     planet.getResources());
             if (task.isEnoughFuel()) {
                 return task;
+            } else {
+                task.removeFromQueue();
             }
         }
         return null;
@@ -160,6 +162,8 @@ public class TaskGenerator {
         task.setRandomTransportSpeed();
         if (task.isEnoughFuel()) {
             return task;
+        } else {
+            task.removeFromQueue();
         }
         return null;
     }
@@ -322,6 +326,8 @@ public class TaskGenerator {
                     FleetTask task = new FleetTask(empire, p, empire.getPlanetForExpedition(p), fleet, MissionType.EXPEDITION);
                     if (task.isEnoughFuel()) {
                         return task;
+                    } else {
+                        task.removeFromQueue();
                     }
                 }
             }
@@ -395,6 +401,8 @@ public class TaskGenerator {
             FleetTask task = new FleetTask(empire, planet, enemyPlanet, planet.getFleet().getRequiredSmallCargo(enemyPlanet.getResources().multiply(0.5).getCapacity()), MissionType.ATTACK);
             if (task.isEnoughFuel()) {
                 return task;
+            } else {
+                task.removeFromQueue();
             }
         }
         return null;
@@ -706,7 +714,7 @@ public class TaskGenerator {
                     && OGameLibrary.canBuild(empire, planet, ShipType.LARGE_CARGO)
                     && resources.isEnoughFor(OGameLibrary.getShipPrice(ShipType.LARGE_CARGO).multiply(buildAmount))) {
 
-                if(resources.isEnoughFor(OGameLibrary.getShipPrice(ShipType.LARGE_CARGO).multiply(buildAmount * 5))){
+                if (resources.isEnoughFor(OGameLibrary.getShipPrice(ShipType.LARGE_CARGO).multiply(buildAmount * 5))) {
                     buildAmount *= 5;
                 }
                 System.out.println(String.format("Details: need to build %d %s on %s planet to meet double production capacity %s or current resources %s" +

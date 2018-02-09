@@ -16,6 +16,7 @@ public class RevertFleetTask extends FleetTask {
         this.missionType = action.getMissionType();
         this.fleet = action.getFleet();
         this.resources = action.getResources();
+        setPriority(IMPORTANT);
     }
 
     @Override

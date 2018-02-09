@@ -1,10 +1,7 @@
 package ru.tki.models.tasks;
 
 import ru.tki.executor.Navigation;
-import ru.tki.models.AbstractPlanet;
-import ru.tki.models.Empire;
-import ru.tki.models.Moon;
-import ru.tki.models.Planet;
+import ru.tki.models.*;
 import ru.tki.models.actions.Action;
 import ru.tki.models.types.UpdateTaskType;
 import ru.tki.po.*;
@@ -102,7 +99,10 @@ public class UpdateInfoTask extends Task {
     private void updateFleet() {
         navigation.openFleet();
         getPlanet().setFleet(new FleetPage().getFleet());
-        System.out.println(getPlanet().getCoordinates() + " " + getPlanet().getFleet().getDetails());
+        //Refresh active fleets count because bot fails with save due to no room for another fleet
+        navigation.openFleetMove();
+        empire.setActiveFleets(new FleetDetailsPage().getActiveFleets());
+        System.out.println(getPlanet().getCoordinates() + getPlanet().getFleet().getDetails());
     }
 
     private void updateResearches() {

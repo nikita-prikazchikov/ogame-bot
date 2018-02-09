@@ -9,6 +9,7 @@ public class SaveFleetTask extends FleetTask {
 
     public SaveFleetTask(Empire empire, AbstractPlanet planet, FleetAction action) {
         super(empire, planet);
+        setPriority(HIGH);
         name = "Save fleet on planet: " + planet.getCoordinates();
         if(empire.getPlanets().size() == 1){
             //In case we are alone save fleet through attack to attacker

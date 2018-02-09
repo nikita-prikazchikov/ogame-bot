@@ -19,6 +19,7 @@ public class AbstractGalaxyScanTask extends Task {
     public AbstractGalaxyScanTask(Empire empire) {
         this.empire = empire;
         this.galaxy = empire.getGalaxy();
+        setPriority(LOW);
     }
 
     protected void waitActiveFleets(int active) {

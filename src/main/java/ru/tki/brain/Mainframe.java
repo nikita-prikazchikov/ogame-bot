@@ -18,6 +18,7 @@ import ru.tki.po.LoginPage;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Mainframe {
@@ -317,7 +318,7 @@ public class Mainframe {
         }
 
         List<Task> tasksForRemove = new ArrayList<>();
-        empire.getTasks().stream().filter(Task::canExecute).forEach(task -> {
+        empire.getTasks().stream().filter(Task::canExecute).sorted(Comparator.comparingInt(Task::getPriority).reversed()).forEach(task -> {
             if (!task.isExecuted()) {
                 System.out.printf("%s: Execute task: %s%n", Instant.now(), task.toString());
                 Action action = task.execute();

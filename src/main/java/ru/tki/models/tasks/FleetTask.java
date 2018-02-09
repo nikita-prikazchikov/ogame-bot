@@ -27,6 +27,7 @@ public class FleetTask extends Task {
         name = "Fleet task";
         setPlanet(planet);
         empire.addActiveFleet();
+        setPriority(IMPORTANT);
     }
 
     public FleetTask(Empire empire, AbstractPlanet fromPlanet, AbstractPlanet targetPlanet, Fleet fleet) {
@@ -107,7 +108,7 @@ public class FleetTask extends Task {
         }
     }
 
-    public boolean isEnoughFuel(){
+    public boolean isEnoughFuel() {
         Integer distance = OGameLibrary.getDistance(getPlanet(), getTargetPlanet());
         return OGameLibrary.getFuelConsumption(fleet, distance, fleetSpeed, empire.getResearches()) <= getPlanet().getResources().getDeuterium();
     }
