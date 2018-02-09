@@ -346,7 +346,7 @@ public class TaskGenerator {
     Task raidInactivePlayers() {
 
         if (!config.RAID_INACTIVE
-                || empire.getResearches().getEspionage() < 6) {
+                || empire.getResearches().getEspionage() < 4) {
             return null;
         }
 
@@ -721,7 +721,8 @@ public class TaskGenerator {
     private Task getRequiredSpies(Planet planet) {
         Integer requiredSpies = Math.min(empire.getResearches().getComputer(), 8);
         if (!planet.getShipyardBusy()
-                && empire.isPlanetMain(planet)
+                && (empire.isPlanetMain(planet)
+                || empire.getPlanets().size() == 1)
                 && planet.getLevel() > 15
                 && planet.getFleet().getEspionageProbe() < requiredSpies
                 && config.BUILD_FLEET) {
