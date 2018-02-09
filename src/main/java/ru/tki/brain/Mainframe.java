@@ -1,6 +1,7 @@
 package ru.tki.brain;
 
 import org.openqa.selenium.NoSuchSessionException;
+import org.openqa.selenium.NoSuchWindowException;
 import ru.tki.BotConfigMain;
 import ru.tki.ContextHolder;
 import ru.tki.executor.Navigation;
@@ -129,7 +130,7 @@ public class Mainframe {
                 execution();
                 //reset fails count in case everything was executed
                 exceptionCount = 0;
-            }catch (NoSuchSessionException ex){
+            }catch (NoSuchSessionException | NoSuchWindowException ex) {
                 exceptionCount = 10;
             } catch (Exception ex) {
                 exceptionCount++;

@@ -12,20 +12,20 @@ public class DriverManager {
 
     public static final int IMPLICITLY_WAIT = 10;
 
-    private static Logger logger = Logger.getLogger(String.valueOf(DriverManager.class));
-    private WebDriver driver = null;
+    private static Logger    logger = Logger.getLogger(String.valueOf(DriverManager.class));
+    private        WebDriver driver = null;
 
-    private void startDriver(){
+    private void startDriver() {
         ChromeOptions options = new ChromeOptions();
-        if(ContextHolder.getBotConfigMain().HEADLESS) {
+        if (ContextHolder.getBotConfigMain().HEADLESS) {
             options.addArguments("--headless");
             options.addArguments("--window-size=1920,1080");
         }
         this.driver = new ChromeDriver(options);
     }
 
-    public WebDriver getDriver(){
-        if(this.driver == null){
+    public WebDriver getDriver() {
+        if (this.driver == null) {
             this.startDriver();
             this.setImplicitlyWait();
             this.maximize();
@@ -33,24 +33,27 @@ public class DriverManager {
         return this.driver;
     }
 
-    public void maximize (){
+    public void maximize() {
         this.driver.manage().window().maximize();
     }
 
-    public void closeDriver(){
-        this.driver.close();
+    public void closeDriver() {
+        try {
+            this.driver.close();
+        } catch (Exception ignored) {
+        }
         this.driver = null;
     }
 
-    public void setImplicitlyWait(int seconds){
+    public void setImplicitlyWait(int seconds) {
         driver.manage().timeouts().implicitlyWait(seconds, TimeUnit.SECONDS);
     }
 
-    public void setImplicitlyWait(){
+    public void setImplicitlyWait() {
         this.setImplicitlyWait(IMPLICITLY_WAIT);
     }
 
-    public void resetImplicitlyWait(){
+    public void resetImplicitlyWait() {
         this.setImplicitlyWait(0);
     }
 
