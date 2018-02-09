@@ -1,6 +1,7 @@
 package ru.tki.po;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import ru.tki.models.*;
 import ru.tki.models.types.FleetSpeed;
 import ru.tki.models.types.MissionType;
@@ -28,6 +29,8 @@ public class FleetPage extends PageObject {
     private static final By DEUTERIUM  = By.cssSelector("#deuterium");
     private static final By START      = By.cssSelector("#start");
     private static final By WARNING    = By.cssSelector("#warning");
+
+    private static final By FLEET_SLOTS = By.cssSelector("#slots .tooltip.advice");
 
     private static final Map<ShipType, By> ships = new HashMap<ShipType, By>() {{
         put(ShipType.LIGHT_FIGHTER, By.cssSelector("#battleships #button204"));
@@ -198,6 +201,22 @@ public class FleetPage extends PageObject {
             fleet.set(type, getShipCount(type));
         }
         return fleet;
+    }
+
+    public int getActiveFleets() {
+        return parseFleetCount(findElements(FLEET_SLOTS).get(0).getText());
+    }
+
+    public int getActiveExpeditions() {
+        return parseFleetCount(findElements(FLEET_SLOTS).get(1).getText());
+    }
+
+    private int parseFleetCount(String fleets) {
+        Matcher m = Pattern.compile("(\\d+)/\\d+").matcher(fleets);
+        if (m.find()) {
+            return Integer.parseInt(m.group(1));
+        }
+        return 0;
     }
 
     public boolean waitPage1() {

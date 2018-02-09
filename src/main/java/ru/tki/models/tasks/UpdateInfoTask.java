@@ -31,13 +31,13 @@ public class UpdateInfoTask extends Task {
 
         ResourcesComponent resourcesComponent = new ResourcesComponent();
 
-        if(getPlanet() instanceof Moon){
+        if (getPlanet() instanceof Moon) {
             return null;
         }
         Planet p = (Planet) getPlanet();
         navigation.selectPlanet(getPlanet());
         getPlanet().setResources(resourcesComponent.getResources());
-        switch (type){
+        switch (type) {
 
             case All:
                 updateDetails();
@@ -98,10 +98,11 @@ public class UpdateInfoTask extends Task {
 
     private void updateFleet() {
         navigation.openFleet();
-        getPlanet().setFleet(new FleetPage().getFleet());
+        FleetPage fleetPage = new FleetPage();
+        getPlanet().setFleet(fleetPage.getFleet());
         //Refresh active fleets count because bot fails with save due to no room for another fleet
-        navigation.openFleetMove();
-        empire.setActiveFleets(new FleetDetailsPage().getActiveFleets());
+        empire.setActiveFleets(fleetPage.getActiveFleets());
+        empire.setActiveExpeditions(fleetPage.getActiveExpeditions());
         System.out.println(getPlanet().getCoordinates() + getPlanet().getFleet().getDetails());
     }
 
