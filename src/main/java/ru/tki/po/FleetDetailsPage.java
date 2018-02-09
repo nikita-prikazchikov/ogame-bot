@@ -120,6 +120,8 @@ public class FleetDetailsPage extends AbstractFleetDetails {
     private void collectFleetDetails(WebElement element, FleetAction action) {
         WebElement route = getElement(element, By.cssSelector(".route a"));
         scrollToElement(route);
+        getElement(element, By.cssSelector(".mission")).click();
+        pause();
         hoverElement(route);
         String fleetId = route.getAttribute("rel");
 
