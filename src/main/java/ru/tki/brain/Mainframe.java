@@ -130,17 +130,18 @@ public class Mainframe {
                 //reset fails count in case everything was executed
                 exceptionCount = 0;
             }catch (NoSuchSessionException ex){
-                ContextHolder.getDriverManager().closeDriver();
-                ContextHolder.getDriverManager().getDriver();
-                checkLogin();
+                exceptionCount = 10;
             } catch (Exception ex) {
                 exceptionCount++;
                 System.out.println("Exception count: " + exceptionCount);
                 ex.printStackTrace();
-                System.out.println("Screenshot: " + empire.captureScreen());
                 try {
+                    System.out.println("Screenshot: " + empire.captureScreen());
                     Thread.sleep(config.SLEEP_TIMEOUT);
-                } catch (InterruptedException e) {
+                }catch (NoSuchSessionException ignored){
+                    //restart immediately
+                    exceptionCount = 10;
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
