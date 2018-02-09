@@ -14,6 +14,7 @@ public class CheckAttackTask extends Task {
     public CheckAttackTask(Empire empire) {
         this.empire = empire;
         name = "Check empire under attack";
+        setPriority(IMPORTANT);
     }
 
     @Override
