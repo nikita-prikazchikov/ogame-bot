@@ -398,7 +398,9 @@ public class TaskGenerator {
                 && !empire.isLastFleetSlot()) {
             enemyPlanet.setUnderAttack(true);
             empire.getGalaxy().addPlanet(enemyPlanet);
-            FleetTask task = new FleetTask(empire, planet, enemyPlanet, planet.getFleet().getRequiredSmallCargo(enemyPlanet.getResources().multiply(0.5).getCapacity()), MissionType.ATTACK);
+            FleetTask task = new FleetTask(empire, planet, enemyPlanet,
+                    planet.getFleet().getRequiredSmallCargo(enemyPlanet.getResources().multiply(0.5).getCapacity()).add(new Fleet(ShipType.SMALL_CARGO, 1)),
+                    MissionType.ATTACK);
             if (task.isEnoughFuel()) {
                 return task;
             } else {

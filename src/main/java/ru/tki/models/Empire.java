@@ -312,7 +312,7 @@ public class Empire {
         ).collect(Collectors.toList());
         for (FleetAction fleetAction : fleets) {
             Duration gap = Duration.between(fleetAction.getFinishTime(), myFleet.getFleetTimeToTarget()).abs();
-            if (gap.minus(Duration.ofSeconds(config.FLEET_SAVE_TIMEOUT)).isNegative()) {
+            if (gap.minus(Duration.ofSeconds(config.FLEET_SAVE_TIMEOUT).dividedBy(2)).isNegative()) {
                 return true;
             }
         }
