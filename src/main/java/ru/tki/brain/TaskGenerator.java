@@ -319,6 +319,10 @@ public class TaskGenerator {
                 }
                 return a.getFleet().getSmallCargo() - b.getFleet().getSmallCargo();
             });
+            //In case we have only 1 planet send expedition from it
+            if(!planet.isPresent() && empire.getPlanets().size() == 1){
+                planet = empire.getPlanets().stream().findFirst();
+            }
             if (planet.isPresent()) {
                 AbstractPlanet p = planet.get();
                 Fleet fleet = empire.getFleetForExpedition(p);
