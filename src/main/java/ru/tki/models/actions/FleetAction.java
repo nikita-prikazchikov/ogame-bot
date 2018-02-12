@@ -1,11 +1,15 @@
 package ru.tki.models.actions;
 
-import ru.tki.models.*;
-import ru.tki.models.tasks.CheckFleetsCountTask;
+import ru.tki.models.AbstractPlanet;
+import ru.tki.models.Empire;
+import ru.tki.models.Fleet;
+import ru.tki.models.Resources;
 import ru.tki.models.tasks.FleetTask;
 import ru.tki.models.tasks.SaveFleetTask;
+import ru.tki.models.tasks.UpdateInfoTask;
 import ru.tki.models.types.FleetSpeed;
 import ru.tki.models.types.MissionType;
+import ru.tki.models.types.UpdateTaskType;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -123,7 +127,7 @@ public class FleetAction extends Action {
         empire.removeActiveFleet();
         if (missionType == MissionType.EXPEDITION) {
             empire.removeActiveExpedition();
-            empire.addTask(new CheckFleetsCountTask(empire));
+            empire.addTask(new UpdateInfoTask(empire, getPlanet(), UpdateTaskType.FLEET));
         }
     }
 

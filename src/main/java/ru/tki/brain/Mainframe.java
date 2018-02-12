@@ -27,7 +27,6 @@ public class Mainframe {
     private static Duration checkUpdateResourcesDuration;
     private static Duration saveFleetDuration;
     private static Duration checkFlagsDuration;
-    private static Duration checkFleetDuration;
     private static Duration checkDailyBonusDuration;
     private static Duration checkAdmiralDuration;
 
@@ -71,7 +70,6 @@ public class Mainframe {
 
         //Following flags are for internal use and should not be configurable
         checkFlagsDuration = Duration.ofMinutes(10);
-        checkFleetDuration = Duration.ofMinutes(58);
         checkDailyBonusDuration = Duration.ofMinutes(123);
         checkAdmiralDuration = Duration.ofMinutes(60);
     }
@@ -208,11 +206,6 @@ public class Mainframe {
         if (lastFlagsCheck.plus(checkFlagsDuration).compareTo(now) < 0) {
             empire.addTask(new CheckExistingFlagsTask(empire));
             lastFlagsCheck = Instant.now();
-        }
-
-        if (lastFleetCheck.plus(checkFleetDuration).compareTo(now) < 0) {
-            empire.addTask(new CheckFleetsCountTask(empire));
-            lastFleetCheck = Instant.now();
         }
 
         if (lastDailyBonusCheck.plus(checkDailyBonusDuration).compareTo(now) < 0) {
