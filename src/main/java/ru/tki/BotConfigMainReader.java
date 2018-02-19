@@ -53,6 +53,7 @@ public class BotConfigMainReader {
             config.ATTACK_CHECK_TIMEOUT = Integer.parseInt(prop.getProperty("empire.check.attack.timeout", "120"));
             config.UPDATE_RESOURCES_TIMEOUT = Integer.parseInt(prop.getProperty("update.resources.timeout", "900"));
             config.FLEET_SAVE_TIMEOUT = Integer.parseInt(prop.getProperty("fleet.save.timeout", "180"));
+            config.RESOURCES_THRESHOLD_ATTACK = Integer.parseInt(prop.getProperty("attack.resources.threshold", "29999"));
 
             config.DO_CHECK_ATTACK = Boolean.parseBoolean(prop.getProperty("empire.check.attack", "true"));
 
